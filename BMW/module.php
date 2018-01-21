@@ -183,12 +183,12 @@ class BMWConnectedDrive extends IPSModule
 
         $this->RegisterVariableString("bmw_car_picture", $this->Translate("picture"), "~HTMLBox", 1);
         $this->RegisterProfile("BMW.Perspective",   "Eyes",   "", "°",    0, 360, 30, 0, 1);
-        $this->RegisterVariableString("bmw_perspective", $this->Translate("perspective"), "BMW.Perspective", 2);
+        $this->RegisterVariableInteger("bmw_perspective", $this->Translate("perspective"), "BMW.Perspective", 2);
         $this->EnableAction("bmw_perspective");
         $this->RegisterProfile("BMW.Mileage",   "Distance",   "", " ".$this->GetMileageUnit(),    0, 0, 0, 0, 1);
         $this->RegisterVariableInteger("bmw_mileage", $this->Translate("mileage"), "BMW.Mileage", 3);
         $this->RegisterProfile("BMW.TankCapacity",   "Gauge",   "", " Liter",    0, 0, 0, 0, 1);
-        $this->RegisterVariableInteger("bmw_tank_capacity", $this->Translate("mileage"), "BMW.TankCapacity", 4);
+        $this->RegisterVariableInteger("bmw_tank_capacity", $this->Translate("tank capacity"), "BMW.TankCapacity", 4);
 
 		$this->ValidateConfiguration();	
 	
