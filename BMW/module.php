@@ -694,21 +694,21 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                { "type": "Label", "label": "select type of BMW" },
                { "type": "Select", "name": "model", "caption": "model",
 					"options": [
-						{ "label": "electric", "value": 1 },
-						{ "label": "hybrid", "value": 2 },
-						{ "label": "standard", "value": 3 }
+						{ "label": "'.$this->Translate("electric").'", "value": 1 },
+						{ "label": "'.$this->Translate("hybrid").'", "value": 2 },
+						{ "label": "'.$this->Translate("standard").'", "value": 3 }
 					]
 				},
                { "type": "Label", "label": "select area" },
                { "type": "Select", "name": "bmw_server", "caption": "BMW area",
 					"options": [
-						{ "label": "Europe", "value": 1 },
-						{ "label": "USA", "value": 2 },
-						{ "label": "China", "value": 3 },
-						{ "label": "Rest of the World", "value": 4 }
+						{ "label": "'.$this->Translate("Europe").'", "value": 1 },
+						{ "label": "'.$this->Translate("USA").'", "value": 2 },
+						{ "label": "'.$this->Translate("China").'", "value": 3 },
+						{ "label": "'.$this->Translate("Rest of the World").'", "value": 4 }
 					]
 				},
-				{ "type": "Label", "label": "Audi login credentials" },
+				{ "type": "Label", "label": "BMW Connected Drive login credentials" },
                 {
                     "name": "user",
                     "type": "ValidationTextBox",
@@ -718,6 +718,12 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                     "name": "password",
                     "type": "ValidationTextBox",
                     "caption": "Password"
+                },
+                { "type": "Label", "label": "Identifier" },
+                {
+                    "name": "app_id",
+                    "type": "ValidationTextBox",
+                    "caption": "App ID"
                 },
                 { "type": "Label", "label": "air conditioner control" },
 				{
