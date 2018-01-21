@@ -72,7 +72,7 @@ Text.
 
 ## 5. Konfiguration:
 
-### Doorbird:
+### BMW:
 
 | Eigenschaft | Typ     | Standardwert | Funktion                                  |
 | :---------: | :-----: | :----------: | :---------------------------------------: |

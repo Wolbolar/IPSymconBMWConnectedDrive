@@ -559,7 +559,7 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
 
     protected function SendBMWAPI($command)
     {
-        $area = $this->ReadPropertyString('bmw_server');
+        $area = $this->ReadPropertyInteger('bmw_server');
         $api = $this->GetBMWServerURL($area);
         $token = $this->ReadPropertyString("token");
         $ch = curl_init();
