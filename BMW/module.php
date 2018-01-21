@@ -163,7 +163,7 @@ class BMWConnectedDrive extends IPSModule
 		$this->RegisterPropertyString("password", "");
         $this->RegisterPropertyString("token", "");
         $this->RegisterPropertyInteger("token_expiration", 0);
-        $this->RegisterPropertyString("app_id", "");
+        $this->RegisterPropertyString("app_id", "dbf0a542-ebd1-4ff0-a9a7-55172fbfce35");
         $this->RegisterPropertyString("vin", "");
         $this->RegisterPropertyInteger("bmw_server", 1);
         $this->RegisterPropertyInteger("model", 1);
@@ -374,7 +374,7 @@ class BMWConnectedDrive extends IPSModule
         $postfields = http_build_query(array(
             'username' => $user,
             'password' => $password,
-            'client_id' => 'dbf0a542-ebd1-4ff0-a9a7-55172fbfce35',
+            'client_id' => $app_id,
             'redirect_uri' => 'https://www.bmw-connecteddrive.com/app/default/static/external-dispatch.html',
             'response_type' => 'token',
             'locale' => 'DE-de'
@@ -874,12 +874,6 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                     "name": "password",
                     "type": "ValidationTextBox",
                     "caption": "Password"
-                },
-                { "type": "Label", "label": "Identifier" },
-                {
-                    "name": "app_id",
-                    "type": "ValidationTextBox",
-                    "caption": "App ID"
                 },
                 { "type": "Label", "label": "air conditioner control" },
 				{
