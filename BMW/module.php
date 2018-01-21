@@ -172,8 +172,10 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterPropertyBoolean("active_lock", false);
         $this->RegisterPropertyBoolean("active_flash_headlights", false);
         $this->RegisterPropertyBoolean("active_vehicle_finder", false);
+        $this->RegisterPropertyBoolean("active_lock_data", false);
         $this->RegisterPropertyInteger("UpdateInterval", "360");
         $this->RegisterTimer('BMWTokenUpdate', 15000, 'BMW_CheckToken('.$this->InstanceID.');');
+        $this->RegisterTimer('BMWDataUpdate', 600000, 'BMW_DataUpdate('.$this->InstanceID.');');
     }
 
     public function ApplyChanges()
@@ -232,6 +234,7 @@ class BMWConnectedDrive extends IPSModule
         $active_lock = $this->ReadPropertyBoolean("active_lock");
         $active_flash_headlights = $this->ReadPropertyBoolean("active_flash_headlights");
         $active_vehicle_finder = $this->ReadPropertyBoolean("active_vehicle_finder");
+        $active_lock_data = $this->ReadPropertyBoolean("active_lock_data");
 
         // climate
         if ($active_climate)
@@ -273,6 +276,38 @@ class BMWConnectedDrive extends IPSModule
         {
             $this->UnregisterVariable("bmw_start_vehicle_finder");
         }
+        if ($active_lock_data)
+        {
+            $this->RegisterVariableBoolean("bmw_doorDriverFront", $this->Translate("door driver front"), "~Lock", 6);
+            $this->RegisterVariableBoolean("bmw_doorDriverRear", $this->Translate("door driver rear"), "~Lock", 7);
+            $this->RegisterVariableBoolean("bmw_doorPassengerFront", $this->Translate("door passenger front"), "~Lock", 8);
+            $this->RegisterVariableBoolean("bmw_doorPassengerRear", $this->Translate("door passenger rear"), "~Lock", 9);
+            $this->RegisterVariableBoolean("bmw_windowDriverFront", $this->Translate("window driver front"), "~Lock", 10);
+            $this->RegisterVariableBoolean("bmw_windowDriverRear", $this->Translate("window driver rear"), "~Lock", 11);
+            $this->RegisterVariableBoolean("bmw_windowPassengerFront", $this->Translate("window passenger front"), "~Lock", 12);
+            $this->RegisterVariableBoolean("bmw_windowPassengerRear", $this->Translate("window passenger rear"), "~Lock", 13);
+            $this->RegisterVariableBoolean("bmw_trunk", $this->Translate("trunk"), "~Lock", 14);
+            $this->RegisterVariableBoolean("bmw_rearWindow", $this->Translate("rear window"), "~Lock", 15);
+            $this->RegisterVariableBoolean("bmw_convertibleRoofState", $this->Translate("convertible roof"), "~Lock", 16);
+            $this->RegisterVariableBoolean("bmw_hood", $this->Translate("hood"), "~Lock", 17);
+            $this->RegisterVariableBoolean("bmw_doorLockState", $this->Translate("door lock state"), "~Lock", 18);
+        }
+        else
+        {
+            $this->UnregisterVariable("bmw_doorDriverFront");
+            $this->UnregisterVariable("bmw_doorDriverRear");
+            $this->UnregisterVariable("bmw_doorPassengerFront");
+            $this->UnregisterVariable("bmw_doorPassengerRear");
+            $this->UnregisterVariable("bmw_windowDriverFront");
+            $this->UnregisterVariable("bmw_windowDriverRear");
+            $this->UnregisterVariable("bmw_windowPassengerFront");
+            $this->UnregisterVariable("bmw_windowPassengerRear");
+            $this->UnregisterVariable("bmw_trunk");
+            $this->UnregisterVariable("bmw_rearWindow");
+            $this->UnregisterVariable("bmw_convertibleRoofState");
+            $this->UnregisterVariable("bmw_hood");
+            $this->UnregisterVariable("bmw_doorLockState");
+        }
 				// Status Aktiv
 				$this->SetStatus(102);
 	}
@@ -281,6 +316,11 @@ class BMWConnectedDrive extends IPSModule
     {
         $interval = ($this->ReadPropertyInteger("UpdateInterval"))*1000*60; // interval min
         $this->SetTimerInterval("BMWTokenUpdate", $interval);
+    }
+
+    public function DataUpdate()
+    {
+        $this->GetVehicleStatus();
     }
 
     protected function GetMileageUnit()
@@ -331,7 +371,14 @@ class BMWConnectedDrive extends IPSModule
         $password = $this->ReadPropertyString('password');
         $app_id = $this->ReadPropertyString('app_id');
         $auth_api = 'https://customer.bmwgroup.com/gcdm/oauth/authenticate';
-
+        $postfields = http_build_query(array(
+            'username' => $user,
+            'password' => $password,
+            'client_id' => 'dbf0a542-ebd1-4ff0-a9a7-55172fbfce35',
+            'redirect_uri' => 'https://www.bmw-connecteddrive.com/app/default/static/external-dispatch.html',
+            'response_type' => 'token',
+            'locale' => 'DE-de'
+        ));
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $auth_api);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
@@ -341,15 +388,7 @@ class BMWConnectedDrive extends IPSModule
         curl_setopt($ch, CURLOPT_COOKIESESSION, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/x-www-form-urlencoded'));
-        // urlencode ?
-        curl_setopt($ch, CURLOPT_POSTFIELDS, array(
-            'username' => $user,
-            'password' => $password,
-            'client_id' => $app_id,
-            'redirect_uri' => 'https://www.bmw-connecteddrive.com/app/default/static/external-dispatch.html',
-            'response_type' => 'token',
-            'locale' => 'DE-de'
-        ));
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
         $response = curl_exec($ch);
         $curl_error = curl_error($ch);
         curl_close( $ch );
@@ -406,6 +445,93 @@ class BMWConnectedDrive extends IPSModule
         $command = "/webapi/v1/user/vehicles/".$vin."/status";
         $response = $this->SendBMWAPI($command);
         $data = json_decode($response);
+        $carinfo = $data->vehicleStatus;
+        $current_vin = $carinfo->vin;
+        if($vin == $current_vin)
+        {
+            $mileage = $carinfo->mileage;
+            SetValue($this->GetIDForIdent("bmw_mileage"), $mileage);
+            $id_doorDriverFront = $this->GetIDForIdent("bmw_doorDriverFront");
+            if(isset($id_doorDriverFront))
+            {
+                $doorDriverFront = $carinfo->doorDriverFront;
+                SetValue($this->GetIDForIdent("bmw_doorDriverFront"), $doorDriverFront);
+            }
+            $id_doorDriverRear = $this->GetIDForIdent("bmw_doorDriverRear");
+            if(isset($id_doorDriverRear))
+            {
+                $doorDriverRear = $carinfo->doorDriverFront;
+                SetValue($this->GetIDForIdent("bmw_doorDriverRear"), $doorDriverRear);
+            }
+            $id_doorPassengerFront = $this->GetIDForIdent("bmw_doorPassengerFront");
+            if(isset($id_doorPassengerFront))
+            {
+                $doorPassengerFront = $carinfo->doorPassengerFront;
+                SetValue($this->GetIDForIdent("bmw_doorPassengerFront"), $doorPassengerFront);
+            }
+            $id_doorPassengerRear = $this->GetIDForIdent("bmw_doorPassengerRear");
+            if(isset($id_doorPassengerRear))
+            {
+                $doorPassengerRear = $carinfo->doorPassengerFront;
+                SetValue($this->GetIDForIdent("bmw_doorPassengerRear"), $doorPassengerRear);
+            }
+            $id_windowDriverFront = $this->GetIDForIdent("bmw_windowDriverFront");
+            if(isset($id_windowDriverFront))
+            {
+                $windowDriverFront = $carinfo->windowDriverFront;
+                SetValue($this->GetIDForIdent("bmw_windowDriverFront"), $windowDriverFront);
+            }
+            $id_windowDriverRear = $this->GetIDForIdent("bmw_windowDriverRear");
+            if(isset($id_windowDriverRear))
+            {
+                $windowDriverRear = $carinfo->windowDriverRear;
+                SetValue($this->GetIDForIdent("bmw_windowDriverRear"), $windowDriverRear);
+            }
+            $id_windowPassengerFront = $this->GetIDForIdent("bmw_windowPassengerFront");
+            if(isset($id_windowPassengerFront))
+            {
+                $windowPassengerFront = $carinfo->windowPassengerFront;
+                SetValue($this->GetIDForIdent("bmw_windowPassengerFront"), $windowPassengerFront);
+            }
+            $id_windowPassengerRear = $this->GetIDForIdent("bmw_windowPassengerRear");
+            if(isset($id_windowPassengerRear))
+            {
+                $windowPassengerRear = $carinfo->windowPassengerRear;
+                SetValue($this->GetIDForIdent("bmw_windowPassengerRear"), $windowPassengerRear);
+            }
+            $id_trunk = $this->GetIDForIdent("bmw_trunk");
+            if(isset($id_trunk))
+            {
+                $trunk = $carinfo->trunk;
+                SetValue($this->GetIDForIdent("bmw_trunk"), $trunk);
+            }
+            $id_rearWindow = $this->GetIDForIdent("bmw_rearWindow");
+            if(isset($id_rearWindow))
+            {
+                $rearWindow = $carinfo->rearWindow;
+                SetValue($this->GetIDForIdent("bmw_rearWindow"), $rearWindow);
+            }
+            $id_convertibleRoofState = $this->GetIDForIdent("bmw_convertibleRoofState");
+            if(isset($id_convertibleRoofState))
+            {
+                $convertibleRoofState = $carinfo->convertibleRoofState;
+                SetValue($this->GetIDForIdent("bmw_convertibleRoofState"), $convertibleRoofState);
+            }
+            $id_hood = $this->GetIDForIdent("bmw_hood");
+            if(isset($id_hood))
+            {
+                $hood = $carinfo->hood;
+                SetValue($this->GetIDForIdent("bmw_hood"), $hood);
+            }
+            $id_doorLockState = $this->GetIDForIdent("bmw_doorLockState");
+            if(isset($id_doorLockState))
+            {
+                $doorLockState = $carinfo->doorLockState;
+                SetValue($this->GetIDForIdent("bmw_doorLockState"), $doorLockState);
+            }
+            $remainingFuel = $carinfo->remainingFuel;
+            SetValue($this->GetIDForIdent("bmw_tank_capacity"), $remainingFuel);
+        }
         return $data;
     }
 
@@ -778,6 +904,12 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                     "name": "active_vehicle_finder",
                     "type": "CheckBox",
                     "caption": "search vehicle"
+                },
+                { "type": "Label", "label": "show detailed lock state" },
+				{
+                    "name": "active_lock_data",
+                    "type": "CheckBox",
+                    "caption": "detailed lock state"
                 },';
         return $form;
     }
@@ -791,7 +923,7 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
 				{ "type": "Label", "label": "Get token for communication with BMW Connected Drive" },
 				{ "type": "Button", "label": "Get token", "onClick": "BMW_GetToken($id);" },
 				{ "type": "Label", "label": "Get car data from BMW" },
-				{ "type": "Button", "label": "Get car data", "onClick": "BMW_GetVehicleData($id);" }
+				{ "type": "Button", "label": "Get car data", "onClick": "BMW_DataUpdate($id);" }
 			],';
         return  $form;
     }
