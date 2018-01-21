@@ -1,0 +1,24 @@
+{
+	"translations": {
+		"de": { 
+			"model": "Modell",
+			"mileage": "Kilometerstand",
+			"VIN": "Fahrgestellnummer",
+			"user": "Benutzername",
+			"password": "Passwort",
+			"start air conditioner": "Klimaanlage starten",
+			"air conditioner": "Klimaanlage",
+			"air conditioner control": "Klimaanlagen Steuerung",
+			"lock": "Verschluss",
+			"lock car": "Auto verschließen",
+			"start flash headlights": "Lichthupe auslösen",
+			"flash_headlights": "Lichthupe",
+			"search vehicle": "Fahrzeug suchen",
+			"Creating instance.": "Die Instanz wird erstellt.",
+			"BMW accessible.": "BMW ereichbar.",
+			"interface closed.": "Interface geschlossen.",
+			"connection to BMW lost.": "Verbindung zum BMW verloren.",
+			"field must not be empty.": "Felder dürfen nicht leer sein."
+		}
+	}
+}

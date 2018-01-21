@@ -1,0 +1,13 @@
+{
+	"id": "{3BEBDFE5-9DAF-3373-BFA9-A80038D3FE63}",
+	"author": "Fonzo",
+	"name": "BMWConnectedDrive",
+	"url": "https://www.bmw-connecteddrive.de/app/de/index.html#/portal",
+	"compatibility": {
+		"version": "4.2",
+		"date": 1491343200
+	},
+	"version": "0.1",
+	"build": 0,
+	"date": 0
+}
