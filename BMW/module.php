@@ -343,25 +343,41 @@ class BMWConnectedDrive extends IPSModule
 
     protected function GetBMWServerURL($area)
     {
-        if($area == 1) // Europe
+        if($area == 1) // Germany
         {
+            $server = "Germany";
+            $url = "https://www.bmw-connecteddrive.de/api";
+        }
+        if($area == 2) // Switzerland
+        {
+            $server = "Switzerland";
+            $url = "https://www.bmw-connecteddrive.ch/api";
+        }
+        if($area == 3) // Europe
+        {
+            $server = "Europe";
             $url = "https://b2vapi.bmwgroup.com";
         }
-        elseif($area == 2) // USA
+        elseif($area == 4) // USA
         {
+            $server = "USA";
             $url = "https://b2vapi.bmwgroup.us";
         }
-        elseif($area == 2) // China
+        elseif($area == 5) // China
         {
+            $server = "China";
             $url = "https://b2vapi.bmwgroup.cn:8592";
         }
         else // Rest of World
         {
+            $server = "Europe";
             $url = "https://b2vapi.bmwgroup.com";
         }
 
         // Die Adresse ist für die Schweiz. Vermutlich .de anstatt .ch für Deutschland?
         // $api = 'https://www.bmw-connecteddrive.ch/api';
+        $this->SendDebug("BMW","use server location ".$server,0);
+        $this->SendDebug("BMW","server url: ".$url,0);
         return $url;
     }
 
@@ -394,7 +410,6 @@ class BMWConnectedDrive extends IPSModule
         $response = curl_exec($ch);
         $curl_error = curl_error($ch);
         curl_close( $ch );
-
 
         if(empty($response) || $response === false || !empty($curl_error))
         {
@@ -429,6 +444,7 @@ class BMWConnectedDrive extends IPSModule
         $token_expiration = $this->ReadPropertyInteger("token_expiration");
         if (time() > $token_expiration)
         {
+            $this->SendDebug("BMW","token expired, get new token",0);
             $this->GetToken();
         }
     }
@@ -441,6 +457,55 @@ class BMWConnectedDrive extends IPSModule
     public function GetVehicleData()
     {
         $command = "/webapi/v1/user/vehicles/";
+        $response = $this->SendBMWAPI($command);
+        $data = json_decode($response);
+        return $data;
+    }
+
+    public function GetNavigationData()
+    {
+        $vin = $this->ReadPropertyString('vin');
+        $command = '/vehicle/navigation/v1/' . $vin;
+        $response = $this->SendBMWAPI($command);
+        return $response;
+    }
+
+    public function GetEfficiency()
+    {
+        $vin = $this->ReadPropertyString('vin');
+        $command = '/vehicle/efficiency/v1/' . $vin;
+        $response = $this->SendBMWAPI($command);
+        return $response;
+    }
+
+    public function GetChargingProfile()
+    {
+        $vin = $this->ReadPropertyString('vin');
+        $command = '/vehicle/remoteservices/chargingprofile/v1/' . $vin;
+        $response = $this->SendBMWAPI($command);
+        return $response;
+    }
+
+    public function GetMapUpdate()
+    {
+        $vin = $this->ReadPropertyString('vin');
+        $command = '/me/service/mapupdate/download/v1/' . $vin;
+        $response = $this->SendBMWAPI($command);
+        return $response;
+    }
+
+    public function GetRemoteServices()
+    {
+        $vin = $this->ReadPropertyString('vin');
+        $command = '/vehicle/remoteservices/v1/' . $vin . '/history';
+        $response = $this->SendBMWAPI($command);
+        return $response;
+    }
+
+    public function GetDynamicData()
+    {
+        $vin = $this->ReadPropertyString('vin');
+        $command = "/vehicle/dynamic/v1/" . $vin . "?offset=-60";
         $response = $this->SendBMWAPI($command);
         $data = json_decode($response);
         return $data;
@@ -727,7 +792,9 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
         $token = $this->ReadPropertyString("token");
         $ch = curl_init();
         curl_setopt( $ch, CURLOPT_URL, $api . $command );
+        $this->SendDebug("BMW","Send to url: ".$api . $command,0);
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/json' , 'Authorization: Bearer ' . $token) );
+        $this->SendDebug("BMW","'Content-Type: application/json' , 'Authorization: Bearer ' ". $token,0);
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
         $response = curl_exec($ch);
@@ -865,10 +932,12 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                { "type": "Label", "label": "select area" },
                { "type": "Select", "name": "bmw_server", "caption": "BMW area",
 					"options": [
-						{ "label": "'.$this->Translate("Europe").'", "value": 1 },
-						{ "label": "'.$this->Translate("USA").'", "value": 2 },
-						{ "label": "'.$this->Translate("China").'", "value": 3 },
-						{ "label": "'.$this->Translate("Rest of the World").'", "value": 4 }
+						{ "label": "'.$this->Translate("Germany").'", "value": 1 },
+						{ "label": "'.$this->Translate("Switzerland").'", "value": 2 },
+						{ "label": "'.$this->Translate("Europe").'", "value": 3 },
+						{ "label": "'.$this->Translate("USA").'", "value": 4 },
+						{ "label": "'.$this->Translate("China").'", "value": 5 },
+						{ "label": "'.$this->Translate("Rest of the World").'", "value": 6 }
 					]
 				},
 				{ "type": "Label", "label": "BMW Connected Drive login credentials" },
