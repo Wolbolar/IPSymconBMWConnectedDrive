@@ -416,12 +416,34 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    protected function GetCarPictureForAngle($angle)
+    public function GetCarPictureForAngle(int $angle)
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/vehicle/image/v1/' . $vin . '?startAngle=".$angle."&stepAngle=10&width=780";
         $response = $this->SendBMWAPI($command);
-        return $response;
+        $images = json_decode($response);
+        $picture_vin = $images->vin;
+        if($vin == $picture_vin)
+        {
+            $images_angle = $images->angleUrls;
+            $picture_angle = $angle;
+            foreach($images_angle as $key => $image_angle)
+            {
+
+                $angle = $image_angle->angle;
+                if($picture_angle == $angle)
+                {
+                    $picture_url = $image_angle->url;
+                }
+            }
+        }
+        else
+        {
+            $picture_url = false;
+        }
+        //$HTML = "";
+        //SetValue($this->GetIDForIdent("bmw_car_picture"), $HTML);
+        return $picture_url;
     }
 
     public function GetLastTrip()
