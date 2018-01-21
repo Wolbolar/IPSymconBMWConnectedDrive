@@ -102,6 +102,13 @@ Liest Fahrzeugdaten von BMW Connect Drive aus
 
 GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}` 
 
+### c. Quellen
+
+[BMW-i-Remote](https://github.com/edent/BMW-i-Remote "BMW-i-Remote") _edent_ (MIT)
+
+
+
+
 
 
 

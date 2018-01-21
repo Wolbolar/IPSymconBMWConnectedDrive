@@ -396,22 +396,27 @@ class BMWConnectedDrive extends IPSModule
 
         if(empty($response) || $response === false || !empty($curl_error))
         {
-            $this->SendDebug("BMW","Empty answer from Bearerinterface: ".$curl_error."\n",0);
+            $this->SendDebug("BMW","Empty answer from Bearerinterface: ".$curl_error,0);
             return false;
         }
 
         // extract token
         preg_match( '/access_token=([\w\d]+).*token_type=(\w+).*expires_in=(\d+)/', $response, $matches );
+        $this->SendDebug("BMW","access_token: ".$matches[1],0);
+        $this->SendDebug("BMW","Bearer expires in: ".$matches[3]."s",0);
 
         // check token type
         if ( empty( $matches[2] ) OR $matches[2] !== 'Bearer' )
         {
-            $this->SendDebug("BMW","No remote token received - username or password might be wrong: ".$response."\n",0);
+            $this->SendDebug("BMW","No remote token received - username or password might be wrong: ".$response,0);
             return false;
         }
 
         IPS_SetProperty($this->InstanceID, "token", $matches[1]);
-        IPS_SetProperty($this->InstanceID, "token_expiration", time() + $matches[3]);
+        $this->SendDebug("BMW","set access_token: ".$matches[1],0);
+        $token_expiration = time() + $matches[3];
+        IPS_SetProperty($this->InstanceID, "token_expiration", $token_expiration);
+        $this->SendDebug("BMW","set token expiration: ".$token_expiration,0);
         IPS_ApplyChanges($this->InstanceID);
         return $matches[1];
     }
@@ -725,7 +730,7 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
         $response = curl_exec($ch);
         $curl_error = curl_error($ch);
-        $this->SendDebug("BMW","curl error: ".$curl_error,0);
+        // $this->SendDebug("BMW","curl error: ".$curl_error,0);
         curl_close( $ch );
         return $response;
     }
