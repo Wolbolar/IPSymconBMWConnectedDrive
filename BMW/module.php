@@ -369,7 +369,8 @@ class BMWConnectedDrive extends IPSModule
     {
         $user = $this->ReadPropertyString('user');
         $password = $this->ReadPropertyString('password');
-        $app_id = $this->ReadPropertyString('app_id');
+        //$app_id = $this->ReadPropertyString('app_id');
+        $app_id = 'dbf0a542-ebd1-4ff0-a9a7-55172fbfce35';
         $auth_api = 'https://customer.bmwgroup.com/gcdm/oauth/authenticate';
         $postfields = http_build_query(array(
             'username' => $user,
@@ -379,6 +380,7 @@ class BMWConnectedDrive extends IPSModule
             'response_type' => 'token',
             'locale' => 'DE-de'
         ));
+        $this->SendDebug("BMW Postfields",$postfields,0);
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $auth_api);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
@@ -879,6 +881,12 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                     "name": "password",
                     "type": "ValidationTextBox",
                     "caption": "Password"
+                },
+                { "type": "Label", "label": "BMW VIN" },
+                {
+                    "name": "vin",
+                    "type": "ValidationTextBox",
+                    "caption": "VIN"
                 },
                 { "type": "Label", "label": "air conditioner control" },
 				{

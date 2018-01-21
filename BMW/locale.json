@@ -5,6 +5,7 @@
 			"model": "Modell",
 			"mileage": "Kilometerstand",
 			"tank capacity": "Tankinhalt",
+			"BMW VIN": "BMW Fahrgestellnummer",
 			"VIN": "Fahrgestellnummer",
 			"BMW Connected Drive login credentials": "BMW Connected Drive Zugangsdaten",
 			"user": "Benutzername",
