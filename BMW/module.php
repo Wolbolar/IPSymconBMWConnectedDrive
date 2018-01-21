@@ -341,7 +341,15 @@ class BMWConnectedDrive extends IPSModule
         curl_setopt($ch, CURLOPT_COOKIESESSION, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, array( 'Content-Type: application/x-www-form-urlencoded'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, 'username=' . urlencode( $user) . '&password=' . urlencode( $password) . '&client_id='.$app_id.'&locale=DE-de');
+        // urlencode ?
+        curl_setopt($ch, CURLOPT_POSTFIELDS, array(
+            'username' => $user,
+            'password' => $password,
+            'client_id' => $app_id,
+            'redirect_uri' => 'https://www.bmw-connecteddrive.com/app/default/static/external-dispatch.html',
+            'response_type' => 'token',
+            'locale' => 'DE-de'
+        ));
         $response = curl_exec($ch);
         $curl_error = curl_error($ch);
         curl_close( $ch );
