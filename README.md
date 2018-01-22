@@ -95,6 +95,30 @@ Text.
 
 Liest Fahrzeugdaten von BMW Connect Drive aus
 
+`BMW_StartClimateControlV1(integer $InstanceID)`
+
+Startet Klimaanlage über BMW Connect Drive
+
+`BMW_LockTheDoorsV1(integer $InstanceID)`
+
+Fahrzeug verrieglen über BMW Connect Drive
+
+`BMW_UnlockTheDoorsV1(integer $InstanceID)`
+
+Fahrzeug entrieglen über BMW Connect Drive
+
+`BMW_FlashHeadlightsV1(integer $InstanceID)`
+
+Lichthupe am Fahrzeug auslösen über BMW Connect Drive
+
+`BMW_Honk(integer $InstanceID)`
+
+Hupe am Fahrzeug auslösen über BMW Connect Drive
+
+`BMW_GetCarPictureForAngle(integer $InstanceID, integer $angle)`
+
+Bild vom Fahrzeug für den Winkel _$angle_ abrufen über BMW Connect Drive
+
 
 ###  b. GUIDs und Datenaustausch:
 
