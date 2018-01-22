@@ -320,7 +320,8 @@ class BMWConnectedDrive extends IPSModule
 
     public function DataUpdate()
     {
-        $this->GetVehicleStatus();
+        //$this->GetVehicleStatus();
+        $this->GetDynamicData();
     }
 
     protected function GetMileageUnit()
@@ -512,7 +513,99 @@ class BMWConnectedDrive extends IPSModule
         // $current_vin = $carinfo->vin;
         $mileage = $carinfo->mileage;
         SetValue($this->GetIDForIdent("bmw_mileage"), $mileage);
+        $id_doorDriverFront = $this->GetIDForIdent("bmw_doorDriverFront");
+        if(isset($id_doorDriverFront))
+        {
+            $doorDriverFront = $carinfo->door_driver_front;
+            $this->SetLockState("bmw_doorDriverFront", $doorDriverFront);
+        }
+        $id_doorDriverRear = $this->GetIDForIdent("bmw_doorDriverRear");
+        if(isset($id_doorDriverRear))
+        {
+            $doorDriverRear = $carinfo->door_driver_rear;
+            $this->SetLockState("bmw_doorDriverRear", $doorDriverRear);
+        }
+        $id_doorPassengerFront = $this->GetIDForIdent("bmw_doorPassengerFront");
+        if(isset($id_doorPassengerFront))
+        {
+            $doorPassengerFront = $carinfo->door_passenger_front;
+            $this->SetLockState("bmw_doorPassengerFront", $doorPassengerFront);
+        }
+        $id_doorPassengerRear = $this->GetIDForIdent("bmw_doorPassengerRear");
+        if(isset($id_doorPassengerRear))
+        {
+            $doorPassengerRear = $carinfo->door_passenger_rear;
+            $this->SetLockState("bmw_doorPassengerRear", $doorPassengerRear);
+        }
+        $id_windowDriverFront = $this->GetIDForIdent("bmw_windowDriverFront");
+        if(isset($id_windowDriverFront))
+        {
+            $windowDriverFront = $carinfo->window_driver_front;
+            $this->SetLockState("bmw_windowDriverFront", $windowDriverFront);
+        }
+        $id_windowDriverRear = $this->GetIDForIdent("bmw_windowDriverRear");
+        if(isset($id_windowDriverRear))
+        {
+            $windowDriverRear = $carinfo->window_driver_rear;
+            $this->SetLockState("bmw_windowDriverRear", $windowDriverRear);
+        }
+        $id_windowPassengerFront = $this->GetIDForIdent("bmw_windowPassengerFront");
+        if(isset($id_windowPassengerFront))
+        {
+            $windowPassengerFront = $carinfo->window_passenger_front;
+            $this->SetLockState("bmw_windowPassengerFront", $windowPassengerFront);
+        }
+        $id_windowPassengerRear = $this->GetIDForIdent("bmw_windowPassengerRear");
+        if(isset($id_windowPassengerRear))
+        {
+            $windowPassengerRear = $carinfo->window_passenger_rear;
+            $this->SetLockState("bmw_windowPassengerRear", $windowPassengerRear);
+        }
+        $id_trunk = $this->GetIDForIdent("bmw_trunk");
+        if(isset($id_trunk))
+        {
+            $trunk = $carinfo->trunk_state;
+            $this->SetLockState("bmw_trunk", $trunk);
+        }
+        $id_rearWindow = $this->GetIDForIdent("bmw_rearWindow");
+        if(isset($id_rearWindow))
+        {
+            $rearWindow = $carinfo->rear_window;
+            $this->SetLockState("bmw_rearWindow", $rearWindow);
+        }
+        $id_convertibleRoofState = $this->GetIDForIdent("bmw_convertibleRoofState");
+        if(isset($id_convertibleRoofState))
+        {
+            $convertibleRoofState = $carinfo->convertible_roof_state;
+            $this->SetLockState("bmw_convertibleRoofState", $convertibleRoofState);
+        }
+        $id_hood = $this->GetIDForIdent("bmw_hood");
+        if(isset($id_hood))
+        {
+            $hood = $carinfo->hood_state;
+            $this->SetLockState("bmw_hood", $hood);
+        }
+        $id_doorLockState = $this->GetIDForIdent("bmw_doorLockState");
+        if(isset($id_doorLockState))
+        {
+            $doorLockState = $carinfo->door_lock_state;
+            $this->SetLockState("bmw_doorLockState", $doorLockState);
+        }
+        $remainingFuel = $carinfo->beRemainingRangeFuel;
+        SetValue($this->GetIDForIdent("bmw_tank_capacity"), $remainingFuel);
         return $data;
+    }
+
+    protected function SetLockState($ident, $command)
+    {
+        if($command == "CLOSED")
+        {
+            SetValue($this->GetIDForIdent($ident), true);
+        }
+        else
+        {
+            SetValue($this->GetIDForIdent($ident), false);
+        }
     }
 
     public function GetVehicleStatus()
@@ -548,7 +641,7 @@ class BMWConnectedDrive extends IPSModule
             $id_doorPassengerRear = $this->GetIDForIdent("bmw_doorPassengerRear");
             if(isset($id_doorPassengerRear))
             {
-                $doorPassengerRear = $carinfo->doorPassengerFront;
+                $doorPassengerRear = $carinfo->doorPassengerRear;
                 SetValue($this->GetIDForIdent("bmw_doorPassengerRear"), $doorPassengerRear);
             }
             $id_windowDriverFront = $this->GetIDForIdent("bmw_windowDriverFront");
