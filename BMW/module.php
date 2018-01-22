@@ -802,7 +802,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetCarPictureForAngle(int $angle)
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/api/vehicle/image/v1/' . $vin . '?startAngle=".$angle."&stepAngle=10&width=780";
+        $command = "/api/vehicle/image/v1/".$vin."?startAngle=".$angle."&stepAngle=10&width=780";
         $response = $this->SendBMWAPIV1($command);
         SetValue($this->GetIDForIdent("bmw_image_interface"), $response);
         $images = json_decode($response);
@@ -1057,6 +1057,7 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
 	
 	public function RequestAction($Ident, $Value)
     {
+        SetValue($this->GetIDForIdent($Ident), $Value);
         switch($Ident) {
             case "bmw_start_air_conditioner":
                 $this->StartClimateControlV1();
