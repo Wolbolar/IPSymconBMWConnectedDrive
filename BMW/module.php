@@ -348,12 +348,12 @@ class BMWConnectedDrive extends IPSModule
             $server = "Germany";
             $url = "https://www.bmw-connecteddrive.de/api";
         }
-        if($area == 2) // Switzerland
+        elseif($area == 2) // Switzerland
         {
             $server = "Switzerland";
             $url = "https://www.bmw-connecteddrive.ch/api";
         }
-        if($area == 3) // Europe
+        elseif($area == 3) // Europe
         {
             $server = "Europe";
             $url = "https://b2vapi.bmwgroup.com";
