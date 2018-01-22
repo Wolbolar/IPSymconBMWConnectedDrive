@@ -192,6 +192,13 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterProfile("BMW.TankCapacity",   "Gauge",   "", " Liter",    0, 0, 0, 0, 1);
         $this->RegisterVariableInteger("bmw_tank_capacity", $this->Translate("tank capacity"), "BMW.TankCapacity", 4);
 
+        $this->RegisterVariableString("bmw_dynamic_interface", $this->Translate("Interface Dynamic"), "", 30);
+        $this->RegisterVariableString("bmw_navigation_interface", $this->Translate("Interface Navigation"), "", 31);
+        $this->RegisterVariableString("bmw_efficiency_interface", $this->Translate("Interface Efficiency"), "", 32);
+        $this->RegisterVariableString("bmw_image_interface", $this->Translate("Interface Image"), "", 33);
+        $this->RegisterVariableString("bmw_mapupdate_interface", $this->Translate("Interface Map Update"), "", 34);
+        $this->RegisterVariableString("bmw_history_interface", $this->Translate("Interface History"), "", 35);
+
 		$this->ValidateConfiguration();	
 	
     }
@@ -462,12 +469,13 @@ class BMWConnectedDrive extends IPSModule
         $data = json_decode($response);
         return $data;
     }
-
+    
     public function GetNavigationData()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = '/vehicle/navigation/v1/' . $vin;
+        $command = '/api/vehicle/navigation/v1/' . $vin;
         $response = $this->SendBMWAPIV1($command);
+        SetValue($this->GetIDForIdent("bmw_navigation_interface"), $response);
         return $response;
     }
 
@@ -476,6 +484,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/efficiency/v1/' . $vin;
         $response = $this->SendBMWAPIV1($command);
+        SetValue($this->GetIDForIdent("bmw_efficiency_interface"), $response);
         return $response;
     }
 
@@ -492,6 +501,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/me/service/mapupdate/download/v1/' . $vin;
         $response = $this->SendBMWAPIV1($command);
+        SetValue($this->GetIDForIdent("bmw_mapupdate_interface"), $response);
         return $response;
     }
 
@@ -508,11 +518,13 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/vehicle/dynamic/v1/" . $vin . "?offset=-60";
         $response = $this->SendBMWAPIV1($command);
+        SetValue($this->GetIDForIdent("bmw_dynamic_interface"), $response);
         $data = json_decode($response);
         $carinfo = $data->attributesMap;
         // $current_vin = $carinfo->vin;
         $mileage = $carinfo->mileage;
         SetValue($this->GetIDForIdent("bmw_mileage"), $mileage);
+        /*
         $id_doorDriverFront = $this->GetIDForIdent("bmw_doorDriverFront");
         if(isset($id_doorDriverFront))
         {
@@ -591,6 +603,7 @@ class BMWConnectedDrive extends IPSModule
             $doorLockState = $carinfo->door_lock_state;
             $this->SetLockState("bmw_doorLockState", $doorLockState);
         }
+        */
         $remainingFuel = $carinfo->beRemainingRangeFuel;
         SetValue($this->GetIDForIdent("bmw_tank_capacity"), $remainingFuel);
         return $data;
@@ -708,6 +721,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $angle = "0";
         $response = $this->GetCarPictureForAngle($angle);
+        SetValue($this->GetIDForIdent("bmw_image_interface"), $response);
         return $response;
     }
 
@@ -716,6 +730,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/vehicle/image/v1/' . $vin . '?startAngle=".$angle."&stepAngle=10&width=780";
         $response = $this->SendBMWAPIV1($command);
+        SetValue($this->GetIDForIdent("bmw_image_interface"), $response);
         $images = json_decode($response);
         $picture_vin = $images->vin;
         if($vin == $picture_vin)
