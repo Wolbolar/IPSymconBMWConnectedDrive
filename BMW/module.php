@@ -638,13 +638,18 @@ class BMWConnectedDrive extends IPSModule
                     $picture_url = $image_angle->url;
                 }
             }
+            $HTML = '<!DOCTYPE html>'.PHP_EOL.'
+            <html>'.PHP_EOL.'
+            <body>'.PHP_EOL.'
+            <img src="'.$picture_url.'" alt="car picture">'.PHP_EOL.'
+            </body>'.PHP_EOL.'
+            </html>';
+            SetValue($this->GetIDForIdent("bmw_car_picture"), $HTML);
         }
         else
         {
             $picture_url = false;
         }
-        //$HTML = "";
-        //SetValue($this->GetIDForIdent("bmw_car_picture"), $HTML);
         return $picture_url;
     }
 
@@ -727,6 +732,14 @@ COMFORT driving using comfort mode.
         return $response;
     }
 
+    protected function PerfomActionV1($service)
+    {
+        $vin = $this->ReadPropertyString('vin');
+        $command = "/vehicle/remoteservices/v1/".$vin."/".$service;
+        $response = $this->SendBMWAPIV1($command);
+        return $response;
+    }
+
     public function InitiateCharging()
     {
         $service = "serviceType=CHARGE_NOW";
@@ -737,6 +750,12 @@ COMFORT driving using comfort mode.
     {
         $service = "serviceType=CLIMATE_NOW";
         $this->PerfomAction($service);
+    }
+
+    public function StartClimateControlV1()
+    {
+        $service = "RCN";
+        $this->PerfomActionV1($service);
     }
 
     public function LockTheDoors()
@@ -759,11 +778,35 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
          */
     }
 
+    public function LockTheDoorsV1()
+    {
+        $service = "RDL";
+        $this->PerfomActionV1($service);
+    }
+
+    public function UnlockTheDoorsV1()
+    {
+        $service = "RDU";
+        $this->PerfomActionV1($service);
+    }
+
     // If you can't find the vehicle, or need to illuminate something in its vicinity, you can briefly activate the headlights.
     public function FlashHeadlights()
     {
         $service = "serviceType=LIGHT_FLASH&count=2";
         $this->PerfomAction($service);
+    }
+
+    public function FlashHeadlightsV1()
+    {
+        $service = "RLF";
+        $this->PerfomAction($service);
+    }
+
+    public function Honk()
+    {
+        $service = "RHB";
+        $this->PerfomActionV1($service);
     }
 
     /*
@@ -834,23 +877,26 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
     {
         switch($Ident) {
             case "bmw_start_air_conditioner":
-                $this->StartClimateControl();
+                $this->StartClimateControlV1();
 				break;
 			case "bmw_start_lock":
 			    if($Value)
                 {
-                    $this->LockTheDoors();
+                    $this->LockTheDoorsV1();
                 }
                 else
                 {
-                    $this->UnlockTheDoors();
+                    $this->UnlockTheDoorsV1();
                 }
                 break;
 			case "bmw_start_flash_headlights":
-                $this->FlashHeadlights();
+                $this->FlashHeadlightsV1();
                 break;
             case "bmw_start_vehicle_finder":
                 $this->VehicleFinder();
+                break;
+            case "bmw_perspective":
+                $this->GetCarPictureForAngle($Value);
                 break;
             default:
                 $this->SendDebug("BMW", "Invalid ident",0);
