@@ -173,6 +173,9 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterPropertyBoolean("active_flash_headlights", false);
         $this->RegisterPropertyBoolean("active_vehicle_finder", false);
         $this->RegisterPropertyBoolean("active_lock_data", false);
+        $this->RegisterPropertyBoolean("active_honk", false);
+        $this->RegisterPropertyBoolean("active_googlemap", false);
+        $this->RegisterPropertyString("google_api_key", "");
         $this->RegisterPropertyInteger("UpdateInterval", "360");
         $this->RegisterTimer('BMWTokenUpdate', 15000, 'BMW_CheckToken('.$this->InstanceID.');');
         $this->RegisterTimer('BMWDataUpdate', 600000, 'BMW_DataUpdate('.$this->InstanceID.');');
@@ -198,7 +201,6 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterVariableString("bmw_image_interface", $this->Translate("Interface Image"), "", 33);
         $this->RegisterVariableString("bmw_mapupdate_interface", $this->Translate("Interface Map Update"), "", 34);
         $this->RegisterVariableString("bmw_history_interface", $this->Translate("Interface History"), "", 35);
-
 		$this->ValidateConfiguration();	
 	
     }
@@ -242,6 +244,8 @@ class BMWConnectedDrive extends IPSModule
         $active_flash_headlights = $this->ReadPropertyBoolean("active_flash_headlights");
         $active_vehicle_finder = $this->ReadPropertyBoolean("active_vehicle_finder");
         $active_lock_data = $this->ReadPropertyBoolean("active_lock_data");
+        $active_honk = $this->ReadPropertyBoolean("active_honk");
+        $active_googlemap = $this->ReadPropertyBoolean("active_googlemap");
 
         // climate
         if ($active_climate)
@@ -283,21 +287,49 @@ class BMWConnectedDrive extends IPSModule
         {
             $this->UnregisterVariable("bmw_start_vehicle_finder");
         }
+        if ($active_honk)
+        {
+            $this->RegisterProfileAssociation("BMW.Start", "Execute", "", "",  0, 0, 0, 0, 1, Array( Array(0, "Start", "", 0x3ADF00) ));
+            $this->RegisterVariableInteger("bmw_start_honk", $this->Translate("honk"), "BMW.Start", 6);
+            $this->EnableAction("bmw_start_honk");
+        }
+        else
+        {
+            $this->UnregisterVariable("bmw_start_honk");
+        }
+        if ($active_googlemap)
+        {
+            $this->RegisterVariableString("bmw_car_googlemap", $this->Translate("map"), "~HTMLBox", 40);
+            $this->RegisterProfileAssociation("BMW.Googlemap", "Car", "", "",  0, 3, 1, 0, 1, Array( Array(0, $this->Translate("roadmap"), "", 0x3ADF00),
+                Array(1, $this->Translate("satellite"), "", 0x3ADF00),
+                Array(2, $this->Translate("hybrid"), "", 0x3ADF00),
+                Array(3, $this->Translate("terrain"), "", 0x3ADF00)));
+            $this->RegisterVariableInteger("bmw_googlemap_maptype", $this->Translate("map type"), "BMW.Googlemap", 41);
+            $this->EnableAction("bmw_googlemap_maptype");
+        }
+        else
+        {
+            $this->UnregisterVariable("bmw_car_googlemap");
+            $this->UnregisterVariable("bmw_googlemap_maptype");
+        }
+
+
+
         if ($active_lock_data)
         {
-            $this->RegisterVariableBoolean("bmw_doorDriverFront", $this->Translate("door driver front"), "~Lock", 6);
-            $this->RegisterVariableBoolean("bmw_doorDriverRear", $this->Translate("door driver rear"), "~Lock", 7);
-            $this->RegisterVariableBoolean("bmw_doorPassengerFront", $this->Translate("door passenger front"), "~Lock", 8);
-            $this->RegisterVariableBoolean("bmw_doorPassengerRear", $this->Translate("door passenger rear"), "~Lock", 9);
-            $this->RegisterVariableBoolean("bmw_windowDriverFront", $this->Translate("window driver front"), "~Lock", 10);
-            $this->RegisterVariableBoolean("bmw_windowDriverRear", $this->Translate("window driver rear"), "~Lock", 11);
-            $this->RegisterVariableBoolean("bmw_windowPassengerFront", $this->Translate("window passenger front"), "~Lock", 12);
-            $this->RegisterVariableBoolean("bmw_windowPassengerRear", $this->Translate("window passenger rear"), "~Lock", 13);
-            $this->RegisterVariableBoolean("bmw_trunk", $this->Translate("trunk"), "~Lock", 14);
-            $this->RegisterVariableBoolean("bmw_rearWindow", $this->Translate("rear window"), "~Lock", 15);
-            $this->RegisterVariableBoolean("bmw_convertibleRoofState", $this->Translate("convertible roof"), "~Lock", 16);
-            $this->RegisterVariableBoolean("bmw_hood", $this->Translate("hood"), "~Lock", 17);
-            $this->RegisterVariableBoolean("bmw_doorLockState", $this->Translate("door lock state"), "~Lock", 18);
+            $this->RegisterVariableBoolean("bmw_doorDriverFront", $this->Translate("door driver front"), "~Lock", 7);
+            $this->RegisterVariableBoolean("bmw_doorDriverRear", $this->Translate("door driver rear"), "~Lock", 8);
+            $this->RegisterVariableBoolean("bmw_doorPassengerFront", $this->Translate("door passenger front"), "~Lock", 9);
+            $this->RegisterVariableBoolean("bmw_doorPassengerRear", $this->Translate("door passenger rear"), "~Lock", 10);
+            $this->RegisterVariableBoolean("bmw_windowDriverFront", $this->Translate("window driver front"), "~Lock", 11);
+            $this->RegisterVariableBoolean("bmw_windowDriverRear", $this->Translate("window driver rear"), "~Lock", 12);
+            $this->RegisterVariableBoolean("bmw_windowPassengerFront", $this->Translate("window passenger front"), "~Lock", 13);
+            $this->RegisterVariableBoolean("bmw_windowPassengerRear", $this->Translate("window passenger rear"), "~Lock", 14);
+            $this->RegisterVariableBoolean("bmw_trunk", $this->Translate("trunk"), "~Lock", 15);
+            $this->RegisterVariableBoolean("bmw_rearWindow", $this->Translate("rear window"), "~Lock", 16);
+            $this->RegisterVariableBoolean("bmw_convertibleRoofState", $this->Translate("convertible roof"), "~Lock", 17);
+            $this->RegisterVariableBoolean("bmw_hood", $this->Translate("hood"), "~Lock", 18);
+            $this->RegisterVariableBoolean("bmw_doorLockState", $this->Translate("door lock state"), "~Lock", 19);
         }
         else
         {
@@ -329,6 +361,11 @@ class BMWConnectedDrive extends IPSModule
     {
         //$this->GetVehicleStatus();
         $this->GetDynamicData();
+        $this->GetNavigationData();
+        $this->GetEfficiency();
+        $this->GetMapUpdate();
+        $angle = GetValue($this->GetIDForIdent("bmw_perspective"));
+        $this->GetCarPictureForAngle($angle);
     }
 
     protected function GetMileageUnit()
@@ -477,6 +514,42 @@ class BMWConnectedDrive extends IPSModule
         $response = $this->SendBMWAPIV1($command);
         SetValue($this->GetIDForIdent("bmw_navigation_interface"), $response);
         return $response;
+    }
+
+    protected function SetGoogleMap($maptype)
+    {
+        // $api = $this->ReadPropertyString("google_api_key"); // Google API Key
+
+        // get lat und long from current car position ongoing
+        $latitude = 50.114005;
+        $longitude = 8.679332;
+        $pos = $latitude.",".$longitude;
+        $horizontal_size = 600;
+        $vertical_value = 400;
+        $markercolor = "red";
+        $zoom = 16; // 0 world - 21 building
+        $ausgabe = '<img src="http://maps.google.com/maps/api/staticmap?center='.$pos.'&zoom='.$zoom.'&size='.$horizontal_size.'x'.$vertical_value.'&maptype='.$maptype.'&markers=color:'.$markercolor.'%7C'.$pos.'&sensor=true" />';
+        SetValue($this->GetIDForIdent("bmw_car_googlemap"), $ausgabe); //Stringvariable HTML-Box
+    }
+
+    protected function SetGoogleMapType($value)
+    {
+        if($value == 0)
+        {
+            $this->SetGoogleMap("roadmap");
+        }
+        elseif($value == 1)
+        {
+            $this->SetGoogleMap("satellite");
+        }
+        elseif($value == 2)
+        {
+            $this->SetGoogleMap("hybrid");
+        }
+        elseif($value == 3)
+        {
+            $this->SetGoogleMap("terrain");
+        }
     }
 
     public function GetEfficiency()
@@ -1007,6 +1080,12 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
             case "bmw_perspective":
                 $this->GetCarPictureForAngle($Value);
                 break;
+            case "bmw_start_honk":
+                $this->Honk();
+                break;
+            case "bmw_googlemap_maptype":
+                $this->SetGoogleMapType($Value);
+                break;
             default:
                 $this->SendDebug("BMW", "Invalid ident",0);
         }
@@ -1161,6 +1240,18 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                     "type": "CheckBox",
                     "caption": "search vehicle"
                 },
+                { "type": "Label", "label": "honk" },
+				{
+                    "name": "active_honk",
+                    "type": "CheckBox",
+                    "caption": "honk"
+                },
+                { "type": "Label", "label": "show car position in map" },
+				{
+                    "name": "active_googlemap",
+                    "type": "CheckBox",
+                    "caption": "map"
+                },
                 { "type": "Label", "label": "show detailed lock state" },
 				{
                     "name": "active_lock_data",
@@ -1170,7 +1261,14 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
         return $form;
     }
 
-
+    /*
+      { "type": "Label", "label": "Google API key for Google Map" },
+                {
+                    "name": "google_api_key",
+                    "type": "ValidationTextBox",
+                    "caption": "Google API Key"
+                },
+     */
 
     protected function FormActions()
     {
