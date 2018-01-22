@@ -469,7 +469,7 @@ class BMWConnectedDrive extends IPSModule
         $data = json_decode($response);
         return $data;
     }
-    
+
     public function GetNavigationData()
     {
         $vin = $this->ReadPropertyString('vin');
@@ -603,9 +603,10 @@ class BMWConnectedDrive extends IPSModule
             $doorLockState = $carinfo->door_lock_state;
             $this->SetLockState("bmw_doorLockState", $doorLockState);
         }
-        */
+
         $remainingFuel = $carinfo->beRemainingRangeFuel;
         SetValue($this->GetIDForIdent("bmw_tank_capacity"), $remainingFuel);
+        */
         return $data;
     }
 
