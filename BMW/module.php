@@ -530,6 +530,14 @@ class BMWConnectedDrive extends IPSModule
         return $data;
     }
 
+    public function GetVehicleInfo()
+    {
+        $command = "/api/me/vehicles/v2";
+        $response = $this->SendBMWAPIV1($command);
+        $data = json_decode($response);
+        return $data;
+    }
+
     public function GetNavigationData()
     {
         $vin = $this->ReadPropertyString('vin');
