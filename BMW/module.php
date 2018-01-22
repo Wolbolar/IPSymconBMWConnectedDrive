@@ -347,12 +347,12 @@ class BMWConnectedDrive extends IPSModule
         if($area == 1) // Germany
         {
             $server = "Germany";
-            $url = "https://www.bmw-connecteddrive.de/api";
+            $url = "https://www.bmw-connecteddrive.de";
         }
         elseif($area == 2) // Switzerland
         {
             $server = "Switzerland";
-            $url = "https://www.bmw-connecteddrive.ch/api";
+            $url = "https://www.bmw-connecteddrive.ch";
         }
         elseif($area == 3) // Europe
         {
@@ -457,7 +457,7 @@ class BMWConnectedDrive extends IPSModule
 
     public function GetVehicleData()
     {
-        $command = "/webapi/v1/user/vehicles/";
+        $command = "/api/v1/user/vehicles/";
         $response = $this->SendBMWAPI($command);
         $data = json_decode($response);
         return $data;
@@ -474,7 +474,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetEfficiency()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = '/vehicle/efficiency/v1/' . $vin;
+        $command = '/api/vehicle/efficiency/v1/' . $vin;
         $response = $this->SendBMWAPIV1($command);
         return $response;
     }
@@ -482,7 +482,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetChargingProfile()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = '/vehicle/remoteservices/chargingprofile/v1/' . $vin;
+        $command = '/api/vehicle/remoteservices/chargingprofile/v1/' . $vin;
         $response = $this->SendBMWAPIV1($command);
         return $response;
     }
@@ -490,7 +490,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetMapUpdate()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = '/me/service/mapupdate/download/v1/' . $vin;
+        $command = '/api/me/service/mapupdate/download/v1/' . $vin;
         $response = $this->SendBMWAPIV1($command);
         return $response;
     }
@@ -498,7 +498,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetRemoteServices()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = '/vehicle/remoteservices/v1/' . $vin . '/history';
+        $command = '/api/vehicle/remoteservices/v1/' . $vin . '/history';
         $response = $this->SendBMWAPIV1($command);
         return $response;
     }
@@ -506,7 +506,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetDynamicData()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/vehicle/dynamic/v1/" . $vin . "?offset=-60";
+        $command = "/api/vehicle/dynamic/v1/" . $vin . "?offset=-60";
         $response = $this->SendBMWAPIV1($command);
         $data = json_decode($response);
         $carinfo = $data->attributesMap;
@@ -611,7 +611,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetVehicleStatus()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/webapi/v1/user/vehicles/".$vin."/status";
+        $command = "/api/v1/user/vehicles/".$vin."/status";
         $response = $this->SendBMWAPI($command);
         $data = json_decode($response);
         $carinfo = $data->vehicleStatus;
@@ -714,7 +714,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetCarPictureForAngle(int $angle)
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/vehicle/image/v1/' . $vin . '?startAngle=".$angle."&stepAngle=10&width=780";
+        $command = "/api/vehicle/image/v1/' . $vin . '?startAngle=".$angle."&stepAngle=10&width=780";
         $response = $this->SendBMWAPIV1($command);
         $images = json_decode($response);
         $picture_vin = $images->vin;
@@ -749,7 +749,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetLastTrip()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/webapi/v1/user/vehicles/".$vin."/statistics/lastTrip";
+        $command = "/api/v1/user/vehicles/".$vin."/statistics/lastTrip";
         $response = $this->SendBMWAPI($command);
         $data = json_decode($response);
         return $data;
@@ -758,7 +758,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetChargingTimes()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/webapi/v1/user/vehicles/".$vin."/chargingprofile";
+        $command = "/api/v1/user/vehicles/".$vin."/chargingprofile";
         $response = $this->SendBMWAPI($command);
         $chargingtimes = json_decode($response);
         return $chargingtimes;
@@ -767,7 +767,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetVehicleDestinations()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/webapi/v1/user/vehicles/".$vin."/destinations";
+        $command = "/api/v1/user/vehicles/".$vin."/destinations";
         $response = $this->SendBMWAPI($command);
         $destination = json_decode($response);
         return $destination;
@@ -776,7 +776,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetAllTripDetails()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/webapi/v1/user/vehicles/".$vin."/statistics/allTrips";
+        $command = "/api/v1/user/vehicles/".$vin."/statistics/allTrips";
         $response = $this->SendBMWAPI($command);
         $tripdetails = json_decode($response);
         return $tripdetails;
@@ -786,7 +786,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetRangeMap()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/webapi/v1/user/vehicles/".$vin."/rangemap";
+        $command = "/api/v1/user/vehicles/".$vin."/rangemap";
         $response = $this->SendBMWAPI($command);
         /*
          * ECO_PRO_PLUS driving using the efficient Eco mode.
@@ -799,7 +799,7 @@ COMFORT driving using comfort mode.
     public function GetSoCData()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/webapi/v1/user/vehicles/".$vin."/rangemap";
+        $command = "/api/v1/user/vehicles/".$vin."/rangemap";
         $response = $this->SendBMWAPI($command);
         $soc_data = json_decode($response);
         return $soc_data;
@@ -809,7 +809,7 @@ COMFORT driving using comfort mode.
     protected function GetRequestStatus($service)
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/webapi/v1/user/vehicles/".$vin."/serviceExecutionStatus?serviceType=".$service;
+        $command = "/api/v1/user/vehicles/".$vin."/serviceExecutionStatus?serviceType=".$service;
         $response = $this->SendBMWAPI($command);
         $state = json_decode($response);
         return $state;
@@ -820,7 +820,7 @@ COMFORT driving using comfort mode.
     protected function PerfomAction($service)
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/webapi/v1/user/vehicles/".$vin."/".$service;
+        $command = "/api/v1/user/vehicles/".$vin."/".$service;
         $response = $this->SendBMWAPI($command);
         return $response;
     }
@@ -828,7 +828,7 @@ COMFORT driving using comfort mode.
     protected function PerfomActionV1($service)
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/vehicle/remoteservices/v1/".$vin."/".$service;
+        $command = "/api/vehicle/remoteservices/v1/".$vin."/".$service;
         $response = $this->SendBMWAPIV1($command);
         return $response;
     }
