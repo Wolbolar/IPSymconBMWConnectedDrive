@@ -194,7 +194,7 @@ class BMWConnectedDrive extends IPSModule
         $this->EnableAction("bmw_perspective");
         $this->RegisterProfile("BMW.Mileage",   "Distance",   "", " ".$this->GetMileageUnit(),    0, 0, 0, 0, 1);
         $this->RegisterVariableInteger("bmw_mileage", $this->Translate("mileage"), "BMW.Mileage", 3);
-        $this->RegisterProfile("BMW.TankCapacity",   "Gauge",   "", " Liter",    0, 0, 0, 0, 1);
+        $this->RegisterProfile("BMW.TankCapacity",   "Gauge",   "", " Liter",    0, 0, 0, 0, 2);
         $this->RegisterVariableFloat("bmw_tank_capacity", $this->Translate("tank capacity"), "BMW.TankCapacity", 4);
 
         $this->RegisterVariableString("bmw_dynamic_interface", $this->Translate("Interface Dynamic"), "", 30);
@@ -326,7 +326,7 @@ class BMWConnectedDrive extends IPSModule
         }
         if ($active_current_position)
         {
-            $this->RegisterProfile("BMW.Location",   "Car",   "", " °",    0, 0, 0, 0, 2);
+            $this->RegisterProfile("BMW.Location",   "Car",   "", " °",    0, 0, 0, 2, 2);
             $this->RegisterVariableFloat("bmw_current_latitude", $this->Translate("current latitude"), "BMW.Location", 43);
             $this->RegisterVariableFloat("bmw_current_longitude", $this->Translate("current longitude"), "BMW.Location", 44);
         }
