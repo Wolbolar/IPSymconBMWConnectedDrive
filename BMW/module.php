@@ -198,11 +198,17 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterVariableFloat("bmw_tank_capacity", $this->Translate("tank capacity"), "BMW.TankCapacity", 4);
 
         $this->RegisterVariableString("bmw_dynamic_interface", $this->Translate("Interface Dynamic"), "", 30);
+        IPS_SetHidden($this->GetIDForIdent("bmw_dynamic_interface"), true);
         $this->RegisterVariableString("bmw_navigation_interface", $this->Translate("Interface Navigation"), "", 31);
+        IPS_SetHidden($this->GetIDForIdent("bmw_navigation_interface"), true);
         $this->RegisterVariableString("bmw_efficiency_interface", $this->Translate("Interface Efficiency"), "", 32);
+        IPS_SetHidden($this->GetIDForIdent("bmw_efficiency_interface"), true);
         $this->RegisterVariableString("bmw_image_interface", $this->Translate("Interface Image"), "", 33);
+        IPS_SetHidden($this->GetIDForIdent("bmw_image_interface"), true);
         $this->RegisterVariableString("bmw_mapupdate_interface", $this->Translate("Interface Map Update"), "", 34);
+        IPS_SetHidden($this->GetIDForIdent("bmw_mapupdate_interface"), true);
         $this->RegisterVariableString("bmw_history_interface", $this->Translate("Interface History"), "", 35);
+        IPS_SetHidden($this->GetIDForIdent("bmw_history_interface"), true);
 		$this->ValidateConfiguration();	
 	
     }
