@@ -352,18 +352,18 @@ class BMWConnectedDrive extends IPSModule
 
         if ($active_lock_data)
         {
-            $this->RegisterVariableBoolean("bmw_doorDriverFront", $this->Translate("door driver front"), "~Lock.Reversed", 7);
-            $this->RegisterVariableBoolean("bmw_doorDriverRear", $this->Translate("door driver rear"), "~Lock.Reversed", 8);
-            $this->RegisterVariableBoolean("bmw_doorPassengerFront", $this->Translate("door passenger front"), "~Lock.Reversed", 9);
-            $this->RegisterVariableBoolean("bmw_doorPassengerRear", $this->Translate("door passenger rear"), "~Lock.Reversed", 10);
-            $this->RegisterVariableBoolean("bmw_windowDriverFront", $this->Translate("window driver front"), "~Lock.Reversed", 11);
-            $this->RegisterVariableBoolean("bmw_windowDriverRear", $this->Translate("window driver rear"), "~Lock.Reversed", 12);
-            $this->RegisterVariableBoolean("bmw_windowPassengerFront", $this->Translate("window passenger front"), "~Lock.Reversed", 13);
-            $this->RegisterVariableBoolean("bmw_windowPassengerRear", $this->Translate("window passenger rear"), "~Lock.Reversed", 14);
-            $this->RegisterVariableBoolean("bmw_trunk", $this->Translate("trunk"), "~Lock.Reversed", 15);
-            $this->RegisterVariableBoolean("bmw_rearWindow", $this->Translate("rear window"), "~Lock.Reversed", 16);
-            $this->RegisterVariableBoolean("bmw_convertibleRoofState", $this->Translate("convertible roof"), "~Lock.Reversed", 17);
-            $this->RegisterVariableBoolean("bmw_hood", $this->Translate("hood"), "~Lock.Reversed", 18);
+            $this->RegisterVariableBoolean("bmw_doorDriverFront", $this->Translate("door driver front"), "~Lock", 7);
+            $this->RegisterVariableBoolean("bmw_doorDriverRear", $this->Translate("door driver rear"), "~Lock", 8);
+            $this->RegisterVariableBoolean("bmw_doorPassengerFront", $this->Translate("door passenger front"), "~Lock", 9);
+            $this->RegisterVariableBoolean("bmw_doorPassengerRear", $this->Translate("door passenger rear"), "~Lock", 10);
+            $this->RegisterVariableBoolean("bmw_windowDriverFront", $this->Translate("window driver front"), "~Lock", 11);
+            $this->RegisterVariableBoolean("bmw_windowDriverRear", $this->Translate("window driver rear"), "~Lock", 12);
+            $this->RegisterVariableBoolean("bmw_windowPassengerFront", $this->Translate("window passenger front"), "~Lock", 13);
+            $this->RegisterVariableBoolean("bmw_windowPassengerRear", $this->Translate("window passenger rear"), "~Lock", 14);
+            $this->RegisterVariableBoolean("bmw_trunk", $this->Translate("trunk"), "~Lock", 15);
+            $this->RegisterVariableBoolean("bmw_rearWindow", $this->Translate("rear window"), "~Lock", 16);
+            $this->RegisterVariableBoolean("bmw_convertibleRoofState", $this->Translate("convertible roof"), "~Lock", 17);
+            $this->RegisterVariableBoolean("bmw_hood", $this->Translate("hood"), "~Lock", 18);
             $this->RegisterVariableBoolean("bmw_doorLockState", $this->Translate("door lock state"), "~Lock.Reversed", 19);
         }
         else
