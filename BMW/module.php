@@ -179,7 +179,7 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterPropertyBoolean("active_current_position", false);
         $this->RegisterPropertyString("google_api_key", "");
         $this->RegisterPropertyInteger("UpdateInterval", "10");
-        $this->RegisterTimer('BMWTokenUpdate', 21600000, 'BMW_CheckToken('.$this->InstanceID.');');
+        $this->RegisterTimer('BMWTokenUpdate', 9000000, 'BMW_CheckToken('.$this->InstanceID.');');
         $this->RegisterTimer('BMWDataUpdate', 600000, 'BMW_DataUpdate('.$this->InstanceID.');');
     }
 
