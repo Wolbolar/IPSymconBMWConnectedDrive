@@ -178,8 +178,8 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterPropertyBoolean("active_service", false);
         $this->RegisterPropertyBoolean("active_current_position", false);
         $this->RegisterPropertyString("google_api_key", "");
-        $this->RegisterPropertyInteger("UpdateInterval", "360");
-        $this->RegisterTimer('BMWTokenUpdate', 15000, 'BMW_CheckToken('.$this->InstanceID.');');
+        $this->RegisterPropertyInteger("UpdateInterval", "10");
+        $this->RegisterTimer('BMWTokenUpdate', 21600000, 'BMW_CheckToken('.$this->InstanceID.');');
         $this->RegisterTimer('BMWDataUpdate', 600000, 'BMW_DataUpdate('.$this->InstanceID.');');
     }
 
@@ -309,7 +309,9 @@ class BMWConnectedDrive extends IPSModule
                 Array(2, $this->Translate("hybrid"), "", 0x3ADF00),
                 Array(3, $this->Translate("terrain"), "", 0x3ADF00)));
             $this->RegisterVariableInteger("bmw_googlemap_maptype", $this->Translate("map type"), "BMW.Googlemap", 41);
+            $this->RegisterVariableInteger("bmw_googlemap_zoom", $this->Translate("map zoom"), "~Intensity.100", 42);
             $this->EnableAction("bmw_googlemap_maptype");
+            $this->EnableAction("bmw_googlemap_zoom");
         }
         else
         {
@@ -377,7 +379,7 @@ class BMWConnectedDrive extends IPSModule
     protected function SetUpdateIntervall()
     {
         $interval = ($this->ReadPropertyInteger("UpdateInterval"))*1000*60; // interval min
-        $this->SetTimerInterval("BMWTokenUpdate", $interval);
+        $this->SetTimerInterval("BMWDataUpdate", $interval);
     }
 
     public function DataUpdate()
@@ -547,7 +549,7 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    protected function SetGoogleMap($maptype, $latitude=NULL, $longitude=NULL)
+    protected function SetGoogleMap($maptype, $zoom,  $latitude=NULL, $longitude=NULL)
     {
         // $api = $this->ReadPropertyString("google_api_key"); // Google API Key
         if(empty($latitude) || empty($longitude))
@@ -568,7 +570,8 @@ class BMWConnectedDrive extends IPSModule
             $horizontal_size = 600;
             $vertical_value = 400;
             $markercolor = "red";
-            $zoom = 16; // 0 world - 21 building
+            // zoom 0 world - 21 building
+            $this->SendDebug("BMW Map", "Zoom Level ".$zoom,0);
             $ausgabe = '<img src="http://maps.google.com/maps/api/staticmap?center='.$pos.'&zoom='.$zoom.'&size='.$horizontal_size.'x'.$vertical_value.'&maptype='.$maptype.'&markers=color:'.$markercolor.'%7C'.$pos.'&sensor=true" />';
             SetValue($this->GetIDForIdent("bmw_car_googlemap"), $ausgabe); //Stringvariable HTML-Box
         }
@@ -576,22 +579,31 @@ class BMWConnectedDrive extends IPSModule
 
     protected function SetGoogleMapType($value)
     {
+        $zoom = GetValue($this->GetIDForIdent("bmw_googlemap_zoom"));
         if($value == 0)
         {
-            $this->SetGoogleMap("roadmap");
+            $this->SetGoogleMap("roadmap", $zoom);
         }
         elseif($value == 1)
         {
-            $this->SetGoogleMap("satellite");
+            $this->SetGoogleMap("satellite", $zoom);
         }
         elseif($value == 2)
         {
-            $this->SetGoogleMap("hybrid");
+            $this->SetGoogleMap("hybrid", $zoom);
         }
         elseif($value == 3)
         {
-            $this->SetGoogleMap("terrain");
+            $this->SetGoogleMap("terrain", $zoom);
         }
+    }
+
+    protected function SetMapZoom($zoom)
+    {
+        $latitude = GetValue($this->GetIDForIdent("bmw_current_latitude"));
+        $longitude = GetValue($this->GetIDForIdent("bmw_current_longitude"));
+        $maptype = GetValue($this->GetIDForIdent("bmw_googlemap_maptype"));
+        $this->SetGoogleMap($maptype, $zoom,  $latitude, $longitude);
     }
 
     public function GetEfficiency()
@@ -766,7 +778,10 @@ class BMWConnectedDrive extends IPSModule
             $longitude = $carinfo->gps_lng;
             $latitude = $carinfo->gps_lat;
             $maptype = GetValue($this->GetIDForIdent("bmw_googlemap_maptype"));
-            $this->SetGoogleMap($maptype, $latitude, $longitude);
+            $zoom = GetValue($this->GetIDForIdent("bmw_googlemap_zoom"));
+            SetValue($this->GetIDForIdent("bmw_current_latitude"), $latitude);
+            SetValue($this->GetIDForIdent("bmw_current_longitude"), $longitude);
+            $this->SetGoogleMap($maptype, $zoom, $latitude, $longitude);
         }
         if(isset(json_decode($response)->vehicleMessages->cbsMessages))
         {
@@ -1108,6 +1123,14 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
     }
 
     /*
+    public function FindVehicle()
+    {
+        $service = "";
+        $this->PerfomActionV1($service);
+    }
+    */
+
+    /*
     public function SendPOI()
     {
         $vin = $this->ReadPropertyString('vin');
@@ -1189,6 +1212,11 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
             case "bmw_googlemap_maptype":
                 $this->SetGoogleMapType($Value);
                 break;
+            case "bmw_googlemap_zoom":
+                $zoom = round(($Value/100)*21);
+                $this->SetMapZoom($zoom);
+                break;
+
             default:
                 $this->SendDebug("BMW", "Invalid ident",0);
         }
@@ -1319,6 +1347,8 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                     "type": "ValidationTextBox",
                     "caption": "VIN"
                 },
+                { "type": "Label", "label": "Update interval in minutes" },
+                { "type": "IntervalBox", "name": "UpdateInterval", "caption": "minutes" },
                 { "type": "Label", "label": "air conditioner control" },
 				{
                     "name": "active_climate",
