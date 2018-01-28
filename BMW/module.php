@@ -175,6 +175,8 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterPropertyBoolean("active_lock_data", false);
         $this->RegisterPropertyBoolean("active_honk", false);
         $this->RegisterPropertyBoolean("active_googlemap", false);
+        $this->RegisterPropertyInteger("horizontal_mapsize", 600);
+        $this->RegisterPropertyInteger("vertical_mapsize", 400);
         $this->RegisterPropertyBoolean("active_service", false);
         $this->RegisterPropertyBoolean("active_current_position", false);
         $this->RegisterPropertyString("google_api_key", "");
@@ -538,7 +540,7 @@ class BMWConnectedDrive extends IPSModule
         return $matches[1];
     }
 
-    protected function CheckToken()
+    public function CheckToken()
     {
         // The token expires_in is in seconds - giving you 8 hours before you have to renew the token.
         $token_expiration = $this->ReadPropertyInteger("token_expiration");
@@ -600,8 +602,8 @@ class BMWConnectedDrive extends IPSModule
         if($latitude != "" && $longitude != "")
         {
             $pos = $latitude.",".$longitude;
-            $horizontal_size = 600;
-            $vertical_value = 400;
+            $horizontal_size = $this->ReadPropertyInteger("horizontal_mapsize");
+            $vertical_value = $this->ReadPropertyInteger("vertical_mapsize");
             $markercolor = "red";
             // zoom 0 world - 21 building
             $this->SendDebug("BMW Map", "Zoom Level ".$zoom,0);
@@ -744,7 +746,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetDynamicData()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = "/api/vehicle/dynamic/v1/" . $vin . "?offset=-60";
+        $command = "/api/vehicle/dynamic/v1/" . $vin . "?offset=" . date('Z') / -60;
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
         SetValue($this->GetIDForIdent("bmw_dynamic_interface"), $response);
@@ -753,8 +755,11 @@ class BMWConnectedDrive extends IPSModule
         {
             $carinfo = $data->attributesMap;
             // $current_vin = $carinfo->vin;
-            $mileage = $carinfo->mileage;
-            SetValue($this->GetIDForIdent("bmw_mileage"), $mileage);
+            if(isset($carinfo->mileage))
+            {
+                $mileage = $carinfo->mileage;
+                SetValue($this->GetIDForIdent("bmw_mileage"), $mileage);
+            }
             $id_doorDriverFront = @$this->GetIDForIdent("bmw_doorDriverFront");
             if(isset($id_doorDriverFront))
             {
@@ -895,17 +900,37 @@ class BMWConnectedDrive extends IPSModule
         }
         if(isset(json_decode($response)->vehicleMessages->cbsMessages))
         {
-            $HTML = "";
+            $HTML ='<body><style type="text/css">table.liste { width: 100%; border-collapse: true;} table.liste td { border: 1px solid #444455; } table.liste th { border: 1px solid #444455; }</style>';
+            $HTML.='<table frame="box" class="liste">';
+            $HTML.='<tr>';
+            $HTML.='<th>Servicart</th>';
+            $HTML.='<th>Beschreibung</th>';
+            $HTML.='<th>Datum</th>';
+            $HTML.='<th>Kilometer</th>';
+            $HTML.='</tr>';
+
             $service = json_decode($response)->vehicleMessages->cbsMessages;
             foreach($service as $key => $servicemessage)
             {
                 $description = $servicemessage->description;
                 $text = $servicemessage->text;
                 $date = $servicemessage->date;
-                $HTML .= "<div>".$description."</div>";
-                $HTML .= "<div>Service ".$text." am ".$date."</div>";
-                SetValue($this->GetIDForIdent("bmw_service"), $HTML);
+                if(isset($servicemessage->unitOfLengthRemaining))
+                {
+                    $dist = $servicemessage->unitOfLengthRemaining;
+                }
+                else
+                {
+                    $dist = 'Nicht angegeben';
+                }
+
+                $HTML.=    '<tr align="center"><td>'    . $text            . '</td>';
+                $HTML.=    '<td>'                        . $description     . '</td>';
+                $HTML.=    '<td>'                        . $date            . '</td>';
+                $HTML.=    '<td>'                        . $dist            . '</td></tr>';
             }
+            $HTML.=    '</table></body>';
+            SetValue($this->GetIDForIdent("bmw_service"), $HTML);
         }
         return $data;
     }
@@ -1034,27 +1059,30 @@ class BMWConnectedDrive extends IPSModule
         $response = $this->SendBMWAPIV1($command, $action);
         SetValue($this->GetIDForIdent("bmw_image_interface"), $response);
         $images = json_decode($response);
-        $picture_vin = $images->vin;
-        if($vin == $picture_vin)
+        if(isset($images->vin))
         {
-            $images_angle = $images->angleUrls;
-            $picture_angle = $angle;
-            foreach($images_angle as $key => $image_angle)
+            $picture_vin = $images->vin;
+            if($vin == $picture_vin)
             {
-
-                $angle = $image_angle->angle;
-                if($picture_angle == $angle)
+                $images_angle = $images->angleUrls;
+                $picture_angle = $angle;
+                foreach($images_angle as $key => $image_angle)
                 {
-                    $picture_url = $image_angle->url;
+
+                    $angle = $image_angle->angle;
+                    if($picture_angle == $angle)
+                    {
+                        $picture_url = $image_angle->url;
+                    }
                 }
-            }
-            $HTML = '<!DOCTYPE html>'.PHP_EOL.'
+                $HTML = '<!DOCTYPE html>'.PHP_EOL.'
             <html>'.PHP_EOL.'
             <body>'.PHP_EOL.'
             <img src="'.$picture_url.'" alt="car picture">'.PHP_EOL.'
             </body>'.PHP_EOL.'
             </html>';
-            SetValue($this->GetIDForIdent("bmw_car_picture"), $HTML);
+                SetValue($this->GetIDForIdent("bmw_car_picture"), $HTML);
+            }
         }
         else
         {
@@ -1489,6 +1517,9 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                     "type": "CheckBox",
                     "caption": "map"
                 },
+                { "type": "Label", "label": "size of the map" },
+                { "type": "NumberSpinner", "name": "horizontal_mapsize", "caption": "horizontal" },
+                { "type": "NumberSpinner", "name": "vertical_mapsize", "caption": "vertical" },
                 { "type": "Label", "label": "show current position, latitude / longitude" },
 				{
                     "name": "active_current_position",
