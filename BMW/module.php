@@ -330,7 +330,7 @@ class BMWConnectedDrive extends IPSModule
         if ($active_googlemap)
         {
             $this->RegisterVariableString("bmw_car_googlemap", $this->Translate("map"), "~HTMLBox", 10);
-            $this->RegisterProfileAssociation("BMW.Googlemap", "Car", "", "",  0, 3, 1, 0, 1, Array( Array(0, $this->Translate("roadmap"), "", 0x3ADF00),
+            $this->RegisterProfileAssociation("BMW.Googlemap", "Car", "", "",  0, 3, 0, 0, 1, Array( Array(0, $this->Translate("roadmap"), "", 0x3ADF00),
                 Array(1, $this->Translate("satellite"), "", 0x3ADF00),
                 Array(2, $this->Translate("hybrid"), "", 0x3ADF00),
                 Array(3, $this->Translate("terrain"), "", 0x3ADF00)));
@@ -608,36 +608,45 @@ class BMWConnectedDrive extends IPSModule
             // zoom 0 world - 21 building
             $this->SendDebug("BMW Map", "Zoom Level ".$zoom,0);
             $ausgabe = '<img src="http://maps.google.com/maps/api/staticmap?center='.$pos.'&zoom='.$zoom.'&size='.$horizontal_size.'x'.$vertical_value.'&maptype='.$maptype.'&markers=color:'.$markercolor.'%7C'.$pos.'&sensor=true" />';
+            $this->SendDebug("BMW Map", 'http://maps.google.com/maps/api/staticmap?center='.$pos.'&zoom='.$zoom.'&size='.$horizontal_size.'x'.$vertical_value.'&maptype='.$maptype.'&markers=color:'.$markercolor.'%7C'.$pos.'&sensor=true',0);
             SetValue($this->GetIDForIdent("bmw_car_googlemap"), $ausgabe); //Stringvariable HTML-Box
         }
     }
 
     protected function SetGoogleMapType($value)
     {
-        $zoom = GetValue($this->GetIDForIdent("bmw_googlemap_zoom"));
+        $zoom_value = GetValue($this->GetIDForIdent("bmw_googlemap_zoom"));
+        $zoom = round(($zoom_value/100)*21);
+        $this->SetGoogleMap($this->GetGoogleMapType($value), $zoom);
+    }
+
+    protected function GetGoogleMapType($value)
+    {
         if($value == 0)
         {
-            $this->SetGoogleMap("roadmap", $zoom);
+            $maptype = "roadmap";
         }
         elseif($value == 1)
         {
-            $this->SetGoogleMap("satellite", $zoom);
+            $maptype = "satellite";
         }
         elseif($value == 2)
         {
-            $this->SetGoogleMap("hybrid", $zoom);
+            $maptype = "hybrid";
         }
         elseif($value == 3)
         {
-            $this->SetGoogleMap("terrain", $zoom);
+            $maptype = "terrain";
         }
+        $this->SendDebug("BMW Map", "Map type ".$maptype,0);
+        return $maptype;
     }
 
     protected function SetMapZoom($zoom)
     {
         $latitude = GetValue($this->GetIDForIdent("bmw_current_latitude"));
         $longitude = GetValue($this->GetIDForIdent("bmw_current_longitude"));
-        $maptype = GetValue($this->GetIDForIdent("bmw_googlemap_maptype"));
+        $maptype = $this->GetGoogleMapType(GetValue($this->GetIDForIdent("bmw_googlemap_maptype")));
         $this->SetGoogleMap($maptype, $zoom,  $latitude, $longitude);
     }
 
