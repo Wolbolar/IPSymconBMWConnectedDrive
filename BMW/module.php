@@ -569,7 +569,7 @@ class BMWConnectedDrive extends IPSModule
         $command = "/api/me/vehicles/v2";
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_car_interface"), $response);
+		$this->SetValue('bmw_car_interface', $response);
         $data = json_decode($response);
         return $data;
     }
@@ -580,7 +580,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/navigation/v1/' . $vin;
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_navigation_interface"), $response);
+		$this->SetValue('bmw_navigation_interface', $response);
         return $response;
     }
 
@@ -609,7 +609,7 @@ class BMWConnectedDrive extends IPSModule
             $this->SendDebug("BMW Map", "Zoom Level ".$zoom,0);
             $ausgabe = '<img src="http://maps.google.com/maps/api/staticmap?center='.$pos.'&zoom='.$zoom.'&size='.$horizontal_size.'x'.$vertical_value.'&maptype='.$maptype.'&markers=color:'.$markercolor.'%7C'.$pos.'&sensor=true" />';
             $this->SendDebug("BMW Map", 'http://maps.google.com/maps/api/staticmap?center='.$pos.'&zoom='.$zoom.'&size='.$horizontal_size.'x'.$vertical_value.'&maptype='.$maptype.'&markers=color:'.$markercolor.'%7C'.$pos.'&sensor=true',0);
-            SetValue($this->GetIDForIdent("bmw_car_googlemap"), $ausgabe); //Stringvariable HTML-Box
+			$this->SetValue('bmw_car_googlemap', $ausgabe); //Stringvariable HTML-Box
         }
     }
 
@@ -656,7 +656,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/efficiency/v1/' . $vin;
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_efficiency_interface"), $response);
+		$this->SetValue('bmw_efficiency_interface', $response);
         return $response;
     }
 
@@ -666,7 +666,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/remoteservices/chargingprofile/v1/' . $vin;
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_chargingprofile_interface"), $response);
+		$this->SetValue('bmw_chargingprofile_interface', $response);
         return $response;
     }
 
@@ -676,7 +676,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/me/service/mapupdate/download/v1/' . $vin;
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_mapupdate_interface"), $response);
+		$this->SetValue('bmw_mapupdate_interface', $response);
         return $response;
     }
 
@@ -686,7 +686,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/store/v2/'. $vin . '/offersAndPortfolios';
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_store_interface"), $response);
+		$this->SetValue('bmw_store_interface', $response);
         return $response;
     }
 
@@ -696,7 +696,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/specs/v1/' . $vin;
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_specs_interface"), $response);
+		$this->SetValue('bmw_specs_interface', $response);
         return $response;
     }
 
@@ -706,7 +706,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/service/v1/' . $vin;
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_service_interface"), $response);
+		$this->SetValue('bmw_service_interface', $response);
         return $response;
     }
 
@@ -716,7 +716,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/servicepartner/v1/' . $vin;
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_service_partner_interface"), $response);
+		$this->SetValue('bmw_service_partner_interface', $response);
         return $response;
     }
 
@@ -726,7 +726,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/remoteservices/v1/' . $vin . '/history';
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_history_interface"), $response);
+		$this->SetValue('bmw_history_interface', $response);
         $data = json_decode($response, true);
         $type = array("RCN" => "Lüftung aktivieren", "RCT" => "Einschaltzeit", "RHB" => "Hupe", "RLF" => "Lichthupe", "RDL" => "Verriegeln", "RDU" => "Entriegeln");
         $status = array("SUCCESS" => "Erfolgreich gesendet", "PENDING" => "Steht aus", "INITIATED" => "Initiiert", "FAILED" => "Sendung Fehlgeschlagen", "CANCELLED" => "Sendung Abgebrochen");
@@ -747,7 +747,7 @@ class BMWConnectedDrive extends IPSModule
         }
         if($html)
         {
-            SetValue($this->GetIDForIdent("bmw_history"), $html);
+			$this->SetValue('bmw_history', $response);
         }
         return $response;
     }
@@ -758,7 +758,7 @@ class BMWConnectedDrive extends IPSModule
         $command = "/api/vehicle/dynamic/v1/" . $vin . "?offset=" . date('Z') / -60;
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_dynamic_interface"), $response);
+		$this->SetValue('bmw_dynamic_interface', $response);
         $data = json_decode($response);
         if(isset($data->attributesMap))
         {
@@ -767,7 +767,7 @@ class BMWConnectedDrive extends IPSModule
             if(isset($carinfo->mileage))
             {
                 $mileage = $carinfo->mileage;
-                SetValue($this->GetIDForIdent("bmw_mileage"), $mileage);
+				$this->SetValue('bmw_mileage', $mileage);
             }
             $id_doorDriverFront = @$this->GetIDForIdent("bmw_doorDriverFront");
             if(isset($id_doorDriverFront))
@@ -889,12 +889,12 @@ class BMWConnectedDrive extends IPSModule
             if(isset($carinfo->remaining_fuel))
             {
                 $remainingFuel = floatval($carinfo->remaining_fuel);
-                SetValue($this->GetIDForIdent("bmw_tank_capacity"), $remainingFuel);
+				$this->SetValue('bmw_tank_capacity', $remainingFuel);
             }
             if(isset($carinfo->beRemainingRangeFuel))
             {
                 $remaining_range = floatval($carinfo->beRemainingRangeFuel);
-                SetValue($this->GetIDForIdent("bmw_remaining_range"), $remaining_range);
+				$this->SetValue('bmw_remaining_range', $remaining_range);
             }
             if(isset($carinfo->gps_lng) && isset($carinfo->gps_lat))
             {
@@ -902,8 +902,8 @@ class BMWConnectedDrive extends IPSModule
                 $latitude = $carinfo->gps_lat;
                 $maptype = GetValue($this->GetIDForIdent("bmw_googlemap_maptype"));
                 $zoom = GetValue($this->GetIDForIdent("bmw_googlemap_zoom"));
-                SetValue($this->GetIDForIdent("bmw_current_latitude"), $latitude);
-                SetValue($this->GetIDForIdent("bmw_current_longitude"), $longitude);
+				$this->SetValue('bmw_current_latitude', $latitude);
+				$this->SetValue('bmw_current_longitude', $latitude);
                 $this->SetGoogleMap($maptype, $zoom, $latitude, $longitude);
             }
         }
@@ -939,7 +939,7 @@ class BMWConnectedDrive extends IPSModule
                 $HTML.=    '<td>'                        . $dist            . '</td></tr>';
             }
             $HTML.=    '</table></body>';
-            SetValue($this->GetIDForIdent("bmw_service"), $HTML);
+			$this->SetValue('bmw_service', $HTML);
         }
         return $data;
     }
@@ -948,11 +948,11 @@ class BMWConnectedDrive extends IPSModule
     {
         if($command == "CLOSED")
         {
-            SetValue($this->GetIDForIdent($ident), true);
+			$this->SetValue($ident, true);
         }
         else
         {
-            SetValue($this->GetIDForIdent($ident), false);
+			$this->SetValue($ident, false);
         }
     }
 
@@ -967,87 +967,87 @@ class BMWConnectedDrive extends IPSModule
         if($vin == $current_vin)
         {
             $mileage = $carinfo->mileage;
-            SetValue($this->GetIDForIdent("bmw_mileage"), $mileage);
+			$this->SetValue('bmw_mileage', $mileage);
             $id_doorDriverFront = $this->GetIDForIdent("bmw_doorDriverFront");
             if(isset($id_doorDriverFront))
             {
                 $doorDriverFront = $carinfo->doorDriverFront;
-                SetValue($this->GetIDForIdent("bmw_doorDriverFront"), $doorDriverFront);
+				$this->SetValue('bmw_doorDriverFront', $doorDriverFront);
             }
             $id_doorDriverRear = $this->GetIDForIdent("bmw_doorDriverRear");
             if(isset($id_doorDriverRear))
             {
                 $doorDriverRear = $carinfo->doorDriverFront;
-                SetValue($this->GetIDForIdent("bmw_doorDriverRear"), $doorDriverRear);
+				$this->SetValue('bmw_doorDriverRear', $doorDriverRear);
             }
             $id_doorPassengerFront = $this->GetIDForIdent("bmw_doorPassengerFront");
             if(isset($id_doorPassengerFront))
             {
                 $doorPassengerFront = $carinfo->doorPassengerFront;
-                SetValue($this->GetIDForIdent("bmw_doorPassengerFront"), $doorPassengerFront);
+				$this->SetValue('bmw_doorPassengerFront', $doorPassengerFront);
             }
             $id_doorPassengerRear = $this->GetIDForIdent("bmw_doorPassengerRear");
             if(isset($id_doorPassengerRear))
             {
                 $doorPassengerRear = $carinfo->doorPassengerRear;
-                SetValue($this->GetIDForIdent("bmw_doorPassengerRear"), $doorPassengerRear);
+				$this->SetValue('bmw_doorPassengerRear', $doorPassengerRear);
             }
             $id_windowDriverFront = $this->GetIDForIdent("bmw_windowDriverFront");
             if(isset($id_windowDriverFront))
             {
                 $windowDriverFront = $carinfo->windowDriverFront;
-                SetValue($this->GetIDForIdent("bmw_windowDriverFront"), $windowDriverFront);
+				$this->SetValue('bmw_windowDriverFront', $windowDriverFront);
             }
             $id_windowDriverRear = $this->GetIDForIdent("bmw_windowDriverRear");
             if(isset($id_windowDriverRear))
             {
                 $windowDriverRear = $carinfo->windowDriverRear;
-                SetValue($this->GetIDForIdent("bmw_windowDriverRear"), $windowDriverRear);
+				$this->SetValue('bmw_windowDriverRear', $windowDriverRear);
             }
             $id_windowPassengerFront = $this->GetIDForIdent("bmw_windowPassengerFront");
             if(isset($id_windowPassengerFront))
             {
                 $windowPassengerFront = $carinfo->windowPassengerFront;
-                SetValue($this->GetIDForIdent("bmw_windowPassengerFront"), $windowPassengerFront);
+				$this->SetValue('bmw_windowPassengerFront', $windowPassengerFront);
             }
             $id_windowPassengerRear = $this->GetIDForIdent("bmw_windowPassengerRear");
             if(isset($id_windowPassengerRear))
             {
                 $windowPassengerRear = $carinfo->windowPassengerRear;
-                SetValue($this->GetIDForIdent("bmw_windowPassengerRear"), $windowPassengerRear);
+				$this->SetValue('bmw_windowPassengerRear', $windowPassengerRear);
             }
             $id_trunk = $this->GetIDForIdent("bmw_trunk");
             if(isset($id_trunk))
             {
                 $trunk = $carinfo->trunk;
-                SetValue($this->GetIDForIdent("bmw_trunk"), $trunk);
+				$this->SetValue('bmw_trunk', $trunk);
             }
             $id_rearWindow = $this->GetIDForIdent("bmw_rearWindow");
             if(isset($id_rearWindow))
             {
                 $rearWindow = $carinfo->rearWindow;
-                SetValue($this->GetIDForIdent("bmw_rearWindow"), $rearWindow);
+				$this->SetValue('bmw_rearWindow', $rearWindow);
             }
             $id_convertibleRoofState = $this->GetIDForIdent("bmw_convertibleRoofState");
             if(isset($id_convertibleRoofState))
             {
                 $convertibleRoofState = $carinfo->convertibleRoofState;
-                SetValue($this->GetIDForIdent("bmw_convertibleRoofState"), $convertibleRoofState);
+				$this->SetValue('bmw_convertibleRoofState', $convertibleRoofState);
             }
             $id_hood = $this->GetIDForIdent("bmw_hood");
             if(isset($id_hood))
             {
                 $hood = $carinfo->hood;
-                SetValue($this->GetIDForIdent("bmw_hood"), $hood);
+				$this->SetValue('bmw_hood', $hood);
             }
             $id_doorLockState = $this->GetIDForIdent("bmw_doorLockState");
             if(isset($id_doorLockState))
             {
                 $doorLockState = $carinfo->doorLockState;
-                SetValue($this->GetIDForIdent("bmw_doorLockState"), $doorLockState);
+				$this->SetValue('bmw_doorLockState', $doorLockState);
             }
             $remainingFuel = $carinfo->remainingFuel;
-            SetValue($this->GetIDForIdent("bmw_tank_capacity"), $remainingFuel);
+			$this->SetValue('bmw_tank_capacity', $remainingFuel);
         }
         return $data;
     }
@@ -1056,7 +1056,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $angle = "0";
         $response = $this->GetCarPictureForAngle($angle);
-        SetValue($this->GetIDForIdent("bmw_image_interface"), $response);
+		$this->SetValue('bmw_image_interface', $response);
         return $response;
     }
 
@@ -1066,7 +1066,7 @@ class BMWConnectedDrive extends IPSModule
         $command = "/api/vehicle/image/v1/".$vin."?startAngle=".$angle."&stepAngle=10&width=780";
         $action = false;
         $response = $this->SendBMWAPIV1($command, $action);
-        SetValue($this->GetIDForIdent("bmw_image_interface"), $response);
+		$this->SetValue('bmw_image_interface', $response);
         $images = json_decode($response);
         if(isset($images->vin))
         {
@@ -1090,7 +1090,7 @@ class BMWConnectedDrive extends IPSModule
             <img src="'.$picture_url.'" alt="car picture">'.PHP_EOL.'
             </body>'.PHP_EOL.'
             </html>';
-                SetValue($this->GetIDForIdent("bmw_car_picture"), $HTML);
+				$this->SetValue('bmw_car_picture', $HTML);
             }
         }
         else
@@ -1293,9 +1293,15 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
         $response = curl_exec($ch);
-        $this->SendDebug("BMW Response", $response,0);
-        $curl_error = curl_error($ch);
-        // $this->SendDebug("BMW","curl error: ".$curl_error,0);
+        if($response === false)
+        {
+            $curl_error = curl_error($ch);
+            $this->SendDebug("BMW","curl error: ".$curl_error,0);
+        }
+        else
+        {
+            $this->SendDebug("BMW Response", $response,0);
+        }
         curl_close( $ch );
         return $response;
     }
@@ -1323,7 +1329,7 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
 	
 	public function RequestAction($Ident, $Value)
     {
-        SetValue($this->GetIDForIdent($Ident), $Value);
+		$this->SetValue($Ident, $Value);
         switch($Ident) {
             case "bmw_start_air_conditioner":
                 $this->StartClimateControl();
@@ -1603,6 +1609,17 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
             ]';
         return $form;
     }
+
+	//Add this Polyfill for IP-Symcon 4.4 and older
+	protected function SetValue($Ident, $Value)
+	{
+
+		if (IPS_GetKernelVersion() >= 5) {
+			parent::SetValue($Ident, $Value);
+		} else {
+			SetValue($this->GetIDForIdent($Ident), $Value);
+		}
+	}
 
 }
 
