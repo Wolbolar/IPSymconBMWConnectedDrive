@@ -903,7 +903,7 @@ class BMWConnectedDrive extends IPSModule
                 $maptype = GetValue($this->GetIDForIdent("bmw_googlemap_maptype"));
                 $zoom = GetValue($this->GetIDForIdent("bmw_googlemap_zoom"));
 				$this->SetValue('bmw_current_latitude', $latitude);
-				$this->SetValue('bmw_current_longitude', $latitude);
+				$this->SetValue('bmw_current_longitude', $longitude);
                 $this->SetGoogleMap($maptype, $zoom, $latitude, $longitude);
             }
         }
