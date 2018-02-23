@@ -40,6 +40,7 @@
             "map": "Karte",
             "map type": "Kartentyp",
             "map zoom": "Zoomstufe Karte",
+			"car zoom": "Zoomstufe Auto",
             "Update interval in minutes": "Aktualisierungsintervall in Minuten",
             "minutes": "Minuten",
             "roadmap": "Straßenkarte",

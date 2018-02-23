@@ -191,16 +191,17 @@ class BMWConnectedDrive extends IPSModule
         parent::ApplyChanges();
 
         $this->RegisterVariableString("bmw_car_picture", $this->Translate("picture"), "~HTMLBox", 1);
+		$this->RegisterVariableInteger("bmw_car_picture_zoom", $this->Translate("car zoom"), "~Intensity.100", 2);
         $this->RegisterProfile("BMW.Perspective",   "Eyes",   "", "°",    0, 360, 30, 0, 1);
-        $this->RegisterVariableInteger("bmw_perspective", $this->Translate("perspective"), "BMW.Perspective", 2);
+        $this->RegisterVariableInteger("bmw_perspective", $this->Translate("perspective"), "BMW.Perspective", 3);
         $this->EnableAction("bmw_perspective");
         $this->RegisterProfile("BMW.Mileage",   "Distance",   "", " ".$this->GetMileageUnit(),    0, 0, 0, 0, 1);
-        $this->RegisterVariableInteger("bmw_mileage", $this->Translate("mileage"), "BMW.Mileage", 3);
+        $this->RegisterVariableInteger("bmw_mileage", $this->Translate("mileage"), "BMW.Mileage", 4);
         $this->RegisterProfile("BMW.TankCapacity",   "Gauge",   "", " Liter",    0, 0, 0, 0, 2);
-        $this->RegisterVariableFloat("bmw_tank_capacity", $this->Translate("tank capacity"), "BMW.TankCapacity", 4);
+        $this->RegisterVariableFloat("bmw_tank_capacity", $this->Translate("tank capacity"), "BMW.TankCapacity", 5);
         $this->RegisterProfile("BMW.RemainingRange",   "Gauge",   "", " km",    0, 0, 0, 0, 2);
-        $this->RegisterVariableFloat("bmw_remaining_range", $this->Translate("remaining range"), "BMW.RemainingRange", 5);
-        $this->RegisterVariableString("bmw_history", $this->Translate("course"), "~HTMLBox", 6);
+        $this->RegisterVariableFloat("bmw_remaining_range", $this->Translate("remaining range"), "BMW.RemainingRange", 6);
+        $this->RegisterVariableString("bmw_history", $this->Translate("course"), "~HTMLBox", 7);
 
 
 
@@ -347,7 +348,7 @@ class BMWConnectedDrive extends IPSModule
 
         if ($active_current_position)
         {
-            $this->RegisterProfile("BMW.Location",   "Car",   "", " °",    0, 0, 0, 2, 2);
+            $this->RegisterProfile("BMW.Location",   "Car",   "", " °",    0, 0, 0, 5, 2);
             $this->RegisterVariableFloat("bmw_current_latitude", $this->Translate("current latitude"), "BMW.Location", 13);
             $this->RegisterVariableFloat("bmw_current_longitude", $this->Translate("current longitude"), "BMW.Location", 14);
         }
@@ -416,7 +417,8 @@ class BMWConnectedDrive extends IPSModule
         $this->GetEfficiency();
         $this->GetMapUpdate();
         $angle = GetValue($this->GetIDForIdent("bmw_perspective"));
-        $this->GetCarPictureForAngle($angle);
+		$zoom = GetValue($this->GetIDForIdent("bmw_car_picture_zoom"));
+        $this->GetCarPictureForAngle($angle, $zoom);
         $this->GetStore();
         $this->GetSpecs();
         $this->GetService();
@@ -622,7 +624,8 @@ class BMWConnectedDrive extends IPSModule
 
     protected function GetGoogleMapType($value)
     {
-        if($value == 0)
+		$maptype = "roadmap";
+    	if($value == 0)
         {
             $maptype = "roadmap";
         }
@@ -909,7 +912,7 @@ class BMWConnectedDrive extends IPSModule
         }
         if(isset(json_decode($response)->vehicleMessages->cbsMessages))
         {
-            $HTML ='<body><style type="text/css">table.liste { width: 100%; border-collapse: true;} table.liste td { border: 1px solid #444455; } table.liste th { border: 1px solid #444455; }</style>';
+            $HTML ='<body><style type="text/css">table.liste { width: 100%; border-collapse: collapse ;} table.liste td { border: 1px solid #444455; } table.liste th { border: 1px solid #444455; }</style>';
             $HTML.='<table frame="box" class="liste">';
             $HTML.='<tr>';
             $HTML.='<th>Servicart</th>';
@@ -1054,13 +1057,14 @@ class BMWConnectedDrive extends IPSModule
 
     public function GetCarPicture()
     {
-        $angle = "0";
-        $response = $this->GetCarPictureForAngle($angle);
+        $angle = 0;
+        $zoom = 100;
+        $response = $this->GetCarPictureForAngle($angle, $zoom);
 		$this->SetValue('bmw_image_interface', $response);
         return $response;
     }
 
-    public function GetCarPictureForAngle(int $angle)
+    public function GetCarPictureForAngle(int $angle, int $zoom)
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/vehicle/image/v1/".$vin."?startAngle=".$angle."&stepAngle=10&width=780";
@@ -1070,7 +1074,8 @@ class BMWConnectedDrive extends IPSModule
         $images = json_decode($response);
         if(isset($images->vin))
         {
-            $picture_vin = $images->vin;
+			$picture_url = false;
+        	$picture_vin = $images->vin;
             if($vin == $picture_vin)
             {
                 $images_angle = $images->angleUrls;
@@ -1084,13 +1089,16 @@ class BMWConnectedDrive extends IPSModule
                         $picture_url = $image_angle->url;
                     }
                 }
-                $HTML = '<!DOCTYPE html>'.PHP_EOL.'
+                if($picture_url)
+				{
+					$HTML = '<!DOCTYPE html>'.PHP_EOL.'
             <html>'.PHP_EOL.'
             <body>'.PHP_EOL.'
-            <img src="'.$picture_url.'" alt="car picture">'.PHP_EOL.'
+            <img src="'.$picture_url.'" alt="car picture" width="'.$zoom.'%" height="'.$zoom.'%">'.PHP_EOL.'
             </body>'.PHP_EOL.'
             </html>';
-				$this->SetValue('bmw_car_picture', $HTML);
+					$this->SetValue('bmw_car_picture', $HTML);
+				}
             }
         }
         else
@@ -1099,6 +1107,12 @@ class BMWConnectedDrive extends IPSModule
         }
         return $picture_url;
     }
+
+    public function SetCarPictureZoom($zoom)
+	{
+		$angle = GetValue($this->GetIDForIdent("bmw_perspective"));
+		$this->GetCarPictureForAngle($angle, $zoom);
+	}
 
     public function GetLastTrip()
     {
@@ -1320,7 +1334,7 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
         $response = curl_exec($ch);
         $this->SendDebug("BMW Response", $response,0);
-        $curl_error = curl_error($ch);
+        // $curl_error = curl_error($ch);
         // $this->SendDebug("BMW","curl error: ".$curl_error,0);
         curl_close( $ch );
         return $response;
@@ -1351,7 +1365,8 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                 $this->VehicleFinder();
                 break;
             case "bmw_perspective":
-                $this->GetCarPictureForAngle($Value);
+				$zoom = GetValue($this->GetIDForIdent("bmw_car_picture_zoom"));
+				$this->GetCarPictureForAngle($Value, $zoom);
                 break;
             case "bmw_start_honk":
                 $this->Honk();
@@ -1363,6 +1378,9 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
                 $zoom = round(($Value/100)*21);
                 $this->SetMapZoom($zoom);
                 break;
+			case "bmw_car_picture_zoom":
+				$this->SetCarPictureZoom($Value);
+				break;
 
             default:
                 $this->SendDebug("BMW", "Invalid ident",0);
