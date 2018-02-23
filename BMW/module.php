@@ -559,7 +559,11 @@ class BMWConnectedDrive extends IPSModule
         IPS_LogMessage(get_class() . '::' . __FUNCTION__,'SenderID: ' . $SenderID . ', Message: ' . $Message . ', Data:'. json_encode($Data));
     }
 
-    public function GetVehicleData()
+	/**
+	 * Get Vehicle Data
+	 * @return mixed
+	 */
+	public function GetVehicleData()
     {
         $command = "/api/v1/user/vehicles/";
         $response = $this->SendBMWAPI($command);
@@ -567,7 +571,11 @@ class BMWConnectedDrive extends IPSModule
         return $data;
     }
 
-    public function GetVehicleInfo()
+	/**
+	 * Get Vehicle Info
+	 * @return mixed
+	 */
+	public function GetVehicleInfo()
     {
         $command = "/api/me/vehicles/v2";
         $action = false;
@@ -577,7 +585,11 @@ class BMWConnectedDrive extends IPSModule
         return $data;
     }
 
-    public function GetNavigationData()
+	/**
+	 * Get Navigation Data
+	 * @return mixed
+	 */
+	public function GetNavigationData()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/navigation/v1/' . $vin;
@@ -587,7 +599,14 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    protected function SetGoogleMap($maptype, $zoom,  $latitude=NULL, $longitude=NULL)
+	/**
+	 * Set car position to google map
+	 * @param $maptype
+	 * @param $zoom
+	 * @param null $latitude
+	 * @param null $longitude
+	 */
+	protected function SetGoogleMap($maptype, $zoom, $latitude=NULL, $longitude=NULL)
     {
         // $api = $this->ReadPropertyString("google_api_key"); // Google API Key
         if(empty($latitude) || empty($longitude))
@@ -616,14 +635,23 @@ class BMWConnectedDrive extends IPSModule
         }
     }
 
-    protected function SetGoogleMapType($value)
+	/**
+	 * Set Google map type
+	 * @param $value
+	 */
+	protected function SetGoogleMapType($value)
     {
         $zoom_value = GetValue($this->GetIDForIdent("bmw_googlemap_zoom"));
         $zoom = round(($zoom_value/100)*21);
         $this->SetGoogleMap($this->GetGoogleMapType($value), $zoom);
     }
 
-    protected function GetGoogleMapType($value)
+	/**
+	 * Get Google map type
+	 * @param $value
+	 * @return string
+	 */
+	protected function GetGoogleMapType($value)
     {
 		$maptype = "roadmap";
     	if($value == 0)
@@ -646,7 +674,11 @@ class BMWConnectedDrive extends IPSModule
         return $maptype;
     }
 
-    protected function SetMapZoom($zoom)
+	/**
+	 * Set Map Zoom
+	 * @param $zoom
+	 */
+	protected function SetMapZoom($zoom)
     {
         $latitude = GetValue($this->GetIDForIdent("bmw_current_latitude"));
         $longitude = GetValue($this->GetIDForIdent("bmw_current_longitude"));
@@ -654,7 +686,11 @@ class BMWConnectedDrive extends IPSModule
         $this->SetGoogleMap($maptype, $zoom,  $latitude, $longitude);
     }
 
-    public function GetEfficiency()
+	/**
+	 * Get Efficiency
+	 * @return mixed
+	 */
+	public function GetEfficiency()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/efficiency/v1/' . $vin;
@@ -664,7 +700,11 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    public function GetChargingProfile()
+	/**
+	 * Get Charging Profile
+	 * @return mixed
+	 */
+	public function GetChargingProfile()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/remoteservices/chargingprofile/v1/' . $vin;
@@ -674,7 +714,11 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    public function GetMapUpdate()
+	/**
+	 * Get map update
+	 * @return mixed
+	 */
+	public function GetMapUpdate()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/me/service/mapupdate/download/v1/' . $vin;
@@ -684,7 +728,11 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    public function GetStore()
+	/**
+	 * Get Store Values
+	 * @return mixed
+	 */
+	public function GetStore()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/store/v2/'. $vin . '/offersAndPortfolios';
@@ -694,7 +742,11 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    public function GetSpecs()
+	/**
+	 * Get specs
+	 * @return mixed
+	 */
+	public function GetSpecs()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/specs/v1/' . $vin;
@@ -704,7 +756,11 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    public function GetService()
+	/**
+	 * Get service
+	 * @return mixed
+	 */
+	public function GetService()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/service/v1/' . $vin;
@@ -714,7 +770,11 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    public function GetServicePartner()
+	/**
+	 * Get servive partner
+	 * @return mixed
+	 */
+	public function GetServicePartner()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/servicepartner/v1/' . $vin;
@@ -724,7 +784,11 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    public function GetRemoteServices()
+	/**
+	 * Get Remote Service
+	 * @return mixed
+	 */
+	public function GetRemoteServices()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/remoteservices/v1/' . $vin . '/history';
@@ -756,7 +820,11 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    public function GetDynamicData()
+	/**
+	 * Get dynamic data
+	 * @return mixed
+	 */
+	public function GetDynamicData()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/vehicle/dynamic/v1/" . $vin . "?offset=" . date('Z') / -60;
@@ -948,7 +1016,12 @@ class BMWConnectedDrive extends IPSModule
         return $data;
     }
 
-    protected function SetLockState($ident, $command)
+	/**
+	 * set lock state
+	 * @param $ident
+	 * @param $command
+	 */
+	protected function SetLockState($ident, $command)
     {
         if($command == "CLOSED")
         {
@@ -960,7 +1033,11 @@ class BMWConnectedDrive extends IPSModule
         }
     }
 
-    public function GetVehicleStatus()
+	/**
+	 * Get Vehicle Status
+	 * @return mixed
+	 */
+	public function GetVehicleStatus()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/v1/user/vehicles/".$vin."/status";
@@ -1056,7 +1133,11 @@ class BMWConnectedDrive extends IPSModule
         return $data;
     }
 
-    public function GetCarPicture()
+	/**
+	 * Get car picture
+	 * @return bool
+	 */
+	public function GetCarPicture()
     {
         $angle = 0;
         $zoom = 100;
@@ -1065,7 +1146,13 @@ class BMWConnectedDrive extends IPSModule
         return $response;
     }
 
-    public function GetCarPictureForAngle(int $angle, int $zoom)
+	/**
+	 * Get car picture for angle
+	 * @param int $angle
+	 * @param int $zoom
+	 * @return bool
+	 */
+	public function GetCarPictureForAngle(int $angle, int $zoom)
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/vehicle/image/v1/".$vin."?startAngle=".$angle."&stepAngle=10&width=780";
@@ -1109,13 +1196,21 @@ class BMWConnectedDrive extends IPSModule
         return $picture_url;
     }
 
-    public function SetCarPictureZoom($zoom)
+	/**
+	 * Set car picture zoom
+	 * @param $zoom
+	 */
+	public function SetCarPictureZoom($zoom)
 	{
 		$angle = GetValue($this->GetIDForIdent("bmw_perspective"));
 		$this->GetCarPictureForAngle($angle, $zoom);
 	}
 
-    public function GetLastTrip()
+	/**
+	 * Get last trip
+	 * @return mixed
+	 */
+	public function GetLastTrip()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/v1/user/vehicles/".$vin."/statistics/lastTrip";
@@ -1125,7 +1220,11 @@ class BMWConnectedDrive extends IPSModule
         return $data;
     }
 
-    public function GetChargingTimes()
+	/**
+	 * Get charging times
+	 * @return mixed
+	 */
+	public function GetChargingTimes()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/v1/user/vehicles/".$vin."/chargingprofile";
@@ -1135,7 +1234,11 @@ class BMWConnectedDrive extends IPSModule
         return $chargingtimes;
     }
 
-    public function GetVehicleDestinations()
+	/**
+	 * Get vehicle destinations
+	 * @return mixed
+	 */
+	public function GetVehicleDestinations()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/v1/user/vehicles/".$vin."/destinations";
@@ -1145,7 +1248,11 @@ class BMWConnectedDrive extends IPSModule
         return $destination;
     }
 
-    public function GetAllTripDetails()
+	/**
+	 * Get all trip details
+	 * @return mixed
+	 */
+	public function GetAllTripDetails()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/v1/user/vehicles/".$vin."/statistics/allTrips";
@@ -1155,8 +1262,11 @@ class BMWConnectedDrive extends IPSModule
         return $tripdetails;
     }
 
-    // Generate a polyline displaying the predicted range of the vehicle
-    public function GetRangeMap()
+	/**
+	 * Generate a polyline displaying the predicted range of the vehicle
+	 * @return mixed
+	 */
+	public function GetRangeMap()
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/v1/user/vehicles/".$vin."/rangemap";
@@ -1180,8 +1290,12 @@ COMFORT driving using comfort mode.
         return $soc_data;
     }
 
-    // Sending information to the car
-    protected function GetRequestStatus($service)
+	/**
+	 * Sending information to the car
+	 * @param $service
+	 * @return mixed
+	 */
+	protected function GetRequestStatus($service)
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/v1/user/vehicles/".$vin."/serviceExecutionStatus?serviceType=".$service;
@@ -1190,9 +1304,12 @@ COMFORT driving using comfort mode.
         return $state;
     }
 
-    // Instructs the car to perform an action
-
-    protected function PerfomAction($service)
+	/**
+	 * Instructs the car to perform an action
+	 * @param $service
+	 * @return mixed
+	 */
+	protected function PerfomAction($service)
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/v1/user/vehicles/".$vin."/".$service;
@@ -1200,7 +1317,13 @@ COMFORT driving using comfort mode.
         return $response;
     }
 
-    protected function PerfomActionV1($service, $action)
+	/**
+	 * Instructs the car to perform an action
+	 * @param $service
+	 * @param $action
+	 * @return mixed
+	 */
+	protected function PerfomActionV1($service, $action)
     {
         $vin = $this->ReadPropertyString('vin');
         $command = "/api/vehicle/remoteservices/v1/".$vin."/".$service;
@@ -1208,27 +1331,47 @@ COMFORT driving using comfort mode.
         return $response;
     }
 
-    public function InitiateCharging()
+
+	/**
+	 * Initiate Charging
+	 * @return mixed
+	 */
+	public function InitiateCharging()
     {
         $service = "serviceType=CHARGE_NOW";
-        $this->PerfomAction($service);
+        $result = $this->PerfomAction($service);
+        return $result;
     }
 
-    public function StartClimateControl()
+	/**
+	 * Start climate control
+	 * @return mixed
+	 */
+	public function StartClimateControl()
     {
         $service = "RCN";
         $action = "CLIMATE_NOW";
-        $this->PerfomActionV1($service, $action);
+        $result = $this->PerfomActionV1($service, $action);
+        return $result;
     }
 
-    public function LockTheDoors()
+	/**
+	 * lock doors
+	 * @return mixed
+	 */
+	public function LockTheDoors()
     {
         $service = "RDL";
         $action = "DOOR_LOCK";
-        $this->PerfomActionV1($service, $action);
+        $result = $this->PerfomActionV1($service, $action);
+        return $result;
     }
 
-    public function UnlockTheDoors()
+	/**
+	 * unlock doors
+	 * @return mixed
+	 */
+	public function UnlockTheDoors()
     {
         $service = "RDU";
         $action = "DOOR_UNLOCK";
@@ -1240,22 +1383,33 @@ An addition field must be included
 serviceType=DOOR_UNLOCK
 bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
         */
-        $this->PerfomActionV1($service, $action);
+        $result = $this->PerfomActionV1($service, $action);
+        return $result;
     }
 
-    // If you can't find the vehicle, or need to illuminate something in its vicinity, you can briefly activate the headlights.
-    public function FlashHeadlights()
+	/**
+	 * If you can't find the vehicle, or need to illuminate something in its vicinity, you can briefly activate the headlights.
+	 * @return mixed
+	 */
+	public function FlashHeadlights()
     {
         $service = "RLF";
         $action = "LIGHT_FLASH&count=2";
-        $this->PerfomActionV1($service, $action);
+        $result = $this->PerfomActionV1($service, $action);
+        return $result;
     }
 
-    public function Honk()
+
+	/**
+	 * honk
+	 * @return mixed
+	 */
+	public function Honk()
     {
         $service = "RHB";
         $action = "HORN_BLOW";
-        $this->PerfomActionV1($service, $action);
+        $result = $this->PerfomActionV1($service, $action);
+        return $result;
     }
 
     /*
@@ -1266,18 +1420,28 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
     }
     */
 
-    public function VehicleFinder()
+	/**
+	 * vehicle finder
+	 * @return mixed
+	 */
+	public function VehicleFinder()
     {
         $service = "serviceType=VEHICLE_FINDER";
-        $this->PerfomAction($service);
+        $result = $this->PerfomAction($service);
+        return $result;
     }
 
 
-    public function FindVehicle()
+	/**
+	 * Find vehicle
+	 * @return mixed
+	 */
+	public function FindVehicle()
     {
         $service = "RVF";
         $action = "VEHICLE_FINDER";
-        $this->PerfomActionV1($service, $action);
+        $result = $this->PerfomActionV1($service, $action);
+        return $result;
     }
 
 
@@ -1290,7 +1454,13 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
     }
     */
 
-    protected function SendBMWAPIV1($command, $action)
+	/**
+	 * Send to BMW API
+	 * @param $command
+	 * @param $action
+	 * @return mixed
+	 */
+	protected function SendBMWAPIV1($command, $action)
     {
         $area = $this->ReadPropertyInteger('bmw_server');
         $api = $this->GetBMWServerURL($area);
@@ -1321,7 +1491,12 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
         return $response;
     }
 
-    protected function SendBMWAPI($command)
+	/**
+	 * Send to BMW API
+	 * @param $command
+	 * @return mixed
+	 */
+	protected function SendBMWAPI($command)
     {
         $area = $this->ReadPropertyInteger('bmw_server');
         $api = $this->GetBMWServerURL($area);
@@ -1388,6 +1563,10 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
         }
     }
 
+	/**
+	 * gets current IP-Symcon version
+	 * @return float|int
+	 */
 	protected function GetIPSVersion ()
     {
         $ipsversion = floatval(IPS_GetKernelVersion());
