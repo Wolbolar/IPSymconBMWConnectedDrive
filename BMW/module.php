@@ -192,6 +192,7 @@ class BMWConnectedDrive extends IPSModule
 
         $this->RegisterVariableString("bmw_car_picture", $this->Translate("picture"), "~HTMLBox", 1);
 		$this->RegisterVariableInteger("bmw_car_picture_zoom", $this->Translate("car zoom"), "~Intensity.100", 2);
+		$this->EnableAction("bmw_car_picture_zoom");
         $this->RegisterProfile("BMW.Perspective",   "Eyes",   "", "°",    0, 360, 30, 0, 1);
         $this->RegisterVariableInteger("bmw_perspective", $this->Translate("perspective"), "BMW.Perspective", 3);
         $this->EnableAction("bmw_perspective");
