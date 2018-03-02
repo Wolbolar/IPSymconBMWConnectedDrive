@@ -22,13 +22,23 @@ Mit dem Modul lassen sich Befehle an einen BMW mit BMW Connected Drive schicken 
  - Klimaanlage ein / aus 
  - Türen öffnen /verschließen
  - Lichthupe auslösen
- - 
+ - Hupe auslösen
 
 ### Status Rückmeldung:  
 
  - Fahrzeugdaten
-	
-  
+ - Autobild, einstellbar in Perspektive und Größe
+ - Fahrzeugposition in Karte
+ - aktueller Breitengard
+ - aktueller Längengrad
+ - Tankinhalt
+ - Tankreichweite
+ - Status Veriegelung Türen
+ - Kilometerstand
+ - Tankinhalt	
+ - Tankreichweite
+ - Servicemeldungen
+ - Verlauf
 
 ## 2. Voraussetzungen
 
@@ -61,13 +71,47 @@ und mit _OK_ bestätigen.
 In IP-Symcon nun _Instanz hinzufügen_ (_CTRL+1_) auswählen unter der Kategorie, unter der man die BMW Instanz hinzufügen will, und _BMW_ auswählen.
 Im Konfigurationsformular ist der BMW Connected Drive User und das BMW Connected Drive Passwort zu ergänzen. 
 
+### Beispiel Webfrontansicht
+![BMW Webfront](docs/bmw webfront.png?raw=true "BMW Webfront")
 
 ## 4. Funktionsreferenz
 
 ### BMW:
 
-Text.
-	
+_**Liest Fahrzeug Status aus**_
+          
+ ```php
+ BMW_GetVehicleStatus(integer $InstanceID);
+ ``` 
+ Parameter _$InstanceID_ __*ObjektID*__ der BMW Instanz 
+
+_**Klimaanlage starten**_
+          
+ ```php
+ BMW_StartClimateControl(integer $InstanceID);
+ ``` 
+ Parameter _$InstanceID_ __*ObjektID*__ der BMW Instanz 
+
+_**Türen schließen**_
+          
+ ```php
+ BMW_LockTheDoors(integer $InstanceID);
+ ``` 
+ Parameter _$InstanceID_ __*ObjektID*__ der BMW Instanz 
+
+_**Lichthupe auslösen**_
+          
+ ```php
+ BMW_FlashHeadlights(integer $InstanceID);
+ ``` 
+ Parameter _$InstanceID_ __*ObjektID*__ der BMW Instanz 
+
+_**Hupe auslösen**_
+          
+ ```php
+ BMW_Honk(integer $InstanceID);
+ ``` 
+ Parameter _$InstanceID_ __*ObjektID*__ der BMW Instanz 	
 
 
 ## 5. Konfiguration:
