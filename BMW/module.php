@@ -181,7 +181,8 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterPropertyBoolean("active_current_position", false);
         $this->RegisterPropertyString("google_api_key", "");
         $this->RegisterPropertyInteger("UpdateInterval", "10");
-        $this->RegisterTimer('BMWTokenUpdate', 9000000, 'BMW_CheckToken('.$this->InstanceID.');');
+	// CheckToken is called bevor each http-request
+        // $this->RegisterTimer('BMWTokenUpdate', 9000000, 'BMW_CheckToken('.$this->InstanceID.');');
         $this->RegisterTimer('BMWDataUpdate', 600000, 'BMW_DataUpdate('.$this->InstanceID.');');
     }
 
@@ -536,7 +537,7 @@ class BMWConnectedDrive extends IPSModule
 
         IPS_SetProperty($this->InstanceID, "token", $matches[1]);
         $this->SendDebug("BMW","set access_token: ".$matches[1],0);
-        $token_expiration = time() + $matches[3];
+        $token_expiration = time() + $matches[3] - 60;
         IPS_SetProperty($this->InstanceID, "token_expiration", $token_expiration);
         $this->SendDebug("BMW","set token expiration: ".$token_expiration,0);
         IPS_ApplyChanges($this->InstanceID);
@@ -1462,6 +1463,8 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
 	 */
 	protected function SendBMWAPIV1($command, $action)
     {
+		$this->CheckToken();
+
         $area = $this->ReadPropertyInteger('bmw_server');
         $api = $this->GetBMWServerURL($area);
         $token = $this->ReadPropertyString("token");
@@ -1478,14 +1481,21 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
         $response = curl_exec($ch);
-        if($response === false)
+	    $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	    if ($httpcode != 200)
+			$this->SendDebug("BMW Response", "got http-code $httpcode", 0);
+	    if ($httpcode == 401)
+		{
+			$response = "";
+	    }
+		else if ($response === false)
         {
             $curl_error = curl_error($ch);
             $this->SendDebug("BMW","curl error: ".$curl_error,0);
         }
         else
         {
-            $this->SendDebug("BMW Response", $response,0);
+            $this->SendDebug("BMW Response", $response, 0);
         }
         curl_close( $ch );
         return $response;
@@ -1498,6 +1508,8 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
 	 */
 	protected function SendBMWAPI($command)
     {
+		$this->CheckToken();
+
         $area = $this->ReadPropertyInteger('bmw_server');
         $api = $this->GetBMWServerURL($area);
         $token = $this->ReadPropertyString("token");
@@ -1509,9 +1521,15 @@ bmwSkAnswer=BMW_ACCOUNT_SECURITY_QUESTION_ANSWER
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
         curl_setopt( $ch, CURLOPT_FOLLOWLOCATION, true );
         $response = curl_exec($ch);
-        $this->SendDebug("BMW Response", $response,0);
-        // $curl_error = curl_error($ch);
-        // $this->SendDebug("BMW","curl error: ".$curl_error,0);
+		$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+	    if ($httpcode != 200)
+			$this->SendDebug("BMW Response", "got http-code $httpcode", 0);
+		if ($httpcode == 401 ) {
+			$response = "";
+		}
+		else {
+			$this->SendDebug("BMW Response", $response, 0);
+		}
         curl_close( $ch );
         return $response;
     }
