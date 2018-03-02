@@ -72,7 +72,7 @@ In IP-Symcon nun _Instanz hinzufügen_ (_CTRL+1_) auswählen unter der Kategorie
 Im Konfigurationsformular ist der BMW Connected Drive User und das BMW Connected Drive Passwort zu ergänzen. 
 
 ### Beispiel Webfrontansicht
-![BMW Webfront](docs/bmw webfront.png?raw=true "BMW Webfront")
+![BMW Webfront](docs/bmw_webfront.png?raw=true "BMW Webfront")
 
 ## 4. Funktionsreferenz
 
