@@ -747,22 +747,25 @@ class BMWConnectedDrive extends IPSModule
 		$data = json_decode($response, true);
 		$type = array("RCN" => "Lüftung aktivieren", "RCT" => "Einschaltzeit", "RHB" => "Hupe", "RLF" => "Lichthupe", "RDL" => "Verriegeln", "RDU" => "Entriegeln");
 		$status = array("SUCCESS" => "Erfolgreich gesendet", "PENDING" => "Steht aus", "INITIATED" => "Initiiert", "FAILED" => "Sendung Fehlgeschlagen", "CANCELLED" => "Sendung Abgebrochen");
-		$html = false;
-		if (isset($data) && !empty($data)) {
-			$html = '<table><th colspan="3">Verlauf</th>';
-			for ($index = 0; $index < count($data); $index++) {
-				$html .= "<tr>";
-				$html .= "<td>" . $type[$data[$index]["remoteServiceType"]] . "</td>";
-				$html .= "<td>" . date("d.m.Y. H:i:s", ($data[$index]["creationTime"] / 1000)) . "</td>";
-				$html .= "<td>" . $status[$data[$index]["status"]] . "</td>";
-				$html .= "</tr>";
-			}
 
-			$html .= "</table>";
+		if (isset($data)) {
+			$html = "<style>\n";
+			$html .= "th, td { padding: 2px 10px; } \n";
+			$html .= "</style>\n";
+			$html .= "<table>\n";
+			for ($index = 0; $index < count($data); $index++) {
+				$html .= "<tr>\n";
+				$html .= "<td>" . date("d.m. H:i:s", ($data[$index]["creationTime"] / 1000)) . "</td>\n";
+				$html .= "<td>" . $type[$data[$index]["remoteServiceType"]] . "</td>\n";
+				$html .= "<td>" . $status[$data[$index]["status"]] . "</td>\n";
+				$html .= "</tr>\n";
+			}
+			$html .= "</table>\n";
+		} else {
+			$html = 'Keine Information zum Verlauf vorhanden';
 		}
-		if ($html) {
-			$this->SetValue('bmw_history', $response);
-		}
+		$this->SetValue('bmw_history', $html);
+
 		return $response;
 	}
 
