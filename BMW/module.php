@@ -745,8 +745,22 @@ class BMWConnectedDrive extends IPSModule
 		$response = $this->SendBMWAPIV1($command, $action);
 		$this->SetValue('bmw_history_interface', $response);
 		$data = json_decode($response, true);
-		$type = array("RCN" => "Lüftung aktivieren", "RCT" => "Einschaltzeit", "RHB" => "Hupe", "RLF" => "Lichthupe", "RDL" => "Verriegeln", "RDU" => "Entriegeln");
-		$status = array("SUCCESS" => "Erfolgreich gesendet", "PENDING" => "Steht aus", "INITIATED" => "Initiiert", "FAILED" => "Sendung Fehlgeschlagen", "CANCELLED" => "Sendung Abgebrochen");
+		$type = [
+					"RCN" => "Lüftung aktivieren",
+					"RCT" => "Einschaltzeit",
+					"RHB" => "Hupe",
+					"RLF" => "Lichthupe",
+					"RDL" => "Verriegeln",
+					"RDU" => "Entriegeln",
+					"RCP" => "Ladepreferenzen"
+				];
+		$status = [
+					"SUCCESS"   => "Erfolgreich gesendet",
+					"PENDING"   => "Steht aus",
+					"INITIATED" => "Initiiert",
+					"FAILED"    => "Sendung Fehlgeschlagen",
+					"CANCELLED" => "Sendung Abgebrochen"
+				];
 
 		if (isset($data)) {
 			$html = "<style>\n";
@@ -754,10 +768,17 @@ class BMWConnectedDrive extends IPSModule
 			$html .= "</style>\n";
 			$html .= "<table>\n";
 			for ($index = 0; $index < count($data); $index++) {
+				$_ts = $data[$index]["creationTime"] / 1000;
+				$ts = date("d.m. H:i:s", $_ts);
+				$_rst = $data[$index]["remoteServiceType"];
+				$rst = isset($type[$_rst]) ? $type[$_rst] : "unbekannter Service";
+				$_st = $data[$index]["status"];
+				$st = isset($status[$_st]) ? $status[$_st] : "unbekannter Status";
+
 				$html .= "<tr>\n";
-				$html .= "<td>" . date("d.m. H:i:s", ($data[$index]["creationTime"] / 1000)) . "</td>\n";
-				$html .= "<td>" . $type[$data[$index]["remoteServiceType"]] . "</td>\n";
-				$html .= "<td>" . $status[$data[$index]["status"]] . "</td>\n";
+				$html .= "<td>" . $ts . "</td>\n";
+				$html .= "<td>" . $rst . "</td>\n";
+				$html .= "<td>" . $st . "</td>\n";
 				$html .= "</tr>\n";
 			}
 			$html .= "</table>\n";
