@@ -6,6 +6,11 @@
 			"mileage": "Kilometerstand",
 			"tank capacity": "Tankinhalt",
             "remaining range": "Tankreichweite",
+            "remaining electric range": "Elektrische Reichweite",
+			"charging level": "Batterie-Kapazität",
+			"connector status": "Ladekabel-Status",
+			"charging status": "Ladezyklus-Status",
+			"charging end": "Ladezyklus-Ende",
 			"BMW VIN": "BMW Fahrgestellnummer",
 			"VIN": "Fahrgestellnummer",
 			"BMW Connected Drive login credentials": "BMW Connected Drive Zugangsdaten",
@@ -91,7 +96,30 @@
 			"BMW accessible.": "BMW ereichbar.",
 			"interface closed.": "Interface geschlossen.",
 			"connection to BMW lost.": "Verbindung zum BMW verloren.",
-			"field must not be empty.": "Felder dürfen nicht leer sein."
+			"field must not be empty.": "Felder dürfen nicht leer sein.",
+
+			"climate now": "Klimatisierung aktivieren",
+			"climate timer": "Klimatisierung planen",
+			"horn blow": "Hupe",
+			"light flash": "Lichthupe",
+			"door lock": "Verriegeln",
+			"door unlock": "Entriegeln",
+			"charge preferences": "Ladepreferenzen",
+			"unknown service": "unbekannter Service",
+
+			"success": "erfolgreich gesendet",
+			"pending": "ausstehend",
+			"initated": "initiiert",
+			"failed": "fehlgeschlagen",
+			"cancelled": "abgebrochen",
+			"unknown status": "unbekannter Status",
+
+			"unknown": "unbekannt",
+			"disconnected": "nicht verbunden",
+			"connected": "verbunden",
+			"no charging": "inaktiv",
+			"charging active": "aktiv",
+			"charging ended": "beendet"
 		}
 	}
 }

@@ -203,8 +203,40 @@ class BMWConnectedDrive extends IPSModule
 		$this->RegisterVariableFloat("bmw_tank_capacity", $this->Translate("tank capacity"), "BMW.TankCapacity", 5);
 		$this->RegisterProfile("BMW.RemainingRange", "Gauge", "", " km", 0, 0, 0, 0, 2);
 		$this->RegisterVariableFloat("bmw_remaining_range", $this->Translate("remaining range"), "BMW.RemainingRange", 6);
-		$this->RegisterVariableString("bmw_history", $this->Translate("course"), "~HTMLBox", 7);
 
+		$model = $this->ReadPropertyInteger("model");
+		if ($model != 3) { // standard, no electric
+			$this->RegisterVariableFloat("bmw_remaining_electric_range", $this->Translate("remaining electric range"), "BMW.RemainingRange", 6);
+
+			$this->RegisterProfile("BMW.ChargingLevel", "", "", " %", 0, 0, 0, 0, 2);
+			$this->RegisterVariableFloat("bmw_charging_level", $this->Translate("charging level"), "BMW.ChargingLevel", 6);
+
+			$associations = [];
+			$associations[] = [-1, $this->Translate('unknown'), '', 0xEE0000];
+			$associations[] = [ 0, $this->Translate('disconnected'), '', -1];
+			$associations[] = [ 1, $this->Translate('connected'), '', 0x228B22];
+			$this->RegisterProfileAssociation("BMW.ConnectorStatus", "", "", "", 0, 0, 0, 0, 1, $associations);
+			$this->RegisterVariableInteger("bmw_connector_status", $this->Translate("connector status"), "BMW.ConnectorStatus", 6);
+
+			$associations = [];
+			$associations[] = [-1, $this->Translate('unknown'), '', 0xEE0000];
+			$associations[] = [ 0, $this->Translate('no charging'), '', -1];
+			$associations[] = [ 1, $this->Translate('charging active'), '', 0x228B22];
+			$associations[] = [ 2, $this->Translate('charging ended'), '', 0x0000FF];
+			$this->RegisterProfileAssociation("BMW.ChargingStatus", "", "", "", 0, 0, 0, 0, 1, $associations);
+
+			$this->RegisterVariableInteger("bmw_charging_status", $this->Translate("charging status"), "BMW.ChargingStatus", 6);
+
+			$this->RegisterVariableInteger("bmw_charging_end", $this->Translate("charging end"), "~UnixTimestampTime", 6);
+		} else {
+			$this->UnregisterVariable("bmw_remaining_electric_range");
+			$this->UnregisterVariable("bmw_charging_level");
+			$this->UnregisterVariable("bmw_connector_status");
+			$this->UnregisterVariable("bmw_charging_status");
+			$this->UnregisterVariable("bmw_charging_end");
+		}
+
+		$this->RegisterVariableString("bmw_history", $this->Translate("course"), "~HTMLBox", 7);
 
 		$this->RegisterVariableString("bmw_dynamic_interface", $this->Translate("Interface Dynamic"), "", 70);
 		IPS_SetHidden($this->GetIDForIdent("bmw_dynamic_interface"), true);
@@ -746,21 +778,21 @@ class BMWConnectedDrive extends IPSModule
 		$this->SetValue('bmw_history_interface', $response);
 		$data = json_decode($response, true);
 		$type = [
-					"RCN" => "Lüftung aktivieren",
-					"RCT" => "Einschaltzeit",
-					"RHB" => "Hupe",
-					"RLF" => "Lichthupe",
-					"RDL" => "Verriegeln",
-					"RDU" => "Entriegeln",
-					"RCP" => "Ladepreferenzen"
-				];
+				"RCN" => "climate now",
+				"RCT" => "climate timer",
+				"RHB" => "horn blow",
+				"RLF" => "light flash",
+				"RDL" => "door lock",
+				"RDU" => "door unlock",
+				"RCP" => "charge preferences",
+			];
 		$status = [
-					"SUCCESS"   => "Erfolgreich gesendet",
-					"PENDING"   => "Steht aus",
-					"INITIATED" => "Initiiert",
-					"FAILED"    => "Sendung Fehlgeschlagen",
-					"CANCELLED" => "Sendung Abgebrochen"
-				];
+				"SUCCESS"   => "success",
+				"PENDING"   => "pending",
+				"INITIATED" => "initiated",
+				"FAILED"    => "failed",
+				"CANCELLED" => "cancelled",
+			];
 
 		if (isset($data)) {
 			$html = "<style>\n";
@@ -771,9 +803,9 @@ class BMWConnectedDrive extends IPSModule
 				$_ts = $data[$index]["creationTime"] / 1000;
 				$ts = date("d.m. H:i:s", $_ts);
 				$_rst = $data[$index]["remoteServiceType"];
-				$rst = isset($type[$_rst]) ? $type[$_rst] : "unbekannter Service";
+				$rst = $this->Translate(isset($type[$_rst]) ? $type[$_rst] : "unknown service");
 				$_st = $data[$index]["status"];
-				$st = isset($status[$_st]) ? $status[$_st] : "unbekannter Status";
+				$st = $this->Translate(isset($status[$_st]) ? $status[$_st] : "unknown status");
 
 				$html .= "<tr>\n";
 				$html .= "<td>" . $ts . "</td>\n";
@@ -908,6 +940,66 @@ class BMWConnectedDrive extends IPSModule
 				$remaining_range = floatval($carinfo->beRemainingRangeFuel);
 				$this->SetValue('bmw_remaining_range', $remaining_range);
 			}
+
+			if (isset($carinfo->beRemainingRangeElectricKm)) {
+				$electric_range = floatval($carinfo->beRemainingRangeElectricKm);
+				$this->SetValue('bmw_remaining_electric_range', $electric_range);
+			}
+			if (isset($carinfo->chargingLevelHv)) {
+				$charging_level = floatval($carinfo->chargingLevelHv);
+				$this->SetValue('bmw_charging_level', $charging_level);
+			}
+
+			$connector_status = -1;
+			if (isset($carinfo->connectorStatus)) {
+				switch($carinfo->connectorStatus) {
+					case 'DISCONNECTED':
+						$connector_status = 0;
+						break;
+					case 'CONNECTED':
+						$connector_status = 1;
+						break;
+					default:
+						$this->SendDebug(__FUNCTION__, 'unknown connectorStatus "' . $carinfo->connectorStatus . '"', 0);
+						break;
+				}
+			}
+
+			$charging_status = -1;
+			if (isset($carinfo->charging_status)) {
+				switch($carinfo->charging_status) {
+					case 'NOCHARGING':
+						$charging_status = 0;
+						break;
+					case 'CHARGINGACTIVE':
+						$charging_status = 1;
+						break;
+					case 'CHARGINGENDED':
+						$charging_status = 2;
+						break;
+					default:
+						$this->SendDebug(__FUNCTION__, 'unknown charging_status "' . $carinfo->charging_status . '"', 0);
+						break;
+				}
+			}
+
+			$charging_end = 0;
+			if ($connector_status == 1 && $charging_status == 1) {
+				if (isset($carinfo->chargingTimeRemaining)) {
+					$chargingTimeRemaining = floatval($carinfo->chargingTimeRemaining);
+					if ($chargingTimeRemaining > 0) {
+						$dateTime = new DateTime(date('Y-m-d H:i:s', time()));
+						$addMinutes = 'PT' . $chargingTimeRemaining . 'M';
+						$dateTime->add(new DateInterval($addMinutes));
+						$charging_end = $dateTime->format('U');
+					}
+				}
+			}
+
+			$this->SetValue('bmw_connector_status', $connector_status);
+			$this->SetValue('bmw_charging_status', $charging_status);
+			$this->SetValue('bmw_charging_end', $charging_end);
+
 			if (isset($carinfo->gps_lng) && isset($carinfo->gps_lat)) {
 				$longitude = $carinfo->gps_lng;
 				$latitude = $carinfo->gps_lat;
