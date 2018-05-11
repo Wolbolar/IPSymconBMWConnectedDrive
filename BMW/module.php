@@ -941,64 +941,67 @@ class BMWConnectedDrive extends IPSModule
 				$this->SetValue('bmw_remaining_range', $remaining_range);
 			}
 
-			if (isset($carinfo->beRemainingRangeElectricKm)) {
-				$electric_range = floatval($carinfo->beRemainingRangeElectricKm);
-				$this->SetValue('bmw_remaining_electric_range', $electric_range);
-			}
-			if (isset($carinfo->chargingLevelHv)) {
-				$charging_level = floatval($carinfo->chargingLevelHv);
-				$this->SetValue('bmw_charging_level', $charging_level);
-			}
-
-			$connector_status = -1;
-			if (isset($carinfo->connectorStatus)) {
-				switch($carinfo->connectorStatus) {
-					case 'DISCONNECTED':
-						$connector_status = 0;
-						break;
-					case 'CONNECTED':
-						$connector_status = 1;
-						break;
-					default:
-						$this->SendDebug(__FUNCTION__, 'unknown connectorStatus "' . $carinfo->connectorStatus . '"', 0);
-						break;
+			$model = $this->ReadPropertyInteger("model");
+			if ($model != 3) { // standard, no electric
+				if (isset($carinfo->beRemainingRangeElectricKm)) {
+					$electric_range = floatval($carinfo->beRemainingRangeElectricKm);
+					$this->SetValue('bmw_remaining_electric_range', $electric_range);
 				}
-			}
-
-			$charging_status = -1;
-			if (isset($carinfo->charging_status)) {
-				switch($carinfo->charging_status) {
-					case 'NOCHARGING':
-						$charging_status = 0;
-						break;
-					case 'CHARGINGACTIVE':
-						$charging_status = 1;
-						break;
-					case 'CHARGINGENDED':
-						$charging_status = 2;
-						break;
-					default:
-						$this->SendDebug(__FUNCTION__, 'unknown charging_status "' . $carinfo->charging_status . '"', 0);
-						break;
+				if (isset($carinfo->chargingLevelHv)) {
+					$charging_level = floatval($carinfo->chargingLevelHv);
+					$this->SetValue('bmw_charging_level', $charging_level);
 				}
-			}
 
-			$charging_end = 0;
-			if ($connector_status == 1 && $charging_status == 1) {
-				if (isset($carinfo->chargingTimeRemaining)) {
-					$chargingTimeRemaining = floatval($carinfo->chargingTimeRemaining);
-					if ($chargingTimeRemaining > 0) {
-						$dateTime = new DateTime(date('Y-m-d H:i:s', time()));
-						$addMinutes = 'PT' . $chargingTimeRemaining . 'M';
-						$dateTime->add(new DateInterval($addMinutes));
-						$charging_end = $dateTime->format('U');
+				$connector_status = -1;
+				if (isset($carinfo->connectorStatus)) {
+					switch($carinfo->connectorStatus) {
+						case 'DISCONNECTED':
+							$connector_status = 0;
+							break;
+						case 'CONNECTED':
+							$connector_status = 1;
+							break;
+						default:
+							$this->SendDebug(__FUNCTION__, 'unknown connectorStatus "' . $carinfo->connectorStatus . '"', 0);
+							break;
 					}
 				}
-			}
 
-			$this->SetValue('bmw_connector_status', $connector_status);
-			$this->SetValue('bmw_charging_status', $charging_status);
-			$this->SetValue('bmw_charging_end', $charging_end);
+				$charging_status = -1;
+				if (isset($carinfo->charging_status)) {
+					switch($carinfo->charging_status) {
+						case 'NOCHARGING':
+							$charging_status = 0;
+							break;
+						case 'CHARGINGACTIVE':
+							$charging_status = 1;
+							break;
+						case 'CHARGINGENDED':
+							$charging_status = 2;
+							break;
+						default:
+							$this->SendDebug(__FUNCTION__, 'unknown charging_status "' . $carinfo->charging_status . '"', 0);
+							break;
+					}
+				}
+
+				$charging_end = 0;
+				if ($connector_status == 1 && $charging_status == 1) {
+					if (isset($carinfo->chargingTimeRemaining)) {
+						$chargingTimeRemaining = floatval($carinfo->chargingTimeRemaining);
+						if ($chargingTimeRemaining > 0) {
+							$dateTime = new DateTime(date('Y-m-d H:i:s', time()));
+							$addMinutes = 'PT' . $chargingTimeRemaining . 'M';
+							$dateTime->add(new DateInterval($addMinutes));
+							$charging_end = $dateTime->format('U');
+						}
+					}
+				}
+
+				$this->SetValue('bmw_connector_status', $connector_status);
+				$this->SetValue('bmw_charging_status', $charging_status);
+				$this->SetValue('bmw_charging_end', $charging_end);
+			}
 
 			if (isset($carinfo->gps_lng) && isset($carinfo->gps_lat)) {
 				$longitude = $carinfo->gps_lng;
