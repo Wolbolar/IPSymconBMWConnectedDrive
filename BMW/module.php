@@ -1205,7 +1205,7 @@ class BMWConnectedDrive extends IPSModule
 	 * Set car picture zoom
 	 * @param $zoom
 	 */
-	public function SetCarPictureZoom($zoom)
+	public function SetCarPictureZoom(int $zoom)
 	{
 		$angle = GetValue($this->GetIDForIdent("bmw_perspective"));
 		$this->GetCarPictureForAngle($angle, $zoom);
