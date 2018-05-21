@@ -256,6 +256,30 @@ class BMWConnectedDrive extends IPSModule
         //Never delete this line!
         parent::ApplyChanges();
 
+		$associations = [];
+        $associations[] = [0, 'Start', '', 0x3ADF00];
+        $this->RegisterProfileAssociation('BMW.Start', 'Execute', '', '', 0, 0, 0, 0, 1, $associations);
+
+		$associations = [];
+		$associations[] = [0, $this->Translate('roadmap'), '', 0x3ADF00];
+		$associations[] = [BMW_GOOGLEMAP_SATELLITE, $this->Translate('satellite'), '', 0x3ADF00];
+		$associations[] = [BMW_GOOGLEMAP_HYBRID, $this->Translate('hybrid'), '', 0x3ADF00];
+		$associations[] = [BMW_GOOGLEMAP_TERRAIN, $this->Translate('terrain'), '', 0x3ADF00];
+		$this->RegisterProfileAssociation('BMW.Googlemap', 'Car', '', '', 0, 3, 0, 0, 1, $associations);
+
+		$associations = [];
+		$associations[] = [BMW_CONNECTOR_UNKNOWN, $this->Translate('unknown'), '', 0xEE0000];
+		$associations[] = [BMW_CONNECTOR_DISCONNECTED, $this->Translate('disconnected'), '', -1];
+		$associations[] = [BMW_CONNECTOR_CONNECTED, $this->Translate('connected'), '', 0x228B22];
+		$this->RegisterProfileAssociation('BMW.ConnectorStatus', '', '', '', 0, 0, 0, 0, 1, $associations);
+
+		$associations = [];
+		$associations[] = [BMW_CHARGING_UNKNOWN, $this->Translate('unknown'), '', 0xEE0000];
+		$associations[] = [BMW_CHARGING_NO, $this->Translate('no charging'), '', -1];
+		$associations[] = [BMW_CHARGING_ACTIVE, $this->Translate('charging active'), '', 0x228B22];
+		$associations[] = [BMW_CHARGING_ENDED, $this->Translate('charging ended'), '', 0x0000FF];
+		$this->RegisterProfileAssociation('BMW.ChargingStatus', '', '', '', 0, 0, 0, 0, 1, $associations);
+
         $this->RegisterProfile('BMW.Mileage', 'Distance', '', ' ' . $this->GetMileageUnit(), 0, 0, 0, 0, 1);
         $this->RegisterVariableInteger('bmw_mileage', $this->Translate('mileage'), 'BMW.Mileage', 4);
         $this->RegisterProfile('BMW.TankCapacity', 'Gauge', '', ' Liter', 0, 0, 0, 0, 2);
@@ -266,26 +290,10 @@ class BMWConnectedDrive extends IPSModule
         $model = $this->ReadPropertyInteger('model');
         if ($model != BMW_MODEL_STANDARD) { // standard, no electric
             $this->RegisterVariableFloat('bmw_remaining_electric_range', $this->Translate('remaining electric range'), 'BMW.RemainingRange', 6);
-
             $this->RegisterProfile('BMW.ChargingLevel', '', '', ' %', 0, 0, 0, 0, 2);
             $this->RegisterVariableFloat('bmw_charging_level', $this->Translate('charging level'), 'BMW.ChargingLevel', 6);
-
-            $associations = [];
-            $associations[] = [BMW_CONNECTOR_UNKNOWN, $this->Translate('unknown'), '', 0xEE0000];
-            $associations[] = [BMW_CONNECTOR_DISCONNECTED, $this->Translate('disconnected'), '', -1];
-            $associations[] = [BMW_CONNECTOR_CONNECTED, $this->Translate('connected'), '', 0x228B22];
-            $this->RegisterProfileAssociation('BMW.ConnectorStatus', '', '', '', 0, 0, 0, 0, 1, $associations);
             $this->RegisterVariableInteger('bmw_connector_status', $this->Translate('connector status'), 'BMW.ConnectorStatus', 6);
-
-            $associations = [];
-            $associations[] = [BMW_CHARGING_UNKNOWN, $this->Translate('unknown'), '', 0xEE0000];
-            $associations[] = [BMW_CHARGING_NO, $this->Translate('no charging'), '', -1];
-            $associations[] = [BMW_CHARGING_ACTIVE, $this->Translate('charging active'), '', 0x228B22];
-            $associations[] = [BMW_CHARGING_ENDED, $this->Translate('charging ended'), '', 0x0000FF];
-            $this->RegisterProfileAssociation('BMW.ChargingStatus', '', '', '', 0, 0, 0, 0, 1, $associations);
-
             $this->RegisterVariableInteger('bmw_charging_status', $this->Translate('charging status'), 'BMW.ChargingStatus', 6);
-
             $this->RegisterVariableInteger('bmw_charging_end', $this->Translate('charging end'), '~UnixTimestampTime', 6);
         } else {
             $this->UnregisterVariable('bmw_remaining_electric_range');
@@ -356,11 +364,6 @@ class BMWConnectedDrive extends IPSModule
         $active_service = $this->ReadPropertyBoolean('active_service');
         $active_current_position = $this->ReadPropertyBoolean('active_current_position');
 
-        $associations = [[0, 'Start', '', 0x3ADF00]];
-        $this->RegisterProfileAssociation('BMW.Start', 'Execute', '', '', 0, 0, 0, 0, 1, $associations);
-
-        $vpos = 20;
-
         if ($active_climate) {
             $this->RegisterVariableInteger('bmw_start_air_conditioner', $this->Translate('start air conditioner'), 'BMW.Start', 20);
             $this->EnableAction('bmw_start_air_conditioner');
@@ -412,13 +415,6 @@ class BMWConnectedDrive extends IPSModule
 
         if ($active_googlemap) {
             $this->RegisterVariableString('bmw_car_googlemap', $this->Translate('map'), '~HTMLBox', 10);
-            $associations = [
-                            [0, $this->Translate('roadmap'), '', 0x3ADF00],
-                            [BMW_GOOGLEMAP_SATELLITE, $this->Translate('satellite'), '', 0x3ADF00],
-                            [BMW_GOOGLEMAP_HYBRID, $this->Translate('hybrid'), '', 0x3ADF00],
-                            [BMW_GOOGLEMAP_TERRAIN, $this->Translate('terrain'), '', 0x3ADF00]
-                        ];
-            $this->RegisterProfileAssociation('BMW.Googlemap', 'Car', '', '', 0, 3, 0, 0, 1, $associations);
             $this->RegisterVariableInteger('bmw_googlemap_maptype', $this->Translate('map type'), 'BMW.Googlemap', 11);
             $this->RegisterVariableInteger('bmw_googlemap_zoom', $this->Translate('map zoom'), '~Intensity.100', 12);
             $this->EnableAction('bmw_googlemap_maptype');
