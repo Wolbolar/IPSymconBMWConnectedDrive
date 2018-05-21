@@ -1149,10 +1149,15 @@ class BMWConnectedDrive extends IPSModule
     protected function SetLockState($ident, $command)
     {
         $this->SendDebug(__FUNCTION__, 'ident=' . $ident . ', command=' . $command, 0);
-        if ($command == 'CLOSED' || $command == 'LOCKED') {
-            $this->SetValue($ident, true);
-        } else {
-            $this->SetValue($ident, false);
+		switch ($command) {
+			case 'CLOSED':
+			case 'LOCKED':
+			case 'SECURED':
+				$this->SetValue($ident, true);
+				break;
+			default:
+				$this->SetValue($ident, false);
+				break;
         }
     }
 
