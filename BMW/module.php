@@ -182,6 +182,9 @@ if (!defined('BMW_CHARGING_ACTIVE')) {
 if (!defined('BMW_CHARGING_ENDED')) {
     define('BMW_CHARGING_ENDED', 2);
 }
+if (!defined('BMW_CHARGING_PAUSED')) {
+    define('BMW_CHARGING_PAUSED', 3);
+}
 
 // GoogleMap
 if (!defined('BMW_GOOGLEMAP_ROADMAP')) {
@@ -278,6 +281,7 @@ class BMWConnectedDrive extends IPSModule
         $associations[] = [BMW_CHARGING_NO, $this->Translate('no charging'), '', -1];
         $associations[] = [BMW_CHARGING_ACTIVE, $this->Translate('charging active'), '', 0x228B22];
         $associations[] = [BMW_CHARGING_ENDED, $this->Translate('charging ended'), '', 0x0000FF];
+        $associations[] = [BMW_CHARGING_PAUSED, $this->Translate('charging paused'), '', -1];
         $this->RegisterProfileAssociation('BMW.ChargingStatus', '', '', '', 0, 0, 0, 0, 1, $associations);
 
         $this->RegisterProfile('BMW.Mileage', 'Distance', '', ' ' . $this->GetMileageUnit(), 0, 0, 0, 0, 1);
@@ -1067,6 +1071,9 @@ class BMWConnectedDrive extends IPSModule
                         case 'CHARGINGENDED':
                             $charging_status = BMW_CHARGING_ENDED;
                             break;
+						case 'CHARGINGPAUSED':
+							$charging_status = BMW_CHARGING_PAUSED;
+							break;
                         default:
                             $this->SendDebug(__FUNCTION__, 'unknown charging_status "' . $carinfo->charging_status . '"', 0);
                             break;

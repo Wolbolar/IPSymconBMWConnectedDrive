@@ -115,7 +115,8 @@
 			"connected": "verbunden",
 			"no charging": "inaktiv",
 			"charging active": "aktiv",
-			"charging ended": "beendet"
+			"charging ended": "beendet",
+			"charging paused": "unterbrochen"
 		}
 	}
 }
