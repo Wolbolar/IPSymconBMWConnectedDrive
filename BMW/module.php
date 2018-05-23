@@ -1071,9 +1071,9 @@ class BMWConnectedDrive extends IPSModule
                         case 'CHARGINGENDED':
                             $charging_status = BMW_CHARGING_ENDED;
                             break;
-						case 'CHARGINGPAUSED':
-							$charging_status = BMW_CHARGING_PAUSED;
-							break;
+                        case 'CHARGINGPAUSED':
+                            $charging_status = BMW_CHARGING_PAUSED;
+                            break;
                         default:
                             $this->SendDebug(__FUNCTION__, 'unknown charging_status "' . $carinfo->charging_status . '"', 0);
                             break;
