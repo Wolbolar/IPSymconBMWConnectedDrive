@@ -1048,10 +1048,10 @@ class BMWConnectedDrive extends IPSModule
                 if (isset($carinfo->connectorStatus)) {
                     switch ($carinfo->connectorStatus) {
                         case 'DISCONNECTED':
-                            $connector_status = BMW_CONNECTOR_CONNECTED;
+                            $connector_status = BMW_CONNECTOR_DISCONNECTED;
                             break;
                         case 'CONNECTED':
-                            $connector_status = BMW_CONNECTOR_DISCONNECTED;
+                            $connector_status = BMW_CONNECTOR_CONNECTED;
                             break;
                         default:
                             $this->SendDebug(__FUNCTION__, 'unknown connectorStatus "' . $carinfo->connectorStatus . '"', 0);
