@@ -562,15 +562,15 @@ class BMWConnectedDrive extends IPSModule
             ];
         $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
 
-        $postfields = http_build_query([
+        $postfields = [
                 'username'      => $user,
                 'password'      => $password,
                 'client_id'     => $app_id,
                 'redirect_uri'  => 'https://www.bmw-connecteddrive.com/app/default/static/external-dispatch.html',
                 'response_type' => 'token',
                 'locale'        => 'DE-de'
-            ]);
-        $this->SendDebug(__FUNCTION__, 'postfields=' . $postfields, 0);
+            ];
+        $this->SendDebug(__FUNCTION__, 'postfields=' . print_r($postfields, true), 0);
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $auth_api);
@@ -581,7 +581,7 @@ class BMWConnectedDrive extends IPSModule
         curl_setopt($ch, CURLOPT_COOKIESESSION, true);
         curl_setopt($ch, CURLOPT_POST, true);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postfields));
         $response = curl_exec($ch);
         $curl_error = curl_error($ch);
         curl_close($ch);
@@ -1585,24 +1585,28 @@ class BMWConnectedDrive extends IPSModule
         $api = $this->GetBMWServerURL($area);
 
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $api . $command);
         $this->SendDebug(__FUNCTION__, 'url=' . $api . $command, 0);
+        curl_setopt($ch, CURLOPT_URL, $api . $command);
+
         $header = [
                 'Content-Type: application/json',
                 'Authorization: Bearer ' . $token
             ];
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+
         if ($action) {
             curl_setopt($ch, CURLOPT_POST, 1);
-            $postfields = http_build_query([
+            $postfields = [
                     'serviceType'   => $action
-                ]);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
-            $this->SendDebug(__FUNCTION__, 'postfields=' . $postfields, 0);
+                ];
+            $this->SendDebug(__FUNCTION__, 'postfields=' . print_r($postfields, true), 0);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postfields));
         }
+
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+
         $response = curl_exec($ch);
         $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         if ($httpcode != 200) {
