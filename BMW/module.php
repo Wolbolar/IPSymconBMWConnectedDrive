@@ -517,31 +517,31 @@ class BMWConnectedDrive extends IPSModule
 
     protected function GetBMWServerURL($area)
     {
-		switch ($area) {
+        switch ($area) {
         case BMW_AREA_GERMANY:
             $server = 'Germany';
             $url = 'https://www.bmw-connecteddrive.de';
-        	break;
-		case BMW_AREA_SWITZERLAND:
+            break;
+        case BMW_AREA_SWITZERLAND:
             $server = 'Switzerland';
             $url = 'https://www.bmw-connecteddrive.ch';
-        	break;
-		case BMW_AREA_EUROPE:;
+            break;
+        case BMW_AREA_EUROPE:;
             $server = 'Europe';
             $url = 'https://b2vapi.bmwgroup.com';
-        	break;
-		case BMW_AREA_USA:
+            break;
+        case BMW_AREA_USA:
             $server = 'USA';
             $url = 'https://b2vapi.bmwgroup.us';
-        	break;
-		case BMW_AREA_CHINA:
+            break;
+        case BMW_AREA_CHINA:
             $server = 'China';
             $url = 'https://b2vapi.bmwgroup.cn:8592';
-        	break;
+            break;
         default:
             $server = 'Europe';
             $url = 'https://b2vapi.bmwgroup.com';
-        	break;
+            break;
         }
 
         $this->SendDebug(__FUNCTION__, 'use server location ' . $server . ', url=' . $url, 0);
@@ -558,18 +558,18 @@ class BMWConnectedDrive extends IPSModule
         $this->SendDebug(__FUNCTION__, 'url=' . $auth_api, 0);
 
         $header = [
-				'Content-Type: application/x-www-form-urlencoded'
-			];
+                'Content-Type: application/x-www-form-urlencoded'
+            ];
         $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
 
         $postfields = http_build_query([
-				'username'      => $user,
-				'password'      => $password,
-				'client_id'     => $app_id,
-				'redirect_uri'  => 'https://www.bmw-connecteddrive.com/app/default/static/external-dispatch.html',
-				'response_type' => 'token',
-				'locale'        => 'DE-de'
-			]);
+                'username'      => $user,
+                'password'      => $password,
+                'client_id'     => $app_id,
+                'redirect_uri'  => 'https://www.bmw-connecteddrive.com/app/default/static/external-dispatch.html',
+                'response_type' => 'token',
+                'locale'        => 'DE-de'
+            ]);
         $this->SendDebug(__FUNCTION__, 'postfields=' . $postfields, 0);
 
         $ch = curl_init();
@@ -1566,8 +1566,8 @@ class BMWConnectedDrive extends IPSModule
     }
 
     protected function SendBMW($command, $action)
-	{
-	}
+    {
+    }
 
     /**
      * Send to BMW API.
@@ -1588,18 +1588,18 @@ class BMWConnectedDrive extends IPSModule
         curl_setopt($ch, CURLOPT_URL, $api . $command);
         $this->SendDebug(__FUNCTION__, 'url=' . $api . $command, 0);
         $header = [
-				'Content-Type: application/json',
-				'Authorization: Bearer ' . $token
-			];
+                'Content-Type: application/json',
+                'Authorization: Bearer ' . $token
+            ];
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
         $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
         if ($action) {
             curl_setopt($ch, CURLOPT_POST, 1);
-			$postfields = http_build_query([
-					'serviceType'   => $action
-				]);
+            $postfields = http_build_query([
+                    'serviceType'   => $action
+                ]);
             curl_setopt($ch, CURLOPT_POSTFIELDS, $postfields);
-			$this->SendDebug(__FUNCTION__, 'postfields=' . $postfields, 0);
+            $this->SendDebug(__FUNCTION__, 'postfields=' . $postfields, 0);
         }
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
@@ -1612,12 +1612,12 @@ class BMWConnectedDrive extends IPSModule
             $curl_error = curl_error($ch);
             $this->SendDebug(__FUNCTION__, 'curl error: ' . $curl_error, 0);
         } else {
-			if (in_array($httpcode, array(401, 405))) {
-				$this->SendDebug(__FUNCTION__, 'ignore binary response', 0);
-				$response = '';
-			} else {
-				$this->SendDebug(__FUNCTION__, 'response=' . $response, 0);
-			}
+            if (in_array($httpcode, [401, 405])) {
+                $this->SendDebug(__FUNCTION__, 'ignore binary response', 0);
+                $response = '';
+            } else {
+                $this->SendDebug(__FUNCTION__, 'response=' . $response, 0);
+            }
         }
         curl_close($ch);
         return $response;
