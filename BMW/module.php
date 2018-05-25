@@ -1812,7 +1812,7 @@ class BMWConnectedDrive extends IPSModule
         }
     }
 
-    public function SetBuffer($name, $data)
+    protected function SetBuffer($name, $data)
     {
         $this->SendDebug(__FUNCTION__, 'name=' . $name . ', size=' . strlen($data) . ', data=' . $data, 0);
         parent::SetBuffer($name, $data);
