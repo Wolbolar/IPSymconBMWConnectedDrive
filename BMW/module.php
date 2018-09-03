@@ -299,12 +299,17 @@ class BMWConnectedDrive extends IPSModule
             $this->RegisterVariableInteger('bmw_connector_status', $this->Translate('connector status'), 'BMW.ConnectorStatus', 6);
             $this->RegisterVariableInteger('bmw_charging_status', $this->Translate('charging status'), 'BMW.ChargingStatus', 6);
             $this->RegisterVariableInteger('bmw_charging_end', $this->Translate('charging end'), '~UnixTimestampTime', 6);
+            $this->RegisterProfile('BMW.StateofCharge', '', '', ' kWh', 0, 0, 0, 0, 2);
+            $this->RegisterVariableFloat('bmw_soc', $this->Translate('current state of charge'), 'BMW.StateofCharge', 7);
+            $this->RegisterVariableFloat('bmw_socMax', $this->Translate('maximum state of charge'), 'BMW.StateofCharge', 8);
         } else {
             $this->UnregisterVariable('bmw_remaining_electric_range');
             $this->UnregisterVariable('bmw_charging_level');
             $this->UnregisterVariable('bmw_connector_status');
             $this->UnregisterVariable('bmw_charging_status');
             $this->UnregisterVariable('bmw_charging_end');
+            $this->UnregisterVariable('bmw_soc');
+            $this->UnregisterVariable('bmw_socMax');
         }
 
         $this->RegisterVariableString('bmw_history', $this->Translate('course'), '~HTMLBox', 7);
@@ -671,6 +676,22 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/navigation/v1/' . $vin;
         $response = $this->SendBMWAPI($command, '');
         $this->SetBuffer('bmw_navigation_interface', $response);
+
+		$data = json_decode($response, true);
+		$this->SendDebug(__FUNCTION__, 'data=' .  print_r($data, true), 0);
+
+		$model = $this->ReadPropertyInteger('model');
+		if ($model != BMW_MODEL_STANDARD) { // standard, no electric
+			if (isset($data->soc)) {
+				$soc = floatval($data->soc);
+				$this->SetValue('bmw_soc', $soc);
+			}
+			if (isset($data->socMax)) {
+				$socMax = floatval($data->socMax);
+				$this->SetValue('bmw_socMax', $socMax);
+			}
+		}
+
         return $response;
     }
 
