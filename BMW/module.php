@@ -677,7 +677,7 @@ class BMWConnectedDrive extends IPSModule
         $response = $this->SendBMWAPI($command, '');
         $this->SetBuffer('bmw_navigation_interface', $response);
 
-        $data = json_decode($response, true);
+        $data = json_decode($response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         $model = $this->ReadPropertyInteger('model');
