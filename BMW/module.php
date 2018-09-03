@@ -677,20 +677,20 @@ class BMWConnectedDrive extends IPSModule
         $response = $this->SendBMWAPI($command, '');
         $this->SetBuffer('bmw_navigation_interface', $response);
 
-		$data = json_decode($response, true);
-		$this->SendDebug(__FUNCTION__, 'data=' .  print_r($data, true), 0);
+        $data = json_decode($response, true);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
-		$model = $this->ReadPropertyInteger('model');
-		if ($model != BMW_MODEL_STANDARD) { // standard, no electric
-			if (isset($data->soc)) {
-				$soc = floatval($data->soc);
-				$this->SetValue('bmw_soc', $soc);
-			}
-			if (isset($data->socMax)) {
-				$socMax = floatval($data->socMax);
-				$this->SetValue('bmw_socMax', $socMax);
-			}
-		}
+        $model = $this->ReadPropertyInteger('model');
+        if ($model != BMW_MODEL_STANDARD) { // standard, no electric
+            if (isset($data->soc)) {
+                $soc = floatval($data->soc);
+                $this->SetValue('bmw_soc', $soc);
+            }
+            if (isset($data->socMax)) {
+                $socMax = floatval($data->socMax);
+                $this->SetValue('bmw_socMax', $socMax);
+            }
+        }
 
         return $response;
     }
