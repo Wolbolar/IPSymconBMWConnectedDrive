@@ -12,6 +12,7 @@ Modul für IP-Symcon ab Version 4. Ermöglicht die Kommunikation mit BMW Connect
 4. [Funktionsreferenz](#4-funktionsreferenz)
 5. [Konfiguration](#5-konfiguartion)  
 6. [Anhang](#6-anhang)  
+7. [Versions-Historie](#7-versions-historie)
 
 ## 1. Funktionsumfang
 
@@ -164,3 +165,12 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 ### b. Quellen
 
 [BMW-i-Remote](https://github.com/edent/BMW-i-Remote "BMW-i-Remote") _edent_ (MIT)
+
+## 7. Versions-Historie
+
+- 1.1 @ 04.09.2018 09:36<br>
+  - Übernahme von soc/socMax (Ladekapazität) für e-Modelle
+  - Versionshistorie dazu
+
+- 1.0 @ 05.04.2017<br>
+  Initiale Version
