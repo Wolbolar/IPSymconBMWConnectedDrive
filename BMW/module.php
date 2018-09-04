@@ -721,8 +721,12 @@ class BMWConnectedDrive extends IPSModule
             if ($latitude == '' || $longitude == '') {
                 $data = $this->GetDynamicData();
                 $carinfo = $data->attributesMap;
-                $longitude = $carinfo->gps_lng;
-                $latitude = $carinfo->gps_lat;
+				if (isset($carinfo->gps_lng)) {
+					$longitude = $carinfo->gps_lng;
+				}
+				if (isset($carinfo->gps_lat)) {
+					$latitude = $carinfo->gps_lat;
+				}
             }
         }
         if ($latitude != '' && $longitude != '') {
