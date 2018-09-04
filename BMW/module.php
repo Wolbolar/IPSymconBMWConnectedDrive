@@ -299,7 +299,7 @@ class BMWConnectedDrive extends IPSModule
             $this->RegisterVariableInteger('bmw_connector_status', $this->Translate('connector status'), 'BMW.ConnectorStatus', 6);
             $this->RegisterVariableInteger('bmw_charging_status', $this->Translate('charging status'), 'BMW.ChargingStatus', 6);
             $this->RegisterVariableInteger('bmw_charging_end', $this->Translate('charging end'), '~UnixTimestampTime', 6);
-            $this->RegisterProfile('BMW.StateofCharge', '', '', ' kWh', 0, 0, 0, 0, 2);
+            $this->RegisterProfile('BMW.StateofCharge', '', '', ' kWh', 0, 0, 0, 1, 2);
             $this->RegisterVariableFloat('bmw_soc', $this->Translate('current state of charge'), 'BMW.StateofCharge', 7);
             $this->RegisterVariableFloat('bmw_socMax', $this->Translate('maximum state of charge'), 'BMW.StateofCharge', 8);
         } else {
