@@ -730,17 +730,17 @@ class BMWConnectedDrive extends IPSModule
             $horizontal_size = $this->ReadPropertyInteger('horizontal_mapsize');
             $vertical_value = $this->ReadPropertyInteger('vertical_mapsize');
             $markercolor = 'red';
-			$api_key = $this->ReadPropertyString('googlemap_api_key');
+            $api_key = $this->ReadPropertyString('googlemap_api_key');
             $url = 'https://maps.google.com/maps/api/staticmap?key=' . $api_key;
-			$url .= '&center=' . rawurlencode($pos);
+            $url .= '&center=' . rawurlencode($pos);
             // zoom 0 world - 21 building
-			if ($zoom > 0) {
-				$url .= '&zoom=' . rawurlencode($zoom);
-			}
-			$url .= '&size=' . rawurlencode($horizontal_size . 'x' . $vertical_value);
-			$url .= '&maptype=' . rawurlencode($maptype);
-			$url .= '&markers=' . rawurlencode('color:' . $markercolor . '|' . $pos);
-			$url .= '&sensor=true';
+            if ($zoom > 0) {
+                $url .= '&zoom=' . rawurlencode($zoom);
+            }
+            $url .= '&size=' . rawurlencode($horizontal_size . 'x' . $vertical_value);
+            $url .= '&maptype=' . rawurlencode($maptype);
+            $url .= '&markers=' . rawurlencode('color:' . $markercolor . '|' . $pos);
+            $url .= '&sensor=true';
 
             $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
             $ausgabe = '<img src="' . $url . '" />';
@@ -1128,7 +1128,7 @@ class BMWConnectedDrive extends IPSModule
                 $latitude = $carinfo->gps_lat;
 
                 if ($active_googlemap) {
-					$maptype = $this->GetGoogleMapType(GetValue($this->GetIDForIdent('bmw_googlemap_maptype')));
+                    $maptype = $this->GetGoogleMapType(GetValue($this->GetIDForIdent('bmw_googlemap_maptype')));
                     $zoom = GetValue($this->GetIDForIdent('bmw_googlemap_zoom'));
                     $this->SetGoogleMap($maptype, $zoom, $latitude, $longitude);
                 }
