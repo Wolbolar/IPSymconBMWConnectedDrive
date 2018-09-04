@@ -149,6 +149,7 @@ Liefert die Daten, die mit den entsprecheden HTTP-Aufrufen gewonnen werden. Sind
 | active_honk              | boolean | false        | mit Hupe                                  |
 | active_picture           | boolean | true         | mit Anzeige einse Bildes des Fahrzeuge    |
 | active_googlemap         | boolean | false        | mit Anzeige der Karte                     |
+| googlemap_api_key        | string  |              | GoogleMaps API-Key                        |
 | horizontal_mapsize       | integer | 600          |  ... horizontale Größe                    |
 | vertical_mapsize         | integer | 400          |  ... vertikale Größe                      |
 | active_service           | boolean | false        | mit Angaben zum Service                   |
@@ -170,6 +171,7 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 - 1.1 @ 04.09.2018 09:36<br>
   - Übernahme von soc/socMax (Ladekapazität) für e-Modelle
+  - Angabe des GoogleMaps-API-Keys (ist seit 06/2018 erforderlich)
   - Versionshistorie dazu
 
 - 1.0 @ 05.04.2017<br>
