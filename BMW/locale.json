@@ -78,6 +78,8 @@
 			"window driver rear": "Fenster Fahrer hinten",
 			"window passenger front": "Fenster Beifahrer vorne",
 			"window passenger rear": "Fenster Beifahrer hinten",
+			"current state of charge": "aktuelle Ladekapazität",
+			"maximum state of charge": "maximale Ladekapazität",
 
 			"electric": "Elektrisch",
 			"hybrid": "Hybrid",

@@ -245,6 +245,7 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterPropertyBoolean('active_honk', false);
         $this->RegisterPropertyBoolean('active_picture', true);
         $this->RegisterPropertyBoolean('active_googlemap', false);
+        $this->RegisterPropertyString('googlemap_api_key', '');
         $this->RegisterPropertyInteger('horizontal_mapsize', 600);
         $this->RegisterPropertyInteger('vertical_mapsize', 400);
         $this->RegisterPropertyBoolean('active_service', false);
@@ -299,12 +300,17 @@ class BMWConnectedDrive extends IPSModule
             $this->RegisterVariableInteger('bmw_connector_status', $this->Translate('connector status'), 'BMW.ConnectorStatus', 6);
             $this->RegisterVariableInteger('bmw_charging_status', $this->Translate('charging status'), 'BMW.ChargingStatus', 6);
             $this->RegisterVariableInteger('bmw_charging_end', $this->Translate('charging end'), '~UnixTimestampTime', 6);
+            $this->RegisterProfile('BMW.StateofCharge', '', '', ' kWh', 0, 0, 0, 1, 2);
+            $this->RegisterVariableFloat('bmw_soc', $this->Translate('current state of charge'), 'BMW.StateofCharge', 7);
+            $this->RegisterVariableFloat('bmw_socMax', $this->Translate('maximum state of charge'), 'BMW.StateofCharge', 8);
         } else {
             $this->UnregisterVariable('bmw_remaining_electric_range');
             $this->UnregisterVariable('bmw_charging_level');
             $this->UnregisterVariable('bmw_connector_status');
             $this->UnregisterVariable('bmw_charging_status');
             $this->UnregisterVariable('bmw_charging_end');
+            $this->UnregisterVariable('bmw_soc');
+            $this->UnregisterVariable('bmw_socMax');
         }
 
         $this->RegisterVariableString('bmw_history', $this->Translate('course'), '~HTMLBox', 7);
@@ -671,6 +677,22 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/navigation/v1/' . $vin;
         $response = $this->SendBMWAPI($command, '');
         $this->SetBuffer('bmw_navigation_interface', $response);
+
+        $data = json_decode($response);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+
+        $model = $this->ReadPropertyInteger('model');
+        if ($model != BMW_MODEL_STANDARD) { // standard, no electric
+            if (isset($data->soc)) {
+                $soc = floatval($data->soc);
+                $this->SetValue('bmw_soc', $soc);
+            }
+            if (isset($data->socMax)) {
+                $socMax = floatval($data->socMax);
+                $this->SetValue('bmw_socMax', $socMax);
+            }
+        }
+
         return $response;
     }
 
@@ -699,19 +721,33 @@ class BMWConnectedDrive extends IPSModule
             if ($latitude == '' || $longitude == '') {
                 $data = $this->GetDynamicData();
                 $carinfo = $data->attributesMap;
-                $longitude = $carinfo->gps_lng;
-                $latitude = $carinfo->gps_lat;
+                if (isset($carinfo->gps_lng)) {
+                    $longitude = $carinfo->gps_lng;
+                }
+                if (isset($carinfo->gps_lat)) {
+                    $latitude = $carinfo->gps_lat;
+                }
             }
         }
         if ($latitude != '' && $longitude != '') {
-            $pos = $latitude . ',' . $longitude;
+            $pos = number_format($latitude, 6, '.', '') . ',' . number_format($longitude, 6, '.', '');
             $horizontal_size = $this->ReadPropertyInteger('horizontal_mapsize');
             $vertical_value = $this->ReadPropertyInteger('vertical_mapsize');
             $markercolor = 'red';
+            $api_key = $this->ReadPropertyString('googlemap_api_key');
+            $url = 'https://maps.google.com/maps/api/staticmap?key=' . $api_key;
+            $url .= '&center=' . rawurlencode($pos);
             // zoom 0 world - 21 building
-            $this->SendDebug(__FUNCTION__, 'zoom Level=' . $zoom, 0);
-            $ausgabe = '<img src="http://maps.google.com/maps/api/staticmap?center=' . $pos . '&zoom=' . $zoom . '&size=' . $horizontal_size . 'x' . $vertical_value . '&maptype=' . $maptype . '&markers=color:' . $markercolor . '%7C' . $pos . '&sensor=true" />';
-            $this->SendDebug(__FUNCTION__, 'http://maps.google.com/maps/api/staticmap?center=' . $pos . '&zoom=' . $zoom . '&size=' . $horizontal_size . 'x' . $vertical_value . '&maptype=' . $maptype . '&markers=color:' . $markercolor . '%7C' . $pos . '&sensor=true', 0);
+            if ($zoom > 0) {
+                $url .= '&zoom=' . rawurlencode($zoom);
+            }
+            $url .= '&size=' . rawurlencode($horizontal_size . 'x' . $vertical_value);
+            $url .= '&maptype=' . rawurlencode($maptype);
+            $url .= '&markers=' . rawurlencode('color:' . $markercolor . '|' . $pos);
+            $url .= '&sensor=true';
+
+            $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
+            $ausgabe = '<img src="' . $url . '" />';
             $this->SetValue('bmw_car_googlemap', $ausgabe); //Stringvariable HTML-Box
         }
     }
@@ -1096,7 +1132,7 @@ class BMWConnectedDrive extends IPSModule
                 $latitude = $carinfo->gps_lat;
 
                 if ($active_googlemap) {
-                    $maptype = GetValue($this->GetIDForIdent('bmw_googlemap_maptype'));
+                    $maptype = $this->GetGoogleMapType(GetValue($this->GetIDForIdent('bmw_googlemap_maptype')));
                     $zoom = GetValue($this->GetIDForIdent('bmw_googlemap_zoom'));
                     $this->SetGoogleMap($maptype, $zoom, $latitude, $longitude);
                 }
@@ -1769,6 +1805,7 @@ class BMWConnectedDrive extends IPSModule
 				{ "name": "active_vehicle_finder", "type": "CheckBox", "caption": "search vehicle (not useable)" },
 				{ "name": "active_picture", "type": "CheckBox", "caption": "show picture of car" },
 				{ "name": "active_googlemap", "type": "CheckBox", "caption": "show car position in map" },
+				{ "name": "googlemap_api_key", "type": "ValidationTextBox", "caption": "GoogleMap API-Key" },
 				{ "type": "Label", "label": " ... size of the map" },
 				{ "type": "NumberSpinner", "name": "horizontal_mapsize", "caption": " ... horizontal" },
 				{ "type": "NumberSpinner", "name": "vertical_mapsize", "caption": " ... vertical" },
