@@ -169,6 +169,9 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Versions-Historie
 
+- 1.2 @ 13.10.2018 17:58<br>
+  - Umstellung der internen Speicherung zur Vermeidung der Warnung _Puffer > 8kb_.
+
 - 1.1 @ 04.09.2018 09:36<br>
   - Übernahme von soc/socMax (Ladekapazität) für e-Modelle
   - Angabe des GoogleMaps-API-Keys (ist seit 06/2018 erforderlich)
