@@ -253,6 +253,20 @@ class BMWConnectedDrive extends IPSModule
         $this->RegisterPropertyInteger('UpdateInterval', 10);
 
         $this->RegisterTimer('BMWDataUpdate', 0, 'BMW_DataUpdate(' . $this->InstanceID . ');');
+
+        $this->SetMultiBuffer('bmw_car_interface', '');
+        $this->SetMultiBuffer('bmw_navigation_interface', '');
+        $this->SetMultiBuffer('bmw_efficiency_interface', '');
+        $this->SetMultiBuffer('bmw_chargingprofile_interface', '');
+        $this->SetMultiBuffer('bmw_mapupdate_interface', '');
+        $this->SetMultiBuffer('bmw_store_interface', '');
+        $this->SetMultiBuffer('bmw_specs_interface', '');
+        $this->SetMultiBuffer('bmw_service_interface', '');
+        $this->SetMultiBuffer('bmw_service_partner_interface', '');
+        $this->SetMultiBuffer('bmw_history_interface', '');
+        $this->SetMultiBuffer('bmw_dynamic_interface', '');
+        $this->SetMultiBuffer('bmw_image_interface', '');
+        $this->SetMultiBuffer('bmw_image_interface', '');
     }
 
     public function ApplyChanges()
@@ -661,7 +675,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $command = '/api/me/vehicles/v2';
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_car_interface', $response);
+        $this->SetMultiBuffer('bmw_car_interface', $response);
         $data = json_decode($response);
         return $data;
     }
@@ -676,7 +690,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/navigation/v1/' . $vin;
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_navigation_interface', $response);
+        $this->SetMultiBuffer('bmw_navigation_interface', $response);
 
         $data = json_decode($response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
@@ -823,7 +837,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/efficiency/v1/' . $vin;
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_efficiency_interface', $response);
+        $this->SetMultiBuffer('bmw_efficiency_interface', $response);
         return $response;
     }
 
@@ -837,7 +851,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/remoteservices/chargingprofile/v1/' . $vin;
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_chargingprofile_interface', $response);
+        $this->SetMultiBuffer('bmw_chargingprofile_interface', $response);
         return $response;
     }
 
@@ -851,7 +865,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/me/service/mapupdate/download/v1/' . $vin;
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_mapupdate_interface', $response);
+        $this->SetMultiBuffer('bmw_mapupdate_interface', $response);
         return $response;
     }
 
@@ -865,7 +879,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/store/v2/' . $vin . '/offersAndPortfolios';
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_store_interface', $response);
+        $this->SetMultiBuffer('bmw_store_interface', $response);
         return $response;
     }
 
@@ -879,7 +893,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/specs/v1/' . $vin;
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_specs_interface', $response);
+        $this->SetMultiBuffer('bmw_specs_interface', $response);
         return $response;
     }
 
@@ -893,7 +907,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/service/v1/' . $vin;
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_service_interface', $response);
+        $this->SetMultiBuffer('bmw_service_interface', $response);
         return $response;
     }
 
@@ -907,7 +921,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/servicepartner/v1/' . $vin;
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_service_partner_interface', $response);
+        $this->SetMultiBuffer('bmw_service_partner_interface', $response);
         return $response;
     }
 
@@ -921,7 +935,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/remoteservices/v1/' . $vin . '/history';
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_history_interface', $response);
+        $this->SetMultiBuffer('bmw_history_interface', $response);
         $data = json_decode($response, true);
         $type = [
                 'RCN' => 'climate now',
@@ -984,7 +998,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/dynamic/v1/' . $vin . '?offset=' . date('Z') / -60;
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_dynamic_interface', $response);
+        $this->SetMultiBuffer('bmw_dynamic_interface', $response);
 
         $data = json_decode($response);
         if (isset($data->attributesMap)) {
@@ -1299,7 +1313,7 @@ class BMWConnectedDrive extends IPSModule
         $angle = 0;
         $zoom = 100;
         $response = $this->GetCarPictureForAngle($angle, $zoom);
-        $this->SetBuffer('bmw_image_interface', $response);
+        $this->SetMultiBuffer('bmw_image_interface', $response);
         return $response;
     }
 
@@ -1318,7 +1332,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/image/v1/' . $vin . '?startAngle=' . $angle . '&stepAngle=10&width=780';
         $response = $this->SendBMWAPI($command, '');
-        $this->SetBuffer('bmw_image_interface', $response);
+        $this->SetMultiBuffer('bmw_image_interface', $response);
         $images = json_decode($response);
         if (isset($images->vin) && $active_picture) {
             $picture_url = false;
@@ -1851,16 +1865,72 @@ class BMWConnectedDrive extends IPSModule
         }
     }
 
-    protected function SetBuffer($name, $data)
-    {
-        $this->SendDebug(__FUNCTION__, 'name=' . $name . ', size=' . strlen($data) . ', data=' . $data, 0);
-        parent::SetBuffer($name, $data);
-    }
-
     public function GetRawData(string $name)
     {
-        $data = $this->GetBuffer($name);
+        $data = $this->GetMultiBuffer($name);
         $this->SendDebug(__FUNCTION__, 'name=' . $name . ', size=' . strlen($data) . ', data=' . $data, 0);
         return $data;
+    }
+
+    // inspired by Nall-chan
+    //   https://github.com/Nall-chan/IPSSqueezeBox/blob/6bbdccc23a0de51bb3fbc114cefc3acf23c27a14/libs/SqueezeBoxTraits.php
+    public function __get($name)
+    {
+        $n = strpos($name, 'Multi_');
+        if (strpos($name, 'Multi_') === 0) {
+            $curCount = $this->GetBuffer('BufferCount_' . $name);
+            if ($curCount == false) {
+                $curCount = 0;
+            }
+            $data = '';
+            for ($i = 0; $i < $curCount; $i++) {
+                $data .= $this->GetBuffer('BufferPart' . $i . '_' . $name);
+            }
+        } else {
+            $data = $this->GetBuffer($name);
+        }
+        return unserialize($data);
+    }
+
+    public function __set($name, $value)
+    {
+        $data = serialize($value);
+        $n = strpos($name, 'Multi_');
+        if (strpos($name, 'Multi_') === 0) {
+            $oldCount = $this->GetBuffer('BufferCount_' . $name);
+            if ($oldCount == false) {
+                $oldCount = 0;
+            }
+            $parts = str_split($data, 8000);
+            $newCount = count($parts);
+            $this->SetBuffer('BufferCount_' . $name, $newCount);
+            for ($i = 0; $i < $newCount; $i++) {
+                $this->SetBuffer('BufferPart' . $i . '_' . $name, $parts[$i]);
+            }
+            for ($i = $newCount; $i < $oldCount; $i++) {
+                $this->SetBuffer('BufferPart' . $i . '_' . $name, '');
+            }
+        } else {
+            $this->SetBuffer($name, $data);
+        }
+    }
+
+    private function SetMultiBuffer($name, $value)
+    {
+        if (IPS_GetKernelVersion() >= 5) {
+            $this->{'Multi_' . $name} = $value;
+        } else {
+            $this->SetBuffer($name, $value);
+        }
+    }
+
+    private function GetMultiBuffer($name)
+    {
+        if (IPS_GetKernelVersion() >= 5) {
+            $value = $this->{'Multi_' . $name};
+        } else {
+            $value = $this->GetBuffer($name);
+        }
+        return $value;
     }
 }
