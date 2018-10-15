@@ -254,19 +254,19 @@ class BMWConnectedDrive extends IPSModule
 
         $this->RegisterTimer('BMWDataUpdate', 0, 'BMW_DataUpdate(' . $this->InstanceID . ');');
 
-		$this->SetMultiBuffer('bmw_car_interface', '');
-		$this->SetMultiBuffer('bmw_navigation_interface', '');
-		$this->SetMultiBuffer('bmw_efficiency_interface', '');
-		$this->SetMultiBuffer('bmw_chargingprofile_interface', '');
-		$this->SetMultiBuffer('bmw_mapupdate_interface', '');
-		$this->SetMultiBuffer('bmw_store_interface', '');
-		$this->SetMultiBuffer('bmw_specs_interface', '');
-		$this->SetMultiBuffer('bmw_service_interface', '');
-		$this->SetMultiBuffer('bmw_service_partner_interface', '');
-		$this->SetMultiBuffer('bmw_history_interface', '');
-		$this->SetMultiBuffer('bmw_dynamic_interface', '');
-		$this->SetMultiBuffer('bmw_image_interface', '');
-		$this->SetMultiBuffer('bmw_image_interface', '');
+        $this->SetMultiBuffer('bmw_car_interface', '');
+        $this->SetMultiBuffer('bmw_navigation_interface', '');
+        $this->SetMultiBuffer('bmw_efficiency_interface', '');
+        $this->SetMultiBuffer('bmw_chargingprofile_interface', '');
+        $this->SetMultiBuffer('bmw_mapupdate_interface', '');
+        $this->SetMultiBuffer('bmw_store_interface', '');
+        $this->SetMultiBuffer('bmw_specs_interface', '');
+        $this->SetMultiBuffer('bmw_service_interface', '');
+        $this->SetMultiBuffer('bmw_service_partner_interface', '');
+        $this->SetMultiBuffer('bmw_history_interface', '');
+        $this->SetMultiBuffer('bmw_dynamic_interface', '');
+        $this->SetMultiBuffer('bmw_image_interface', '');
+        $this->SetMultiBuffer('bmw_image_interface', '');
     }
 
     public function ApplyChanges()
@@ -1872,65 +1872,65 @@ class BMWConnectedDrive extends IPSModule
         return $data;
     }
 
-	// inspired by Nall-chan
-	//   https://github.com/Nall-chan/IPSSqueezeBox/blob/6bbdccc23a0de51bb3fbc114cefc3acf23c27a14/libs/SqueezeBoxTraits.php
+    // inspired by Nall-chan
+    //   https://github.com/Nall-chan/IPSSqueezeBox/blob/6bbdccc23a0de51bb3fbc114cefc3acf23c27a14/libs/SqueezeBoxTraits.php
     public function __get($name)
     {
-		$n = strpos($name, 'Multi_');
+        $n = strpos($name, 'Multi_');
         if (strpos($name, 'Multi_') === 0) {
-			$curCount = $this->GetBuffer('BufferCount_' . $name);
-			if ($curCount == false) {
-				$curCount = 0;
-			}
+            $curCount = $this->GetBuffer('BufferCount_' . $name);
+            if ($curCount == false) {
+                $curCount = 0;
+            }
             $data = '';
-			for ($i = 0; $i < $curCount; $i++) {
+            for ($i = 0; $i < $curCount; $i++) {
                 $data .= $this->GetBuffer('BufferPart' . $i . '_' . $name);
-			}
+            }
         } else {
-			$data = $this->GetBuffer($name);
-		}
-		return unserialize($data);
+            $data = $this->GetBuffer($name);
+        }
+        return unserialize($data);
     }
-    
+
     public function __set($name, $value)
     {
         $data = serialize($value);
-		$n = strpos($name, 'Multi_');
+        $n = strpos($name, 'Multi_');
         if (strpos($name, 'Multi_') === 0) {
-			$oldCount = $this->GetBuffer('BufferCount_' . $name);
-			if ($oldCount == false) {
-				$oldCount = 0;
-			}
+            $oldCount = $this->GetBuffer('BufferCount_' . $name);
+            if ($oldCount == false) {
+                $oldCount = 0;
+            }
             $parts = str_split($data, 8000);
-            $newCount = sizeof($parts);
+            $newCount = count($parts);
             $this->SetBuffer('BufferCount_' . $name, $newCount);
-			for ($i = 0; $i < $newCount; $i++) {
+            for ($i = 0; $i < $newCount; $i++) {
                 $this->SetBuffer('BufferPart' . $i . '_' . $name, $parts[$i]);
-			}
-			for ($i = $newCount; $i < $oldCount; $i++) {
+            }
+            for ($i = $newCount; $i < $oldCount; $i++) {
                 $this->SetBuffer('BufferPart' . $i . '_' . $name, '');
-			}
+            }
         } else {
-			$this->SetBuffer($name, $data);
-		}
-    } 
+            $this->SetBuffer($name, $data);
+        }
+    }
 
-	private function SetMultiBuffer($name, $value)
-	{
+    private function SetMultiBuffer($name, $value)
+    {
         if (IPS_GetKernelVersion() >= 5) {
-			$this->{'Multi_' . $name} = $value;
-		} else {
-			$this->SetBuffer($name, $value);
-		}
-	}
+            $this->{'Multi_' . $name} = $value;
+        } else {
+            $this->SetBuffer($name, $value);
+        }
+    }
 
-	private function GetMultiBuffer($name)
-	{
+    private function GetMultiBuffer($name)
+    {
         if (IPS_GetKernelVersion() >= 5) {
-			$value = $this->{'Multi_' . $name};
-		} else {
-			$value = $this->GetBuffer($name);
-		}
-		return $value;
-	}
+            $value = $this->{'Multi_' . $name};
+        } else {
+            $value = $this->GetBuffer($name);
+        }
+        return $value;
+    }
 }
