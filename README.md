@@ -169,6 +169,9 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Versions-Historie
 
+- 1.3 @ 04.01.2019 14:50<br>
+  - Übernahme der Angaben zur letzten Fahrt, Gesamtfahrten und Effizienz
+
 - 1.2 @ 13.10.2018 17:58<br>
   - Umstellung der internen Speicherung zur Vermeidung der Warnung _Puffer > 8kb_.
 

@@ -137,12 +137,11 @@ if (@constant('IPS_BASE') == null) { //Nur wenn Konstanten noch nicht bekannt si
     define('FOUND_OLD', 2);         //Device is already configues (InstanceID should be set)
     define('FOUND_CURRENT', 3);     //Device is already configues (InstanceID is from the current/searching Instance)
     define('FOUND_UNSUPPORTED', 4); //Device is not supported by Module
-    define('vtBoolean', 0);
-    define('vtInteger', 1);
-    define('vtFloat', 2);
-    define('vtString', 3);
-    define('vtArray', 8);
-    define('vtObject', 9);
+
+    define('VARIABLETYPE_BOOLEAN', 0);
+    define('VARIABLETYPE_INTEGER', 1);
+    define('VARIABLETYPE_FLOAT', 2);
+    define('VARIABLETYPE_STRING', 3);
 }
 
 // module for BMW
@@ -276,20 +275,20 @@ class BMWConnectedDrive extends IPSModule
 
         $associations = [];
         $associations[] = [0, 'Start', '', 0x3ADF00];
-        $this->RegisterProfileAssociation('BMW.Start', 'Execute', '', '', 0, 0, 0, 0, 1, $associations);
+        $this->RegisterProfileAssociation('BMW.Start', 'Execute', '', '', 0, 0, 0, 0, VARIABLETYPE_INTEGER, $associations);
 
         $associations = [];
         $associations[] = [0, $this->Translate('roadmap'), '', 0x3ADF00];
         $associations[] = [BMW_GOOGLEMAP_SATELLITE, $this->Translate('satellite'), '', 0x3ADF00];
         $associations[] = [BMW_GOOGLEMAP_HYBRID, $this->Translate('hybrid'), '', 0x3ADF00];
         $associations[] = [BMW_GOOGLEMAP_TERRAIN, $this->Translate('terrain'), '', 0x3ADF00];
-        $this->RegisterProfileAssociation('BMW.Googlemap', 'Car', '', '', 0, 3, 0, 0, 1, $associations);
+        $this->RegisterProfileAssociation('BMW.Googlemap', 'Car', '', '', 0, 3, 0, 0, VARIABLETYPE_INTEGER, $associations);
 
         $associations = [];
         $associations[] = [BMW_CONNECTOR_UNKNOWN, $this->Translate('unknown'), '', 0xEE0000];
         $associations[] = [BMW_CONNECTOR_DISCONNECTED, $this->Translate('disconnected'), '', -1];
         $associations[] = [BMW_CONNECTOR_CONNECTED, $this->Translate('connected'), '', 0x228B22];
-        $this->RegisterProfileAssociation('BMW.ConnectorStatus', '', '', '', 0, 0, 0, 0, 1, $associations);
+        $this->RegisterProfileAssociation('BMW.ConnectorStatus', '', '', '', 0, 0, 0, 0, VARIABLETYPE_INTEGER, $associations);
 
         $associations = [];
         $associations[] = [BMW_CHARGING_UNKNOWN, $this->Translate('unknown'), '', 0xEE0000];
@@ -297,26 +296,56 @@ class BMWConnectedDrive extends IPSModule
         $associations[] = [BMW_CHARGING_ACTIVE, $this->Translate('charging active'), '', 0x228B22];
         $associations[] = [BMW_CHARGING_ENDED, $this->Translate('charging ended'), '', 0x0000FF];
         $associations[] = [BMW_CHARGING_PAUSED, $this->Translate('charging paused'), '', -1];
-        $this->RegisterProfileAssociation('BMW.ChargingStatus', '', '', '', 0, 0, 0, 0, 1, $associations);
+        $this->RegisterProfileAssociation('BMW.ChargingStatus', '', '', '', 0, 0, 0, 0, VARIABLETYPE_INTEGER, $associations);
 
-        $this->RegisterProfile('BMW.Mileage', 'Distance', '', ' ' . $this->GetMileageUnit(), 0, 0, 0, 0, 1);
+        $this->RegisterProfile('BMW.Mileage', 'Distance', '', ' ' . $this->GetMileageUnit(), 0, 0, 0, 0, VARIABLETYPE_INTEGER);
         $this->RegisterVariableInteger('bmw_mileage', $this->Translate('mileage'), 'BMW.Mileage', 4);
-        $this->RegisterProfile('BMW.TankCapacity', 'Gauge', '', ' Liter', 0, 0, 0, 0, 2);
+        $this->RegisterProfile('BMW.TankCapacity', 'Gauge', '', ' Liter', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
         $this->RegisterVariableFloat('bmw_tank_capacity', $this->Translate('tank capacity'), 'BMW.TankCapacity', 5);
-        $this->RegisterProfile('BMW.RemainingRange', 'Gauge', '', ' km', 0, 0, 0, 0, 2);
+        $this->RegisterProfile('BMW.RemainingRange', 'Gauge', '', ' km', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
         $this->RegisterVariableFloat('bmw_remaining_range', $this->Translate('remaining range'), 'BMW.RemainingRange', 6);
 
         $model = $this->ReadPropertyInteger('model');
         if ($model != BMW_MODEL_STANDARD) { // standard, no electric
             $this->RegisterVariableFloat('bmw_remaining_electric_range', $this->Translate('remaining electric range'), 'BMW.RemainingRange', 6);
-            $this->RegisterProfile('BMW.ChargingLevel', '', '', ' %', 0, 0, 0, 0, 2);
+            $this->RegisterProfile('BMW.ChargingLevel', '', '', ' %', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
             $this->RegisterVariableFloat('bmw_charging_level', $this->Translate('charging level'), 'BMW.ChargingLevel', 6);
             $this->RegisterVariableInteger('bmw_connector_status', $this->Translate('connector status'), 'BMW.ConnectorStatus', 6);
             $this->RegisterVariableInteger('bmw_charging_status', $this->Translate('charging status'), 'BMW.ChargingStatus', 6);
             $this->RegisterVariableInteger('bmw_charging_end', $this->Translate('charging end'), '~UnixTimestampTime', 6);
-            $this->RegisterProfile('BMW.StateofCharge', '', '', ' kWh', 0, 0, 0, 1, 2);
+            $this->RegisterProfile('BMW.StateofCharge', '', '', ' kWh', 0, 0, 0, 1, VARIABLETYPE_FLOAT);
             $this->RegisterVariableFloat('bmw_soc', $this->Translate('current state of charge'), 'BMW.StateofCharge', 7);
             $this->RegisterVariableFloat('bmw_socMax', $this->Translate('maximum state of charge'), 'BMW.StateofCharge', 8);
+
+			$this->RegisterProfile('BMW.Distance', '', '', ' ' . $this->GetMileageUnit(), 0, 0, 0, 0, VARIABLETYPE_FLOAT);
+			$this->RegisterVariableFloat('lasttrip_distance', $this->Translate('Last trip: distance'), 'BMW.Distance', 209);
+			$this->RegisterProfile('BMW.Duration', '', '', ' min', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
+			$this->RegisterVariableFloat('lasttrip_duration', $this->Translate('Last trip: duration'), 'BMW.Duration', 210);
+			$this->RegisterProfile('BMW.Consumption', '', '', ' l/100 km', 0, 0, 0, 1, VARIABLETYPE_FLOAT);
+			$this->RegisterVariableFloat('lasttrip_avg_consumed', $this->Translate('Last trip: avrg consumption'), 'BMW.Consumption', 211);
+			$this->RegisterProfile('BMW.ElectricRatio', '', '', ' %', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
+			$this->RegisterVariableFloat('lasttrip_electric_ratio', $this->Translate('Last trip: electric ratio'), 'BMW.ElectricRatio', 212);
+			$this->RegisterVariableInteger('lasttrip_tstamp', $this->Translate('Last trip: end timestamp'), '~UnixTimestamp', 213);
+
+			$this->RegisterVariableFloat('lifetime_distance', $this->Translate('Life time: distance'), 'BMW.Distance', 214);
+			$this->RegisterProfile('BMW.SavedLiters', '', '', ' Liter', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
+			$this->RegisterVariableFloat('lifetime_save_liters', $this->Translate('Life time: saved liters'), 'BMW.SavedLiters', 215);
+			$this->RegisterVariableInteger('lifetime_reset_tstamp', $this->Translate('Life time: reset timestamp'), '~UnixTimestampDate', 216);
+
+			$associations = [];
+			$associations[] = [0, json_decode('"\u2606\u2606\u2606\u2606\u2606"'), '', -1];
+			$associations[] = [1, json_decode('"\u2605\u2606\u2606\u2606\u2606"'), '', -1];
+			$associations[] = [2, json_decode('"\u2605\u2605\u2606\u2606\u2606"'), '', -1];
+			$associations[] = [3, json_decode('"\u2605\u2605\u2605\u2606\u2606"'), '', -1];
+			$associations[] = [4, json_decode('"\u2605\u2605\u2605\u2605\u2606"'), '', -1];
+			$associations[] = [5, json_decode('"\u2605\u2605\u2605\u2605\u2605"'), '', -1];
+			$this->RegisterProfileAssociation('BMW.Efficiency', '', '', '', 0, 3, 0, 0, VARIABLETYPE_INTEGER, $associations);
+
+			$this->RegisterVariableInteger('effeciency_consumption', $this->Translate('Efficiency: consumption'), 'BMW.Efficiency', 217);
+			$this->RegisterVariableInteger('effeciency_driving', $this->Translate('Efficiency: driving mode'), 'BMW.Efficiency', 218);
+			$this->RegisterVariableInteger('effeciency_charging', $this->Translate('Efficiency: charging behaviour'), 'BMW.Efficiency', 219);
+			$this->RegisterVariableInteger('effeciency_electric', $this->Translate('Efficiency: electric driving'), 'BMW.Efficiency', 220);
+
         } else {
             $this->UnregisterVariable('bmw_remaining_electric_range');
             $this->UnregisterVariable('bmw_charging_level');
@@ -325,6 +354,16 @@ class BMWConnectedDrive extends IPSModule
             $this->UnregisterVariable('bmw_charging_end');
             $this->UnregisterVariable('bmw_soc');
             $this->UnregisterVariable('bmw_socMax');
+
+			$this->UnregisterVariable('lasttrip_km');
+			$this->UnregisterVariable('lasttrip_duration');
+			$this->UnregisterVariable('lasttrip_avg_consumed');
+			$this->UnregisterVariable('lasttrip_electric_ratio');
+			$this->UnregisterVariable('lasttrip_tstamp');
+
+			$this->UnregisterVariable('lifetime_distance');
+			$this->UnregisterVariable('lifetime_save_liters');
+			$this->UnregisterVariable('lifetime_reset_tstamp');
         }
 
         $this->RegisterVariableString('bmw_history', $this->Translate('course'), '~HTMLBox', 7);
@@ -428,7 +467,7 @@ class BMWConnectedDrive extends IPSModule
             $this->RegisterVariableString('bmw_car_picture', $this->Translate('picture'), '~HTMLBox', 1);
             $this->RegisterVariableInteger('bmw_car_picture_zoom', $this->Translate('car zoom'), '~Intensity.100', 2);
             $this->EnableAction('bmw_car_picture_zoom');
-            $this->RegisterProfile('BMW.Perspective', 'Eyes', '', '°', 0, 360, 30, 0, 1);
+            $this->RegisterProfile('BMW.Perspective', 'Eyes', '', '°', 0, 360, 30, 0, VARIABLETYPE_INTEGER);
             $this->RegisterVariableInteger('bmw_perspective', $this->Translate('perspective'), 'BMW.Perspective', 3);
             $this->EnableAction('bmw_perspective');
         } else {
@@ -450,7 +489,7 @@ class BMWConnectedDrive extends IPSModule
         }
 
         if ($active_current_position) {
-            $this->RegisterProfile('BMW.Location', 'Car', '', ' °', 0, 0, 0, 5, 2);
+            $this->RegisterProfile('BMW.Location', 'Car', '', ' °', 0, 0, 0, 5, VARIABLETYPE_FLOAT);
             $this->RegisterVariableFloat('bmw_current_latitude', $this->Translate('current latitude'), 'BMW.Location', 13);
             $this->RegisterVariableFloat('bmw_current_longitude', $this->Translate('current longitude'), 'BMW.Location', 14);
         } else {
@@ -839,6 +878,87 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/efficiency/v1/' . $vin;
         $response = $this->SendBMWAPI($command, '');
         $this->SetMultiBuffer('bmw_efficiency_interface', $response);
+
+        $model = $this->ReadPropertyInteger('model');
+        if ($model != BMW_MODEL_STANDARD) { // standard, no electric
+			$data = json_decode($response);
+			$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+			if (isset($data->lastTripList)) {
+				$lastTripList = $data->lastTripList;
+				$this->SendDebug(__FUNCTION__, 'lastTripList=' . print_r($lastTripList, true), 0);
+				foreach ($lastTripList as $lastTrip) {
+					$name = $lastTrip->name;
+					$val = $lastTrip->lastTrip;
+					$this->SendDebug(__FUNCTION__, 'name=' . $name . ', val=' . $val, 0);
+
+					switch ($name) {
+						case 'LASTTRIP_DELTA_KM':
+							$this->SetValue('lasttrip_distance', $val);
+							break;
+						case 'LASTTRIP_DELTA_TIME':
+							$this->SetValue('lasttrip_duration', $val);
+							break;
+						case 'COMBINED_AVG_CONSUMED_LITERS_OVERALL':
+							$this->SetValue('lasttrip_avg_consumed', $val);
+							break;
+						case 'LASTTRIP_TIME_SEGMENT_END':
+							$ts = strtotime($val);
+							$this->SetValue('lasttrip_tstamp', $ts);
+							break;
+						case 'LASTTRIP_RATIO_ELECTRIC_DRIVEN_DISTANCE':
+							$this->SetValue('lasttrip_electric_ratio', $val);
+							break;
+					}
+				}
+			}
+			if (isset($data->lifeTimeList)) {
+				$lifeTimeList = $data->lifeTimeList;
+				$this->SendDebug(__FUNCTION__, 'lifeTimeList=' . print_r($lifeTimeList, true), 0);
+				foreach ($lifeTimeList as $lifeTime) {
+					$name = $lifeTime->name;
+					$val = $lifeTime->lifeTime;
+					$this->SendDebug(__FUNCTION__, 'name=' . $name . ', val=' . $val, 0);
+
+					switch ($name) {
+						case 'CUMULATED_ELECTRIC_DRIVEN_DISTANCE':
+							$this->SetValue('lifetime_distance', $val);
+							break;
+						case 'SAVED_LITERS_OVERALL':
+							$this->SetValue('lifetime_save_liters', $val);
+							break;
+						case 'TIMESTAMP_STATISTICS_RESET':
+							$ts = strtotime($val);
+							$this->SetValue('lifetime_reset_tstamp', $ts);
+							break;
+					}
+				}
+			}
+			if (isset($data->characteristicList)) {
+				$characteristicList = $data->characteristicList;
+				$this->SendDebug(__FUNCTION__, 'characteristicList=' . print_r($characteristicList, true), 0);
+				foreach ($characteristicList as $characteristic) {
+					$name = $characteristic->characteristic;
+					$val = $characteristic->quantity;
+					$this->SendDebug(__FUNCTION__, 'name=' . $name . ', val=' . $val, 0);
+
+					switch ($name) {
+						case 'CONSUMPTION':
+							$this->SetValue('effeciency_consumption', $val);
+							break;
+						case 'DRIVING_MODE':
+							$this->SetValue('effeciency_driving', $val);
+							break;
+						case 'CHARGING_BEHAVIOUR':
+							$this->SetValue('effeciency_charging', $val);
+							break;
+						case 'ELECTRIC_DRIVING':
+							$this->SetValue('effeciency_electric', $val);
+							break;
+					}
+				}
+			}
+		}
+
         return $response;
     }
 
@@ -2002,7 +2122,7 @@ class BMWConnectedDrive extends IPSModule
             ],
             [
                 'type'    => 'Button',
-                'label'   => 'Get car data from BMW',
+                'label'   => 'Update data',
                 'onClick' => 'BMW_DataUpdate($id);'
             ]
         ];
