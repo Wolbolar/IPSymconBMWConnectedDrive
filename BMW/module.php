@@ -317,35 +317,34 @@ class BMWConnectedDrive extends IPSModule
             $this->RegisterVariableFloat('bmw_soc', $this->Translate('current state of charge'), 'BMW.StateofCharge', 7);
             $this->RegisterVariableFloat('bmw_socMax', $this->Translate('maximum state of charge'), 'BMW.StateofCharge', 8);
 
-			$this->RegisterProfile('BMW.Distance', '', '', ' ' . $this->GetMileageUnit(), 0, 0, 0, 0, VARIABLETYPE_FLOAT);
-			$this->RegisterVariableFloat('lasttrip_distance', $this->Translate('Last trip: distance'), 'BMW.Distance', 209);
-			$this->RegisterProfile('BMW.Duration', '', '', ' min', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
-			$this->RegisterVariableFloat('lasttrip_duration', $this->Translate('Last trip: duration'), 'BMW.Duration', 210);
-			$this->RegisterProfile('BMW.Consumption', '', '', ' l/100 km', 0, 0, 0, 1, VARIABLETYPE_FLOAT);
-			$this->RegisterVariableFloat('lasttrip_avg_consumed', $this->Translate('Last trip: avrg consumption'), 'BMW.Consumption', 211);
-			$this->RegisterProfile('BMW.ElectricRatio', '', '', ' %', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
-			$this->RegisterVariableFloat('lasttrip_electric_ratio', $this->Translate('Last trip: electric ratio'), 'BMW.ElectricRatio', 212);
-			$this->RegisterVariableInteger('lasttrip_tstamp', $this->Translate('Last trip: end timestamp'), '~UnixTimestamp', 213);
+            $this->RegisterProfile('BMW.Distance', '', '', ' ' . $this->GetMileageUnit(), 0, 0, 0, 0, VARIABLETYPE_FLOAT);
+            $this->RegisterVariableFloat('lasttrip_distance', $this->Translate('Last trip: distance'), 'BMW.Distance', 209);
+            $this->RegisterProfile('BMW.Duration', '', '', ' min', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
+            $this->RegisterVariableFloat('lasttrip_duration', $this->Translate('Last trip: duration'), 'BMW.Duration', 210);
+            $this->RegisterProfile('BMW.Consumption', '', '', ' l/100 km', 0, 0, 0, 1, VARIABLETYPE_FLOAT);
+            $this->RegisterVariableFloat('lasttrip_avg_consumed', $this->Translate('Last trip: avrg consumption'), 'BMW.Consumption', 211);
+            $this->RegisterProfile('BMW.ElectricRatio', '', '', ' %', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
+            $this->RegisterVariableFloat('lasttrip_electric_ratio', $this->Translate('Last trip: electric ratio'), 'BMW.ElectricRatio', 212);
+            $this->RegisterVariableInteger('lasttrip_tstamp', $this->Translate('Last trip: end timestamp'), '~UnixTimestamp', 213);
 
-			$this->RegisterVariableFloat('lifetime_distance', $this->Translate('Life time: distance'), 'BMW.Distance', 214);
-			$this->RegisterProfile('BMW.SavedLiters', '', '', ' Liter', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
-			$this->RegisterVariableFloat('lifetime_save_liters', $this->Translate('Life time: saved liters'), 'BMW.SavedLiters', 215);
-			$this->RegisterVariableInteger('lifetime_reset_tstamp', $this->Translate('Life time: reset timestamp'), '~UnixTimestampDate', 216);
+            $this->RegisterVariableFloat('lifetime_distance', $this->Translate('Life time: distance'), 'BMW.Distance', 214);
+            $this->RegisterProfile('BMW.SavedLiters', '', '', ' Liter', 0, 0, 0, 0, VARIABLETYPE_FLOAT);
+            $this->RegisterVariableFloat('lifetime_save_liters', $this->Translate('Life time: saved liters'), 'BMW.SavedLiters', 215);
+            $this->RegisterVariableInteger('lifetime_reset_tstamp', $this->Translate('Life time: reset timestamp'), '~UnixTimestampDate', 216);
 
-			$associations = [];
-			$associations[] = [0, json_decode('"\u2606\u2606\u2606\u2606\u2606"'), '', -1];
-			$associations[] = [1, json_decode('"\u2605\u2606\u2606\u2606\u2606"'), '', -1];
-			$associations[] = [2, json_decode('"\u2605\u2605\u2606\u2606\u2606"'), '', -1];
-			$associations[] = [3, json_decode('"\u2605\u2605\u2605\u2606\u2606"'), '', -1];
-			$associations[] = [4, json_decode('"\u2605\u2605\u2605\u2605\u2606"'), '', -1];
-			$associations[] = [5, json_decode('"\u2605\u2605\u2605\u2605\u2605"'), '', -1];
-			$this->RegisterProfileAssociation('BMW.Efficiency', '', '', '', 0, 3, 0, 0, VARIABLETYPE_INTEGER, $associations);
+            $associations = [];
+            $associations[] = [0, json_decode('"\u2606\u2606\u2606\u2606\u2606"'), '', -1];
+            $associations[] = [1, json_decode('"\u2605\u2606\u2606\u2606\u2606"'), '', -1];
+            $associations[] = [2, json_decode('"\u2605\u2605\u2606\u2606\u2606"'), '', -1];
+            $associations[] = [3, json_decode('"\u2605\u2605\u2605\u2606\u2606"'), '', -1];
+            $associations[] = [4, json_decode('"\u2605\u2605\u2605\u2605\u2606"'), '', -1];
+            $associations[] = [5, json_decode('"\u2605\u2605\u2605\u2605\u2605"'), '', -1];
+            $this->RegisterProfileAssociation('BMW.Efficiency', '', '', '', 0, 3, 0, 0, VARIABLETYPE_INTEGER, $associations);
 
-			$this->RegisterVariableInteger('effeciency_consumption', $this->Translate('Efficiency: consumption'), 'BMW.Efficiency', 217);
-			$this->RegisterVariableInteger('effeciency_driving', $this->Translate('Efficiency: driving mode'), 'BMW.Efficiency', 218);
-			$this->RegisterVariableInteger('effeciency_charging', $this->Translate('Efficiency: charging behaviour'), 'BMW.Efficiency', 219);
-			$this->RegisterVariableInteger('effeciency_electric', $this->Translate('Efficiency: electric driving'), 'BMW.Efficiency', 220);
-
+            $this->RegisterVariableInteger('effeciency_consumption', $this->Translate('Efficiency: consumption'), 'BMW.Efficiency', 217);
+            $this->RegisterVariableInteger('effeciency_driving', $this->Translate('Efficiency: driving mode'), 'BMW.Efficiency', 218);
+            $this->RegisterVariableInteger('effeciency_charging', $this->Translate('Efficiency: charging behaviour'), 'BMW.Efficiency', 219);
+            $this->RegisterVariableInteger('effeciency_electric', $this->Translate('Efficiency: electric driving'), 'BMW.Efficiency', 220);
         } else {
             $this->UnregisterVariable('bmw_remaining_electric_range');
             $this->UnregisterVariable('bmw_charging_level');
@@ -355,15 +354,15 @@ class BMWConnectedDrive extends IPSModule
             $this->UnregisterVariable('bmw_soc');
             $this->UnregisterVariable('bmw_socMax');
 
-			$this->UnregisterVariable('lasttrip_km');
-			$this->UnregisterVariable('lasttrip_duration');
-			$this->UnregisterVariable('lasttrip_avg_consumed');
-			$this->UnregisterVariable('lasttrip_electric_ratio');
-			$this->UnregisterVariable('lasttrip_tstamp');
+            $this->UnregisterVariable('lasttrip_km');
+            $this->UnregisterVariable('lasttrip_duration');
+            $this->UnregisterVariable('lasttrip_avg_consumed');
+            $this->UnregisterVariable('lasttrip_electric_ratio');
+            $this->UnregisterVariable('lasttrip_tstamp');
 
-			$this->UnregisterVariable('lifetime_distance');
-			$this->UnregisterVariable('lifetime_save_liters');
-			$this->UnregisterVariable('lifetime_reset_tstamp');
+            $this->UnregisterVariable('lifetime_distance');
+            $this->UnregisterVariable('lifetime_save_liters');
+            $this->UnregisterVariable('lifetime_reset_tstamp');
         }
 
         $this->RegisterVariableString('bmw_history', $this->Translate('course'), '~HTMLBox', 7);
@@ -881,83 +880,83 @@ class BMWConnectedDrive extends IPSModule
 
         $model = $this->ReadPropertyInteger('model');
         if ($model != BMW_MODEL_STANDARD) { // standard, no electric
-			$data = json_decode($response);
-			$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
-			if (isset($data->lastTripList)) {
-				$lastTripList = $data->lastTripList;
-				$this->SendDebug(__FUNCTION__, 'lastTripList=' . print_r($lastTripList, true), 0);
-				foreach ($lastTripList as $lastTrip) {
-					$name = $lastTrip->name;
-					$val = $lastTrip->lastTrip;
-					$this->SendDebug(__FUNCTION__, 'name=' . $name . ', val=' . $val, 0);
+            $data = json_decode($response);
+            $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+            if (isset($data->lastTripList)) {
+                $lastTripList = $data->lastTripList;
+                $this->SendDebug(__FUNCTION__, 'lastTripList=' . print_r($lastTripList, true), 0);
+                foreach ($lastTripList as $lastTrip) {
+                    $name = $lastTrip->name;
+                    $val = $lastTrip->lastTrip;
+                    $this->SendDebug(__FUNCTION__, 'name=' . $name . ', val=' . $val, 0);
 
-					switch ($name) {
-						case 'LASTTRIP_DELTA_KM':
-							$this->SetValue('lasttrip_distance', $val);
-							break;
-						case 'LASTTRIP_DELTA_TIME':
-							$this->SetValue('lasttrip_duration', $val);
-							break;
-						case 'COMBINED_AVG_CONSUMED_LITERS_OVERALL':
-							$this->SetValue('lasttrip_avg_consumed', $val);
-							break;
-						case 'LASTTRIP_TIME_SEGMENT_END':
-							$ts = strtotime($val);
-							$this->SetValue('lasttrip_tstamp', $ts);
-							break;
-						case 'LASTTRIP_RATIO_ELECTRIC_DRIVEN_DISTANCE':
-							$this->SetValue('lasttrip_electric_ratio', $val);
-							break;
-					}
-				}
-			}
-			if (isset($data->lifeTimeList)) {
-				$lifeTimeList = $data->lifeTimeList;
-				$this->SendDebug(__FUNCTION__, 'lifeTimeList=' . print_r($lifeTimeList, true), 0);
-				foreach ($lifeTimeList as $lifeTime) {
-					$name = $lifeTime->name;
-					$val = $lifeTime->lifeTime;
-					$this->SendDebug(__FUNCTION__, 'name=' . $name . ', val=' . $val, 0);
+                    switch ($name) {
+                        case 'LASTTRIP_DELTA_KM':
+                            $this->SetValue('lasttrip_distance', $val);
+                            break;
+                        case 'LASTTRIP_DELTA_TIME':
+                            $this->SetValue('lasttrip_duration', $val);
+                            break;
+                        case 'COMBINED_AVG_CONSUMED_LITERS_OVERALL':
+                            $this->SetValue('lasttrip_avg_consumed', $val);
+                            break;
+                        case 'LASTTRIP_TIME_SEGMENT_END':
+                            $ts = strtotime($val);
+                            $this->SetValue('lasttrip_tstamp', $ts);
+                            break;
+                        case 'LASTTRIP_RATIO_ELECTRIC_DRIVEN_DISTANCE':
+                            $this->SetValue('lasttrip_electric_ratio', $val);
+                            break;
+                    }
+                }
+            }
+            if (isset($data->lifeTimeList)) {
+                $lifeTimeList = $data->lifeTimeList;
+                $this->SendDebug(__FUNCTION__, 'lifeTimeList=' . print_r($lifeTimeList, true), 0);
+                foreach ($lifeTimeList as $lifeTime) {
+                    $name = $lifeTime->name;
+                    $val = $lifeTime->lifeTime;
+                    $this->SendDebug(__FUNCTION__, 'name=' . $name . ', val=' . $val, 0);
 
-					switch ($name) {
-						case 'CUMULATED_ELECTRIC_DRIVEN_DISTANCE':
-							$this->SetValue('lifetime_distance', $val);
-							break;
-						case 'SAVED_LITERS_OVERALL':
-							$this->SetValue('lifetime_save_liters', $val);
-							break;
-						case 'TIMESTAMP_STATISTICS_RESET':
-							$ts = strtotime($val);
-							$this->SetValue('lifetime_reset_tstamp', $ts);
-							break;
-					}
-				}
-			}
-			if (isset($data->characteristicList)) {
-				$characteristicList = $data->characteristicList;
-				$this->SendDebug(__FUNCTION__, 'characteristicList=' . print_r($characteristicList, true), 0);
-				foreach ($characteristicList as $characteristic) {
-					$name = $characteristic->characteristic;
-					$val = $characteristic->quantity;
-					$this->SendDebug(__FUNCTION__, 'name=' . $name . ', val=' . $val, 0);
+                    switch ($name) {
+                        case 'CUMULATED_ELECTRIC_DRIVEN_DISTANCE':
+                            $this->SetValue('lifetime_distance', $val);
+                            break;
+                        case 'SAVED_LITERS_OVERALL':
+                            $this->SetValue('lifetime_save_liters', $val);
+                            break;
+                        case 'TIMESTAMP_STATISTICS_RESET':
+                            $ts = strtotime($val);
+                            $this->SetValue('lifetime_reset_tstamp', $ts);
+                            break;
+                    }
+                }
+            }
+            if (isset($data->characteristicList)) {
+                $characteristicList = $data->characteristicList;
+                $this->SendDebug(__FUNCTION__, 'characteristicList=' . print_r($characteristicList, true), 0);
+                foreach ($characteristicList as $characteristic) {
+                    $name = $characteristic->characteristic;
+                    $val = $characteristic->quantity;
+                    $this->SendDebug(__FUNCTION__, 'name=' . $name . ', val=' . $val, 0);
 
-					switch ($name) {
-						case 'CONSUMPTION':
-							$this->SetValue('effeciency_consumption', $val);
-							break;
-						case 'DRIVING_MODE':
-							$this->SetValue('effeciency_driving', $val);
-							break;
-						case 'CHARGING_BEHAVIOUR':
-							$this->SetValue('effeciency_charging', $val);
-							break;
-						case 'ELECTRIC_DRIVING':
-							$this->SetValue('effeciency_electric', $val);
-							break;
-					}
-				}
-			}
-		}
+                    switch ($name) {
+                        case 'CONSUMPTION':
+                            $this->SetValue('effeciency_consumption', $val);
+                            break;
+                        case 'DRIVING_MODE':
+                            $this->SetValue('effeciency_driving', $val);
+                            break;
+                        case 'CHARGING_BEHAVIOUR':
+                            $this->SetValue('effeciency_charging', $val);
+                            break;
+                        case 'ELECTRIC_DRIVING':
+                            $this->SetValue('effeciency_electric', $val);
+                            break;
+                    }
+                }
+            }
+        }
 
         return $response;
     }
