@@ -137,7 +137,9 @@ if (@constant('IPS_BASE') == null) { //Nur wenn Konstanten noch nicht bekannt si
     define('FOUND_OLD', 2);         //Device is already configues (InstanceID should be set)
     define('FOUND_CURRENT', 3);     //Device is already configues (InstanceID is from the current/searching Instance)
     define('FOUND_UNSUPPORTED', 4); //Device is not supported by Module
+}
 
+if (!defined('VARIABLETYPE_BOOLEAN')) {
     define('VARIABLETYPE_BOOLEAN', 0);
     define('VARIABLETYPE_INTEGER', 1);
     define('VARIABLETYPE_FLOAT', 2);
