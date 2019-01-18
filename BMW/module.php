@@ -569,8 +569,8 @@ class BMWConnectedDrive extends IPSModule
         $this->GetServicePartner();
 
         if ($model != BMW_MODEL_STANDARD) { // standard, no electric
-			$this->GetChargingProfile();
-		}
+            $this->GetChargingProfile();
+        }
 
         $this->GetRemoteServices();
     }
@@ -709,7 +709,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/v1/user/vehicles/';
         $response = $this->SendBMWAPI($command, '');
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
     }
@@ -725,7 +725,7 @@ class BMWConnectedDrive extends IPSModule
         $response = $this->SendBMWAPI($command, '');
         $this->SetMultiBuffer('bmw_car_interface', $response);
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
     }
@@ -1069,7 +1069,7 @@ class BMWConnectedDrive extends IPSModule
         $response = $this->SendBMWAPI($command, '');
         $this->SetMultiBuffer('bmw_history_interface', $response);
         $data = json_decode($response, true);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         $type = [
                 'RCN' => 'climate now',
@@ -1135,7 +1135,7 @@ class BMWConnectedDrive extends IPSModule
         $this->SetMultiBuffer('bmw_dynamic_interface', $response);
 
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         if (isset($data->attributesMap)) {
             $carinfo = $data->attributesMap;
@@ -1361,79 +1361,79 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/v1/user/vehicles/' . $vin . '/status';
         $response = $this->SendBMWAPI($command, '');
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
-		if (isset($data->vehicleStatus)) {
-			$carinfo = $data->vehicleStatus;
-			$current_vin = $carinfo->vin;
-			if ($vin == $current_vin) {
-				$mileage = $carinfo->mileage;
-				$this->SetValue('bmw_mileage', $mileage);
+        if (isset($data->vehicleStatus)) {
+            $carinfo = $data->vehicleStatus;
+            $current_vin = $carinfo->vin;
+            if ($vin == $current_vin) {
+                $mileage = $carinfo->mileage;
+                $this->SetValue('bmw_mileage', $mileage);
 
-				$remainingFuel = $carinfo->remainingFuel;
-				$this->SetValue('bmw_tank_capacity', $remainingFuel);
+                $remainingFuel = $carinfo->remainingFuel;
+                $this->SetValue('bmw_tank_capacity', $remainingFuel);
 
-				if ($active_lock) {
-					if (isset($carinfo->door_lock_state)) {
-						$doorLockState = $carinfo->door_lock_state;
-						$this->SetLockState('bmw_start_lock', $doorLockState);
-					}
-				}
-				if ($active_lock_data) {
-					if (isset($carinfo->doorDriverFront)) {
-						$doorDriverFront = $carinfo->doorDriverFront;
-						$this->SetLockState('bmw_doorDriverFront', $doorDriverFront);
-					}
-					if (isset($carinfo->doorDriverFront)) {
-						$doorDriverRear = $carinfo->doorDriverFront;
-						$this->SetLockState('bmw_doorDriverRear', $doorDriverRear);
-					}
-					if (isset($carinfo->doorPassengerFront)) {
-						$doorPassengerFront = $carinfo->doorPassengerFront;
-						$this->SetLockState('bmw_doorPassengerFront', $doorPassengerFront);
-					}
-					if (isset($carinfo->doorPassengerRear)) {
-						$doorPassengerRear = $carinfo->doorPassengerRear;
-						$this->SetLockState('bmw_doorPassengerRear', $doorPassengerRear);
-					}
-					if (isset($carinfo->windowDriverFront)) {
-						$windowDriverFront = $carinfo->windowDriverFront;
-						$this->SetLockState('bmw_windowDriverFront', $windowDriverFront);
-					}
-					if (isset($carinfo->windowDriverRear)) {
-						$windowDriverRear = $carinfo->windowDriverRear;
-						$this->SetLockState('bmw_windowDriverRear', $windowDriverRear);
-					}
-					if (isset($carinfo->windowPassengerFront)) {
-						$windowPassengerFront = $carinfo->windowPassengerFront;
-						$this->SetLockState('bmw_windowPassengerFront', $windowPassengerFront);
-					}
-					if (isset($carinfo->windowPassengerRear)) {
-						$windowPassengerRear = $carinfo->windowPassengerRear;
-						$this->SetLockState('bmw_windowPassengerRear', $windowPassengerRear);
-					}
-					if (isset($carinfo->trunk)) {
-						$trunk = $carinfo->trunk;
-						$this->SetLockState('bmw_trunk', $trunk);
-					}
-					if (isset($carinfo->rearWindow)) {
-						$rearWindow = $carinfo->rearWindow;
-						$this->SetLockState('bmw_rearWindow', $rearWindow);
-					}
-					if (isset($carinfo->convertibleRoofState)) {
-						$convertibleRoofState = $carinfo->convertibleRoofState;
-						$this->SetLockState('bmw_convertibleRoofState', $convertibleRoofState);
-					}
-					if (isset($carinfo->hood)) {
-						$hood = $carinfo->hood;
-						$this->SetLockState('bmw_hood', $hood);
-					}
-					if (isset($carinfo->doorLockState)) {
-						$doorLockState = $carinfo->doorLockState;
-						$this->SetLockState('bmw_doorLockState', $doorLockState);
-					}
-				}
-			}
+                if ($active_lock) {
+                    if (isset($carinfo->door_lock_state)) {
+                        $doorLockState = $carinfo->door_lock_state;
+                        $this->SetLockState('bmw_start_lock', $doorLockState);
+                    }
+                }
+                if ($active_lock_data) {
+                    if (isset($carinfo->doorDriverFront)) {
+                        $doorDriverFront = $carinfo->doorDriverFront;
+                        $this->SetLockState('bmw_doorDriverFront', $doorDriverFront);
+                    }
+                    if (isset($carinfo->doorDriverFront)) {
+                        $doorDriverRear = $carinfo->doorDriverFront;
+                        $this->SetLockState('bmw_doorDriverRear', $doorDriverRear);
+                    }
+                    if (isset($carinfo->doorPassengerFront)) {
+                        $doorPassengerFront = $carinfo->doorPassengerFront;
+                        $this->SetLockState('bmw_doorPassengerFront', $doorPassengerFront);
+                    }
+                    if (isset($carinfo->doorPassengerRear)) {
+                        $doorPassengerRear = $carinfo->doorPassengerRear;
+                        $this->SetLockState('bmw_doorPassengerRear', $doorPassengerRear);
+                    }
+                    if (isset($carinfo->windowDriverFront)) {
+                        $windowDriverFront = $carinfo->windowDriverFront;
+                        $this->SetLockState('bmw_windowDriverFront', $windowDriverFront);
+                    }
+                    if (isset($carinfo->windowDriverRear)) {
+                        $windowDriverRear = $carinfo->windowDriverRear;
+                        $this->SetLockState('bmw_windowDriverRear', $windowDriverRear);
+                    }
+                    if (isset($carinfo->windowPassengerFront)) {
+                        $windowPassengerFront = $carinfo->windowPassengerFront;
+                        $this->SetLockState('bmw_windowPassengerFront', $windowPassengerFront);
+                    }
+                    if (isset($carinfo->windowPassengerRear)) {
+                        $windowPassengerRear = $carinfo->windowPassengerRear;
+                        $this->SetLockState('bmw_windowPassengerRear', $windowPassengerRear);
+                    }
+                    if (isset($carinfo->trunk)) {
+                        $trunk = $carinfo->trunk;
+                        $this->SetLockState('bmw_trunk', $trunk);
+                    }
+                    if (isset($carinfo->rearWindow)) {
+                        $rearWindow = $carinfo->rearWindow;
+                        $this->SetLockState('bmw_rearWindow', $rearWindow);
+                    }
+                    if (isset($carinfo->convertibleRoofState)) {
+                        $convertibleRoofState = $carinfo->convertibleRoofState;
+                        $this->SetLockState('bmw_convertibleRoofState', $convertibleRoofState);
+                    }
+                    if (isset($carinfo->hood)) {
+                        $hood = $carinfo->hood;
+                        $this->SetLockState('bmw_hood', $hood);
+                    }
+                    if (isset($carinfo->doorLockState)) {
+                        $doorLockState = $carinfo->doorLockState;
+                        $this->SetLockState('bmw_doorLockState', $doorLockState);
+                    }
+                }
+            }
         }
 
         return $data;
@@ -1525,7 +1525,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/v1/user/vehicles/' . $vin . '/statistics/lastTrip';
         $response = $this->SendBMWAPI($command, '');
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
     }
@@ -1541,7 +1541,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/v1/user/vehicles/' . $vin . '/chargingprofile';
         $response = $this->SendBMWAPI($command, '');
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
     }
@@ -1557,7 +1557,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/v1/user/vehicles/' . $vin . '/destinations';
         $response = $this->SendBMWAPI($command, '');
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
     }
@@ -1573,7 +1573,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/v1/user/vehicles/' . $vin . '/statistics/allTrips';
         $response = $this->SendBMWAPI($command, '');
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
     }
@@ -1589,7 +1589,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/v1/user/vehicles/' . $vin . '/rangemap';
         $response = $this->SendBMWAPI($command, '');
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
     }
@@ -1600,7 +1600,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/v1/user/vehicles/' . $vin . '/rangemap';
         $response = $this->SendBMWAPI($command, '');
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
     }
@@ -1618,7 +1618,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/v1/user/vehicles/' . $vin . '/serviceExecutionStatus?serviceType=' . $service;
         $response = $this->SendBMWAPI($command, '');
         $data = json_decode($response);
-		$this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
+        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
     }
