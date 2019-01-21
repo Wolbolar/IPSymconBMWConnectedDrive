@@ -169,6 +169,9 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Versions-Historie
 
+- 1.5 @ 21.01.2019 18:13<br>
+  - Fix zu 1.4
+
 - 1.4 @ 18.01.2019 18:20<br>
   - Sicherheitsabfragen auf leere Strukturen, mehr Debug
 

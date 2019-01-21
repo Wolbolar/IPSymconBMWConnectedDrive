@@ -1088,7 +1088,7 @@ class BMWConnectedDrive extends IPSModule
                 'CANCELLED' => 'cancelled',
             ];
 
-        if (count($data)) {
+        if ($data != '' && count($data)) {
             $html = "<style>\n";
             $html .= "th, td { padding: 2px 10px; } \n";
             $html .= "</style>\n";
