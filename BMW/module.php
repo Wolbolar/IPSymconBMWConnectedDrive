@@ -1088,26 +1088,31 @@ class BMWConnectedDrive extends IPSModule
                 'CANCELLED' => 'cancelled',
             ];
 
-        if (count($data)) {
-            $html = "<style>\n";
-            $html .= "th, td { padding: 2px 10px; } \n";
-            $html .= "</style>\n";
-            $html .= "<table>\n";
-            for ($index = 0; $index < count($data); $index++) {
-                $_ts = $data[$index]['creationTime'] / 1000;
-                $ts = date('d.m. H:i:s', $_ts);
-                $_rst = $data[$index]['remoteServiceType'];
-                $rst = $this->Translate(isset($type[$_rst]) ? $type[$_rst] : 'unknown service');
-                $_st = $data[$index]['status'];
-                $st = $this->Translate(isset($status[$_st]) ? $status[$_st] : 'unknown status');
+        if ($data != '') {
+            if (isset($data['errors'])) {
+                $html = 'Datenabruf ist nicht möglich';
+                IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'got error: ' . print_r($data, true));
+            } else {
+                $html = "<style>\n";
+                $html .= "th, td { padding: 2px 10px; } \n";
+                $html .= "</style>\n";
+                $html .= "<table>\n";
+                foreach ($data as $entry) {
+                    $_ts = $entry['creationTime'] / 1000;
+                    $ts = date('d.m. H:i:s', $_ts);
+                    $_rst = $entry['remoteServiceType'];
+                    $rst = $this->Translate(isset($type[$_rst]) ? $type[$_rst] : 'unknown service');
+                    $_st = $entry['status'];
+                    $st = $this->Translate(isset($status[$_st]) ? $status[$_st] : 'unknown status');
 
-                $html .= "<tr>\n";
-                $html .= '<td>' . $ts . "</td>\n";
-                $html .= '<td>' . $rst . "</td>\n";
-                $html .= '<td>' . $st . "</td>\n";
-                $html .= "</tr>\n";
+                    $html .= "<tr>\n";
+                    $html .= '<td>' . $ts . "</td>\n";
+                    $html .= '<td>' . $rst . "</td>\n";
+                    $html .= '<td>' . $st . "</td>\n";
+                    $html .= "</tr>\n";
+                }
+                $html .= "</table>\n";
             }
-            $html .= "</table>\n";
         } else {
             $html = 'Keine Information zum Verlauf vorhanden';
         }
