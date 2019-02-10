@@ -169,6 +169,9 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Versions-Historie
 
+- 1.6 @ 10.02.2019 11:09<br>
+  - Absicherung des Datenabrufs von GetRemoteServices()
+
 - 1.5 @ 21.01.2019 18:13<br>
   - Fix zu 1.4
 
