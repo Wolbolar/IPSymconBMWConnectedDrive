@@ -134,12 +134,12 @@
 			"no charging": "inaktiv",
 			"charging active": "aktiv",
 			"charging ended": "beendet",
-			"charging paused": "unterbrochen"
+			"charging paused": "unterbrochen",
 
 			"Service type": "Serviceart",
 			"Description": "Beschreibung",
 			"Date": "Datum",
-			"Kilometer": "Kilometer",
+			"Kilometer": "Kilometer"
 		}
 	}
 }
