@@ -81,6 +81,7 @@
 			"window passenger rear": "Fenster Beifahrer hinten",
 			"current state of charge": "aktuelle Ladekapazität",
 			"maximum state of charge": "maximale Ladekapazität",
+
 			"Last trip: distance": "Letzte Fahrt: Distanz",
 			"Last trip: duration": "Letzte Fahrt: Dauer",
 			"Last trip: avrg consumption": "Letzte Fahrt: Durschnittsverbrauch",
@@ -134,6 +135,11 @@
 			"charging active": "aktiv",
 			"charging ended": "beendet",
 			"charging paused": "unterbrochen"
+
+			"Service type": "Serviceart",
+			"Description": "Beschreibung",
+			"Date": "Datum",
+			"Kilometer": "Kilometer",
 		}
 	}
 }

@@ -1302,10 +1302,10 @@ class BMWConnectedDrive extends IPSModule
                 $HTML = '<body><style type="text/css">table.liste { width: 100%; border-collapse: collapse ;} table.liste td { border: 1px solid #444455; } table.liste th { border: 1px solid #444455; }</style>';
                 $HTML .= '<table frame="box" class="liste">';
                 $HTML .= '<tr>';
-                $HTML .= '<th>Servicart</th>';
-                $HTML .= '<th>Beschreibung</th>';
-                $HTML .= '<th>Datum</th>';
-                $HTML .= '<th>Kilometer</th>';
+                $HTML .= '<th>' . $this->Translate('Service type') . '</th>';
+                $HTML .= '<th>' . $this->Translate('Description') . '</th>';
+                $HTML .= '<th>' . $this->Translate('Date') . '</th>';
+                $HTML .= '<th>' . $this->Translate('Kilometer') . '</th>';
                 $HTML .= '</tr>';
 
                 $service = json_decode($response)->vehicleMessages->cbsMessages;
