@@ -211,6 +211,9 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Version History
 
+- 1.7 @ 10.06.2019 11:48<br>
+  - Typing error fixed
+
 - 1.6 @ 10.02.2019 11:09<br>
   - Securing the data retrieval from GetRemoteServices()
 
