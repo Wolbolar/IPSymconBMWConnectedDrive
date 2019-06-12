@@ -1111,30 +1111,30 @@ class BMWConnectedDrive extends IPSModule
                 foreach ($data as $entry) {
                     $_ts = $entry['creationTime'] / 1000;
                     $ts = date('d.m. H:i:s', $_ts);
-		
+
                     $_rst = $entry['remoteServiceType'];
-					if (isset($type[$_rst])) {
-						$rst = $this->Translate($type[$_rst]);
-					} else {
-						IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown service "' . $_rst . '"');
-						$rst = $this->Translate('unknown service') . ' "' . $_rst . '"';
-					}
+                    if (isset($type[$_rst])) {
+                        $rst = $this->Translate($type[$_rst]);
+                    } else {
+                        IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown service "' . $_rst . '"');
+                        $rst = $this->Translate('unknown service') . ' "' . $_rst . '"';
+                    }
 
                     $_st = $entry['status'];
-					if (isset($status[$_st])) {
-						$st = $this->Translate($status[$_st]);
-					} else {
-						IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown status "' . $_st . '"');
-						$st = $this->Translate('unknown status') . ' "' . $_st . '"';
-					}
+                    if (isset($status[$_st])) {
+                        $st = $this->Translate($status[$_st]);
+                    } else {
+                        IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown status "' . $_st . '"');
+                        $st = $this->Translate('unknown status') . ' "' . $_st . '"';
+                    }
 
-					$_chan = $entry['channel'];
-					if (isset($channel[$_chan])) {
-						$chan = $this->Translate($channel[$_chan]);
-					} else {
-						IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown channel "' . $_chan . '"');
-						$chan = $this->Translate('unknown channel') . ' "' . $_chan . '"';
-					}
+                    $_chan = $entry['channel'];
+                    if (isset($channel[$_chan])) {
+                        $chan = $this->Translate($channel[$_chan]);
+                    } else {
+                        IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown channel "' . $_chan . '"');
+                        $chan = $this->Translate('unknown channel') . ' "' . $_chan . '"';
+                    }
 
                     $html .= "<tr>\n";
                     $html .= '<td>' . $ts . "</td>\n";
