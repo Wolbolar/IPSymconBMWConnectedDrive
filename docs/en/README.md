@@ -211,6 +211,9 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Version History
 
+- 1.8 @ 12.06.2019 18:06<br>
+  - Table "History" supplemented by "Channel", table "Service" adapted
+
 - 1.7 @ 10.06.2019 11:48<br>
   - Typing error fixed
 

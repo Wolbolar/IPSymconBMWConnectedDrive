@@ -1085,7 +1085,12 @@ class BMWConnectedDrive extends IPSModule
                 'PENDING'   => 'pending',
                 'INITIATED' => 'initiated',
                 'FAILED'    => 'failed',
+                'ERROR'     => 'error',
                 'CANCELLED' => 'cancelled',
+            ];
+        $channel = [
+                'PORTAL'      => 'Web-Portal',
+                'MOBILE_APP'  => 'App',
             ];
 
         if ($data != '') {
@@ -1094,21 +1099,48 @@ class BMWConnectedDrive extends IPSModule
                 IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'got error: ' . print_r($data, true));
             } else {
                 $html = "<style>\n";
-                $html .= "th, td { padding: 2px 10px; } \n";
+                $html .= "th, td { padding: 2px 10px; text-align: left; } \n";
                 $html .= "</style>\n";
                 $html .= "<table>\n";
+                $html .= '<tr>';
+                $html .= '<th>' . $this->Translate('Moment') . '</th>';
+                $html .= '<th>' . $this->Translate('Remote service') . '</th>';
+                $html .= '<th>' . $this->Translate('State') . '</th>';
+                $html .= '<th>' . $this->Translate('Channel') . '</th>';
+                $html .= '</tr>';
                 foreach ($data as $entry) {
                     $_ts = $entry['creationTime'] / 1000;
                     $ts = date('d.m. H:i:s', $_ts);
+		
                     $_rst = $entry['remoteServiceType'];
-                    $rst = $this->Translate(isset($type[$_rst]) ? $type[$_rst] : 'unknown service');
+					if (isset($type[$_rst])) {
+						$rst = $this->Translate($type[$_rst]);
+					} else {
+						IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown service "' . $_rst . '"');
+						$rst = $this->Translate('unknown service') . ' "' . $_rst . '"';
+					}
+
                     $_st = $entry['status'];
-                    $st = $this->Translate(isset($status[$_st]) ? $status[$_st] : 'unknown status');
+					if (isset($status[$_st])) {
+						$st = $this->Translate($status[$_st]);
+					} else {
+						IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown status "' . $_st . '"');
+						$st = $this->Translate('unknown status') . ' "' . $_st . '"';
+					}
+
+					$_chan = $entry['channel'];
+					if (isset($channel[$_chan])) {
+						$chan = $this->Translate($channel[$_chan]);
+					} else {
+						IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown channel "' . $_chan . '"');
+						$chan = $this->Translate('unknown channel') . ' "' . $_chan . '"';
+					}
 
                     $html .= "<tr>\n";
                     $html .= '<td>' . $ts . "</td>\n";
                     $html .= '<td>' . $rst . "</td>\n";
                     $html .= '<td>' . $st . "</td>\n";
+                    $html .= '<td>' . $chan . "</td>\n";
                     $html .= "</tr>\n";
                 }
                 $html .= "</table>\n";
@@ -1299,14 +1331,16 @@ class BMWConnectedDrive extends IPSModule
         }
         if (isset(json_decode($response)->vehicleMessages->cbsMessages)) {
             if ($active_service) {
-                $HTML = '<body><style type="text/css">table.liste { width: 100%; border-collapse: collapse ;} table.liste td { border: 1px solid #444455; } table.liste th { border: 1px solid #444455; }</style>';
-                $HTML .= '<table frame="box" class="liste">';
-                $HTML .= '<tr>';
-                $HTML .= '<th>' . $this->Translate('Service type') . '</th>';
-                $HTML .= '<th>' . $this->Translate('Description') . '</th>';
-                $HTML .= '<th>' . $this->Translate('Date') . '</th>';
-                $HTML .= '<th>' . $this->Translate('Kilometer') . '</th>';
-                $HTML .= '</tr>';
+                $html = "<style>\n";
+                $html .= "th, td { padding: 2px 10px; text-align: left; } \n";
+                $html .= "</style>\n";
+                $html .= "<table>\n";
+                $html .= '<tr>';
+                $html .= '<th>' . $this->Translate('Service type') . '</th>';
+                $html .= '<th>' . $this->Translate('Description') . '</th>';
+                $html .= '<th>' . $this->Translate('Date') . '</th>';
+                $html .= '<th>' . $this->Translate('Kilometer') . '</th>';
+                $html .= '</tr>';
 
                 $service = json_decode($response)->vehicleMessages->cbsMessages;
                 foreach ($service as $key => $servicemessage) {
@@ -1316,16 +1350,18 @@ class BMWConnectedDrive extends IPSModule
                     if (isset($servicemessage->unitOfLengthRemaining)) {
                         $dist = $servicemessage->unitOfLengthRemaining;
                     } else {
-                        $dist = 'Nicht angegeben';
+                        $dist = '-';
                     }
 
-                    $HTML .= '<tr align="center"><td>' . $text . '</td>';
-                    $HTML .= '<td>' . $description . '</td>';
-                    $HTML .= '<td>' . $date . '</td>';
-                    $HTML .= '<td>' . $dist . '</td></tr>';
+                    $html .= "<tr>\n";
+                    $html .= '<td>' . $text . '</td>';
+                    $html .= '<td>' . $description . '</td>';
+                    $html .= '<td>' . $date . '</td>';
+                    $html .= '<td>' . $dist . '</td>';
+                    $html .= "</tr>\n";
                 }
-                $HTML .= '</table></body>';
-                $this->SetValue('bmw_service', $HTML);
+                $html .= '</table>';
+                $this->SetValue('bmw_service', $html);
             }
         }
         return $data;
