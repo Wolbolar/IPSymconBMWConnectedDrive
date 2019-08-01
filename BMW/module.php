@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 if (@constant('IPS_BASE') == null) { //Nur wenn Konstanten noch nicht bekannt sind.
 // --- BASE MESSAGE
     define('IPS_BASE', 10000);                             //Base Message
