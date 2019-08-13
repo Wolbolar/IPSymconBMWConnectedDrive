@@ -562,7 +562,7 @@ class BMWConnectedDrive extends IPSModule
         if ($active_picture) {
             $angle = GetValue($this->GetIDForIdent('bmw_perspective'));
             $zoom = GetValue($this->GetIDForIdent('bmw_car_picture_zoom'));
-            $this->GetCarPictureForAngle($angle, $zoom);
+            $this->GetCarPictureForAngle(intval($angle), intval($zoom));
         }
 
         $this->GetStore();
@@ -796,7 +796,7 @@ class BMWConnectedDrive extends IPSModule
             }
         }
         if ($latitude != '' && $longitude != '') {
-            $pos = number_format($latitude, 6, '.', '') . ',' . number_format($longitude, 6, '.', '');
+            $pos = number_format(floatval($latitude), 6, '.', '') . ',' . number_format($longitude, 6, '.', '');
             $horizontal_size = $this->ReadPropertyInteger('horizontal_mapsize');
             $vertical_value = $this->ReadPropertyInteger('vertical_mapsize');
             $markercolor = 'red';
@@ -1518,7 +1518,7 @@ class BMWConnectedDrive extends IPSModule
     public function SetCarPictureZoom(int $zoom)
     {
         $angle = GetValue($this->GetIDForIdent('bmw_perspective'));
-        $this->GetCarPictureForAngle($angle, $zoom);
+        $this->GetCarPictureForAngle(intval($angle), $zoom);
     }
 
     /**
@@ -1873,7 +1873,7 @@ class BMWConnectedDrive extends IPSModule
                 break;
             case 'bmw_perspective':
                 $zoom = GetValue($this->GetIDForIdent('bmw_car_picture_zoom'));
-                $this->GetCarPictureForAngle($Value, $zoom);
+                $this->GetCarPictureForAngle($Value, intval($zoom));
                 break;
             case 'bmw_start_honk':
                 $this->Honk();
@@ -2256,7 +2256,7 @@ class BMWConnectedDrive extends IPSModule
             }
             $parts = str_split($data, 8000);
             $newCount = count($parts);
-            $this->SetBuffer('BufferCount_' . $name, $newCount);
+            $this->SetBuffer('BufferCount_' . $name, strval($newCount));
             for ($i = 0; $i < $newCount; $i++) {
                 $this->SetBuffer('BufferPart' . $i . '_' . $name, $parts[$i]);
             }
