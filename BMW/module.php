@@ -805,11 +805,11 @@ class BMWConnectedDrive extends IPSModule
             $url .= '&center=' . rawurlencode($pos);
             // zoom 0 world - 21 building
             if ($zoom > 0) {
-                $url .= '&zoom=' . rawurlencode($zoom);
+                $url .= '&zoom=' . rawurlencode(strval($zoom));
             }
-            $url .= '&size=' . rawurlencode($horizontal_size . 'x' . $vertical_value);
-            $url .= '&maptype=' . rawurlencode($maptype);
-            $url .= '&markers=' . rawurlencode('color:' . $markercolor . '|' . $pos);
+            $url .= '&size=' . rawurlencode(strval($horizontal_size) . 'x' . strval($vertical_value));
+            $url .= '&maptype=' . rawurlencode(strval($maptype));
+            $url .= '&markers=' . rawurlencode('color:' . strval($markercolor) . '|' . strval($pos));
             $url .= '&sensor=true';
 
             $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
@@ -1100,7 +1100,7 @@ class BMWConnectedDrive extends IPSModule
                 $html .= "</style>\n";
                 $html .= "<table>\n";
                 foreach ($data as $entry) {
-                    $_ts = $entry['creationTime'] / 1000;
+                    $_ts = intval(round($entry['creationTime'] / 1000));
                     $ts = date('d.m. H:i:s', $_ts);
                     $_rst = $entry['remoteServiceType'];
                     $rst = $this->Translate(isset($type[$_rst]) ? $type[$_rst] : 'unknown service');
