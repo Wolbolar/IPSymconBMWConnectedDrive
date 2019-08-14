@@ -796,7 +796,7 @@ class BMWConnectedDrive extends IPSModule
             }
         }
         if ($latitude != '' && $longitude != '') {
-            $pos = number_format(floatval($latitude), 6, '.', '') . ',' . number_format($longitude, 6, '.', '');
+            $pos = number_format(floatval($latitude), 6, '.', '') . ',' . number_format(floatval($longitude), 6, '.', '');
             $horizontal_size = $this->ReadPropertyInteger('horizontal_mapsize');
             $vertical_value = $this->ReadPropertyInteger('vertical_mapsize');
             $markercolor = 'red';
