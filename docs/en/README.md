@@ -213,6 +213,9 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Version History
 
+- 1.9 @ 18.01.2020 10:28<br>
+  - Fix because of 'strict_types = 1': json_decode () must always be given a string
+
 - 1.8 @ 12.06.2019 18:06<br>
   - Table "History" supplemented by "Channel", table "Service" adapted
 

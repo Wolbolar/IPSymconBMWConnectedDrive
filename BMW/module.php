@@ -710,7 +710,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $command = '/api/v1/user/vehicles/';
         $response = $this->SendBMWAPI($command, '');
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
@@ -726,7 +726,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/me/vehicles/v2';
         $response = $this->SendBMWAPI($command, '');
         $this->SetMultiBuffer('bmw_car_interface', $response);
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
@@ -744,7 +744,7 @@ class BMWConnectedDrive extends IPSModule
         $response = $this->SendBMWAPI($command, '');
         $this->SetMultiBuffer('bmw_navigation_interface', $response);
 
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         $model = $this->ReadPropertyInteger('model');
@@ -893,7 +893,7 @@ class BMWConnectedDrive extends IPSModule
 
         $model = $this->ReadPropertyInteger('model');
         if ($model != BMW_MODEL_STANDARD) { // standard, no electric
-            $data = json_decode($response);
+            $data = json_decode((string) $response);
             $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
             if (isset($data->lastTripList)) {
@@ -1070,7 +1070,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/remoteservices/v1/' . $vin . '/history';
         $response = $this->SendBMWAPI($command, '');
         $this->SetMultiBuffer('bmw_history_interface', $response);
-        $data = json_decode($response, true);
+        $data = json_decode((string) $response, true);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         $type = [
@@ -1173,7 +1173,7 @@ class BMWConnectedDrive extends IPSModule
         $response = $this->SendBMWAPI($command, '');
         $this->SetMultiBuffer('bmw_dynamic_interface', $response);
 
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         if (isset($data->attributesMap)) {
@@ -1331,7 +1331,7 @@ class BMWConnectedDrive extends IPSModule
                 }
             }
         }
-        if (isset(json_decode($response)->vehicleMessages->cbsMessages)) {
+        if (isset(json_decode((string) $response)->vehicleMessages->cbsMessages)) {
             if ($active_service) {
                 $html = "<style>\n";
                 $html .= "th, td { padding: 2px 10px; text-align: left; } \n";
@@ -1344,7 +1344,7 @@ class BMWConnectedDrive extends IPSModule
                 $html .= '<th>' . $this->Translate('Kilometer') . '</th>';
                 $html .= '</tr>';
 
-                $service = json_decode($response)->vehicleMessages->cbsMessages;
+                $service = json_decode((string) $response)->vehicleMessages->cbsMessages;
                 foreach ($service as $key => $servicemessage) {
                     $description = $servicemessage->description;
                     $text = $servicemessage->text;
@@ -1403,7 +1403,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/status';
         $response = $this->SendBMWAPI($command, '');
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         if (isset($data->vehicleStatus)) {
@@ -1517,7 +1517,7 @@ class BMWConnectedDrive extends IPSModule
         $command = '/api/vehicle/image/v1/' . $vin . '?startAngle=' . $angle . '&stepAngle=10&width=780';
         $response = $this->SendBMWAPI($command, '');
         $this->SetMultiBuffer('bmw_image_interface', $response);
-        $images = json_decode($response);
+        $images = json_decode((string) $response);
         if (isset($images->vin) && $active_picture) {
             $picture_url = false;
             $picture_vin = $images->vin;
@@ -1567,7 +1567,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/statistics/lastTrip';
         $response = $this->SendBMWAPI($command, '');
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
@@ -1583,7 +1583,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/chargingprofile';
         $response = $this->SendBMWAPI($command, '');
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
@@ -1599,7 +1599,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/destinations';
         $response = $this->SendBMWAPI($command, '');
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
@@ -1615,7 +1615,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/statistics/allTrips';
         $response = $this->SendBMWAPI($command, '');
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
@@ -1631,7 +1631,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/rangemap';
         $response = $this->SendBMWAPI($command, '');
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
@@ -1642,7 +1642,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/rangemap';
         $response = $this->SendBMWAPI($command, '');
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;
@@ -1660,7 +1660,7 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/serviceExecutionStatus?serviceType=' . $service;
         $response = $this->SendBMWAPI($command, '');
-        $data = json_decode($response);
+        $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         return $data;

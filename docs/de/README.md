@@ -220,6 +220,9 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Versions-Historie
 
+- 1.9 @ 18.01.2020 10:28<br>
+  - Fix wg. 'strict_types=1': json_decode() muss immer einen String übergeben bekommen
+
 - 1.8 @ 12.06.2019 18:06<br>
   - Tabelle "Verlauf" um "Channel" ergänzt, Tabelle "Service" angepasst
 
