@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 if (@constant('IPS_BASE') == null) { //Nur wenn Konstanten noch nicht bekannt sind.
 // --- BASE MESSAGE
     define('IPS_BASE', 10000);                             //Base Message
@@ -560,7 +562,7 @@ class BMWConnectedDrive extends IPSModule
         if ($active_picture) {
             $angle = GetValue($this->GetIDForIdent('bmw_perspective'));
             $zoom = GetValue($this->GetIDForIdent('bmw_car_picture_zoom'));
-            $this->GetCarPictureForAngle($angle, $zoom);
+            $this->GetCarPictureForAngle(intval($angle), intval($zoom));
         }
 
         $this->GetStore();
@@ -794,7 +796,7 @@ class BMWConnectedDrive extends IPSModule
             }
         }
         if ($latitude != '' && $longitude != '') {
-            $pos = number_format($latitude, 6, '.', '') . ',' . number_format($longitude, 6, '.', '');
+            $pos = number_format(floatval($latitude), 6, '.', '') . ',' . number_format(floatval($longitude), 6, '.', '');
             $horizontal_size = $this->ReadPropertyInteger('horizontal_mapsize');
             $vertical_value = $this->ReadPropertyInteger('vertical_mapsize');
             $markercolor = 'red';
@@ -803,11 +805,11 @@ class BMWConnectedDrive extends IPSModule
             $url .= '&center=' . rawurlencode($pos);
             // zoom 0 world - 21 building
             if ($zoom > 0) {
-                $url .= '&zoom=' . rawurlencode($zoom);
+                $url .= '&zoom=' . rawurlencode(strval($zoom));
             }
-            $url .= '&size=' . rawurlencode($horizontal_size . 'x' . $vertical_value);
-            $url .= '&maptype=' . rawurlencode($maptype);
-            $url .= '&markers=' . rawurlencode('color:' . $markercolor . '|' . $pos);
+            $url .= '&size=' . rawurlencode(strval($horizontal_size) . 'x' . strval($vertical_value));
+            $url .= '&maptype=' . rawurlencode(strval($maptype));
+            $url .= '&markers=' . rawurlencode('color:' . strval($markercolor) . '|' . strval($pos));
             $url .= '&sensor=true';
 
             $this->SendDebug(__FUNCTION__, 'url=' . $url, 0);
@@ -1109,7 +1111,7 @@ class BMWConnectedDrive extends IPSModule
                 $html .= '<th>' . $this->Translate('Channel') . '</th>';
                 $html .= '</tr>';
                 foreach ($data as $entry) {
-                    $_ts = $entry['creationTime'] / 1000;
+                    $_ts = intval(round($entry['creationTime'] / 1000));
                     $ts = date('d.m. H:i:s', $_ts);
 
                     $_rst = $entry['remoteServiceType'];
@@ -1552,7 +1554,7 @@ class BMWConnectedDrive extends IPSModule
     public function SetCarPictureZoom(int $zoom)
     {
         $angle = GetValue($this->GetIDForIdent('bmw_perspective'));
-        $this->GetCarPictureForAngle($angle, $zoom);
+        $this->GetCarPictureForAngle(intval($angle), $zoom);
     }
 
     /**
@@ -1907,7 +1909,7 @@ class BMWConnectedDrive extends IPSModule
                 break;
             case 'bmw_perspective':
                 $zoom = GetValue($this->GetIDForIdent('bmw_car_picture_zoom'));
-                $this->GetCarPictureForAngle($Value, $zoom);
+                $this->GetCarPictureForAngle($Value, intval($zoom));
                 break;
             case 'bmw_start_honk':
                 $this->Honk();
@@ -2290,7 +2292,7 @@ class BMWConnectedDrive extends IPSModule
             }
             $parts = str_split($data, 8000);
             $newCount = count($parts);
-            $this->SetBuffer('BufferCount_' . $name, $newCount);
+            $this->SetBuffer('BufferCount_' . $name, strval($newCount));
             for ($i = 0; $i < $newCount; $i++) {
                 $this->SetBuffer('BufferPart' . $i . '_' . $name, $parts[$i]);
             }
