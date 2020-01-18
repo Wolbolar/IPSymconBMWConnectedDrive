@@ -625,18 +625,18 @@ class BMWConnectedDrive extends IPSModule
         $this->SendDebug(__FUNCTION__, 'url=' . $auth_api, 0);
 
         $header = [
-                'Content-Type: application/x-www-form-urlencoded'
-            ];
+            'Content-Type: application/x-www-form-urlencoded'
+        ];
         $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
 
         $postfields = [
-                'username'      => $user,
-                'password'      => $password,
-                'client_id'     => $app_id,
-                'redirect_uri'  => 'https://www.bmw-connecteddrive.com/app/default/static/external-dispatch.html',
-                'response_type' => 'token',
-                'locale'        => 'DE-de'
-            ];
+            'username'      => $user,
+            'password'      => $password,
+            'client_id'     => $app_id,
+            'redirect_uri'  => 'https://www.bmw-connecteddrive.com/app/default/static/external-dispatch.html',
+            'response_type' => 'token',
+            'locale'        => 'DE-de'
+        ];
         $this->SendDebug(__FUNCTION__, 'postfields=' . print_r($postfields, true), 0);
 
         $ch = curl_init();
@@ -674,9 +674,9 @@ class BMWConnectedDrive extends IPSModule
         $this->SendDebug(__FUNCTION__, 'set access_token=' . $token . ', expiration=' . $token_expiration, 0);
 
         $jtoken = [
-                'token'            => $token,
-                'token_expiration' => $token_expiration
-            ];
+            'token'            => $token,
+            'token_expiration' => $token_expiration
+        ];
         $this->SetBuffer('Token', json_encode($jtoken));
         return $token;
     }
@@ -1074,26 +1074,26 @@ class BMWConnectedDrive extends IPSModule
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         $type = [
-                'RCN' => 'climate now',
-                'RCT' => 'climate timer',
-                'RHB' => 'horn blow',
-                'RLF' => 'light flash',
-                'RDL' => 'door lock',
-                'RDU' => 'door unlock',
-                'RCP' => 'charge preferences',
-            ];
+            'RCN' => 'climate now',
+            'RCT' => 'climate timer',
+            'RHB' => 'horn blow',
+            'RLF' => 'light flash',
+            'RDL' => 'door lock',
+            'RDU' => 'door unlock',
+            'RCP' => 'charge preferences',
+        ];
         $status = [
-                'SUCCESS'   => 'success',
-                'PENDING'   => 'pending',
-                'INITIATED' => 'initiated',
-                'FAILED'    => 'failed',
-                'ERROR'     => 'error',
-                'CANCELLED' => 'cancelled',
-            ];
+            'SUCCESS'   => 'success',
+            'PENDING'   => 'pending',
+            'INITIATED' => 'initiated',
+            'FAILED'    => 'failed',
+            'ERROR'     => 'error',
+            'CANCELLED' => 'cancelled',
+        ];
         $channel = [
-                'PORTAL'      => 'Web-Portal',
-                'MOBILE_APP'  => 'App',
-            ];
+            'PORTAL'      => 'Web-Portal',
+            'MOBILE_APP'  => 'App',
+        ];
 
         if ($data != '') {
             if (isset($data['errors'])) {
@@ -1838,17 +1838,17 @@ class BMWConnectedDrive extends IPSModule
         curl_setopt($ch, CURLOPT_URL, $api . $command);
 
         $header = [
-                'Content-Type: application/json',
-                'Authorization: Bearer ' . $token
-            ];
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $token
+        ];
         $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
         if ($action) {
             curl_setopt($ch, CURLOPT_POST, 1);
             $postfields = [
-                    'serviceType'   => $action
-                ];
+                'serviceType'   => $action
+            ];
             $this->SendDebug(__FUNCTION__, 'postfields=' . print_r($postfields, true), 0);
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postfields));
         }
