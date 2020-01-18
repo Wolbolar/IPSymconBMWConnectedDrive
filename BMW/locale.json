@@ -112,6 +112,11 @@
 			"China": "China",
 			"Rest of the World": "Rest der Welt",
 
+			"Moment": "Zeitpunkt",
+			"Remote service": "Funktion",
+			"State": "Status",
+			"Channel": "Auslöser",
+
 			"climate now": "Klimatisierung aktivieren",
 			"climate timer": "Klimatisierung planen",
 			"horn blow": "Hupe",
@@ -125,8 +130,13 @@
 			"pending": "ausstehend",
 			"initated": "initiiert",
 			"failed": "fehlgeschlagen",
+			"error": "fehlgeschlagen",
 			"cancelled": "abgebrochen",
 			"unknown status": "unbekannter Status",
+
+			"Web-Portal": "Webportal",
+			"App": "App",
+			"unknown channel": "unbekannte Quelle",
 
 			"unknown": "unbekannt",
 			"disconnected": "nicht verbunden",
@@ -143,3 +153,4 @@
 		}
 	}
 }
+
