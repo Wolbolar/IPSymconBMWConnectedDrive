@@ -220,34 +220,37 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Versions-Historie
 
-- 1.9 @ 18.01.2020 10:28<br>
+- 1.10 @ 03.02.2020 16:01
+  - das bisherige Datenfeld 'socMax' heisst nun 'socmax'. Es werden beide Schreibweisen unterstützt
+
+- 1.9 @ 18.01.2020 10:28
   - Fix wg. 'strict_types=1': json_decode() muss immer einen String übergeben bekommen
 
-- 1.8 @ 12.06.2019 18:06<br>
+- 1.8 @ 12.06.2019 18:06
   - Tabelle "Verlauf" um "Channel" ergänzt, Tabelle "Service" angepasst
 
-- 1.7 @ 10.06.2019 11:48<br>
+- 1.7 @ 10.06.2019 11:48
   - Schrebifehler korrigiert
 
-- 1.6 @ 10.02.2019 11:09<br>
+- 1.6 @ 10.02.2019 11:09
   - Absicherung des Datenabrufs von GetRemoteServices()
 
-- 1.5 @ 21.01.2019 18:13<br>
+- 1.5 @ 21.01.2019 18:13
   - Fix zu 1.4
 
-- 1.4 @ 18.01.2019 18:20<br>
+- 1.4 @ 18.01.2019 18:20
   - Sicherheitsabfragen auf leere Strukturen, mehr Debug
 
-- 1.3 @ 04.01.2019 14:50<br>
+- 1.3 @ 04.01.2019 14:50
   - für elektrisch/hybrid: Übernahme der Angaben zur letzten Fahrt, Gesamtfahrten und Effizienz
 
-- 1.2 @ 13.10.2018 17:58<br>
+- 1.2 @ 13.10.2018 17:58
   - Umstellung der internen Speicherung zur Vermeidung der Warnung _Puffer > 8kb_.
 
-- 1.1 @ 04.09.2018 09:36<br>
+- 1.1 @ 04.09.2018 09:36
   - Übernahme von soc/socMax (Ladekapazität) für e-Modelle
   - Angabe des GoogleMaps-API-Keys (ist seit 06/2018 erforderlich)
   - Versionshistorie dazu
 
-- 1.0 @ 05.04.2017<br>
+- 1.0 @ 05.04.2017
   Initiale Version
