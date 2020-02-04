@@ -756,7 +756,7 @@ class BMWConnectedDrive extends IPSModule
             if (isset($data->socmax)) {
                 $socmax = floatval($data->socmax);
                 $this->SetValue('bmw_socMax', $socmax);
-            } else if (isset($data->socMax)) {
+            } elseif (isset($data->socMax)) {
                 $socMax = floatval($data->socMax);
                 $this->SetValue('bmw_socMax', $socMax);
             }
