@@ -123,12 +123,15 @@
 			"light flash": "Lichthupe",
 			"door lock": "Verriegeln",
 			"door unlock": "Entriegeln",
+			"find vehicle": "Fahrzeug lokalisieren",
+            "charge now": "Ladevorgang starten",
 			"charge preferences": "Ladepreferenzen",
 			"unknown service": "unbekannter Service",
 
 			"success": "erfolgreich gesendet",
 			"pending": "ausstehend",
 			"initated": "initiiert",
+			"executed": "ausgeführt",
 			"failed": "fehlgeschlagen",
 			"error": "fehlgeschlagen",
 			"cancelled": "abgebrochen",
@@ -136,7 +139,7 @@
 
 			"Web-Portal": "Webportal",
 			"App": "App",
-			"unknown channel": "unbekannte Quelle",
+			"unknown client": "unbekannte Quelle",
 
 			"unknown": "unbekannt",
 			"disconnected": "nicht verbunden",
