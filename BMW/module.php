@@ -582,13 +582,16 @@ class BMWConnectedDrive extends IPSModule
         return 'km';
     }
 
-    protected function GetBMWServerURL($area)
+    protected function GetBMWServerURL($area, $mode)
     {
         switch ($area) {
         case BMW_AREA_GERMANY:
             $server = 'Germany';
-            $url = 'https://www.bmw-connecteddrive.de';
-            $url = 'https://b2vapi.bmwgroup.com';
+            if ($mode == 2) {
+                $url = 'https://b2vapi.bmwgroup.com';
+            } else {
+                $url = 'https://www.bmw-connecteddrive.de';
+            }
             break;
         case BMW_AREA_SWITZERLAND:
             $server = 'Switzerland';
@@ -618,23 +621,97 @@ class BMWConnectedDrive extends IPSModule
 
     public function GetToken()
     {
+        $this->GetToken_1();
+        $this->GetToken_2();
+    }
+
+    public function GetToken_1()
+    {
         $user = $this->ReadPropertyString('user');
         $password = $this->ReadPropertyString('password');
         $app_id = $this->ReadPropertyString('app_id');
 
         $auth_api = 'https://customer.bmwgroup.com/gcdm/oauth/authenticate';
-        $auth_api = 'https://b2vapi.bmwgroup.com/gcdm/oauth/token';
         $this->SendDebug(__FUNCTION__, 'url=' . $auth_api, 0);
+
+        $header = [
+            'Content-Type: application/x-www-form-urlencoded'
+        ];
+        $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
+
+        $postfields = [
+            'username'      => $user,
+            'password'      => $password,
+            'client_id'     => $app_id,
+            'redirect_uri'  => 'https://www.bmw-connecteddrive.com/app/default/static/external-dispatch.html',
+            'response_type' => 'token',
+            'locale'        => 'DE-de'
+        ];
+        $this->SendDebug(__FUNCTION__, 'postfields=' . print_r($postfields, true), 0);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $auth_api);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_setopt($ch, CURLOPT_COOKIESESSION, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postfields));
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        $response = curl_exec($ch);
+        $curl_error = curl_error($ch);
+        curl_close($ch);
+
+        if (empty($response) || $response === false || !empty($curl_error)) {
+            $this->SendDebug(__FUNCTION__, 'Empty answer from Bearerinterface: ' . $curl_error, 0);
+            return false;
+        }
+
+        // extract token
+        preg_match('/access_token=([\w\d]+).*token_type=(\w+).*expires_in=(\d+)/', $response, $matches);
+
+        // check token type
+        if (empty($matches[2]) || $matches[2] !== 'Bearer') {
+            $this->SendDebug(__FUNCTION__, 'No remote token received - username or password might be wrong: ' . $response, 0);
+            return false;
+        }
+
+        $token = $matches[1];
+        $token_expiration = time() + $matches[3] - 60;
+        $this->SendDebug(__FUNCTION__, 'set access_token=' . $token . ', expiration=' . $token_expiration, 0);
+
+        $jtoken = [
+            'token'            => $token,
+            'token_expiration' => $token_expiration
+        ];
+        $this->SetBuffer('Token_1', json_encode($jtoken));
+        return $token;
+    }
+
+    public function GetToken_2()
+    {
+        $user = $this->ReadPropertyString('user');
+        $password = $this->ReadPropertyString('password');
+        $app_id = $this->ReadPropertyString('app_id');
+
+        $host = 'b2vapi.bmwgroup.com';
+        $auth_api = 'https://' . $host . '/gcdm/oauth/token';
+        $this->SendDebug(__FUNCTION__, 'url=' . $auth_api, 0);
+
+        $authorization = 'Basic ZDc2NmI1MzctYTY1NC00Y2JkLWEzZGMtMGNhNTY3MmQ3ZjhkOjE1ZjY5N2Y2LWE1ZDUtNGNhZC05OWQ5LTNhMTViYzdmMzk3Mw==';
+        $credentials = 'nQv6CqtxJuXWP74xf3CJwUEP:1zDHx6un4cDjybLENN3kyfumX2kEYigWPcQpdvDRpIBk7rOJ';
 
         $header = [
             'Content-Type: application/x-www-form-urlencoded',
             'Connection: Keep-Alive',
             'Accept-Encoding: gzip',
-            'Authorization: Basic ZDc2NmI1MzctYTY1NC00Y2JkLWEzZGMtMGNhNTY3MmQ3ZjhkOjE1ZjY5N2Y2LWE1ZDUtNGNhZC05OWQ5LTNhMTViYzdmMzk3Mw==',
-            'Credentials: nQv6CqtxJuXWP74xf3CJwUEP:1zDHx6un4cDjybLENN3kyfumX2kEYigWPcQpdvDRpIBk7rOJ',
-            'User-Agent: okhttp/3.12.2',
-            'Accept-Encoding: gzip',
-            'Host: customer.bmwgroup.com',
+            'Authorization: ' . $authorization,
+            'Credentials: ' . $credentials,
+            'User-Agent: okhttp/2.60',
+            'Host: ' . $host,
         ];
         $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
 
@@ -665,8 +742,7 @@ class BMWConnectedDrive extends IPSModule
 
         if (empty($response) || $response === false || !empty($curl_error)) {
             $this->SendDebug(__FUNCTION__, 'Empty answer from Bearerinterface: ' . $curl_error, 0);
-            return false;
-        }
+            return false; }
 
         $header = substr($response, 0, $header_size);
         $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
@@ -676,6 +752,10 @@ class BMWConnectedDrive extends IPSModule
         $jbody = json_decode($body, true);
         $this->SendDebug(__FUNCTION__, 'jbody=' . print_r($jbody, true), 0);
 
+        if (!(isset($jbody['access_token']) && isset($jbody['expires_in']))) {
+            $this->SendDebug(__FUNCTION__, 'malformed answer from Bearerinterface: ' . $curl_error, 0);
+            return false;
+        }
         $access_token = $jbody['access_token'];
         $expires_in = $jbody['expires_in'];
 
@@ -686,22 +766,40 @@ class BMWConnectedDrive extends IPSModule
             'token'            => $access_token,
             'token_expiration' => $token_expiration
         ];
-        $this->SetBuffer('Token', json_encode($jtoken));
+        $this->SetBuffer('Token_2', json_encode($jtoken));
         return $access_token;
     }
 
-    public function CheckToken()
+    public function CheckToken($mode)
     {
-        $dtoken = $this->GetBuffer('Token');
+        switch ($mode) {
+            case '1':
+                $dtoken = $this->GetBuffer('Token_1');
+                break;
+            case '2':
+                $dtoken = $this->GetBuffer('Token_2');
+                break;
+            default:
+                $this->SendDebug(__FUNCTION__, 'unknow mode ' . $mode, 0);
+                return false;
+        }
+
         $jtoken = json_decode($dtoken, true);
         $token = isset($jtoken['token']) ? $jtoken['token'] : '';
         $token_expiration = isset($jtoken['token_expiration']) ? $jtoken['token_expiration'] : 0;
         if ($token == '' || time() > $token_expiration) {
             $this->SendDebug(__FUNCTION__, 'no token or token expired, get new token', 0);
-            $token = $this->GetToken();
+            switch ($mode) {
+                case '1':
+                    $token = $this->GetToken_1();
+                    break;
+                case '2':
+                    $token = $this->GetToken_2();
+                    break;
+            }
         }
 
-        $this->SendDebug(__FUNCTION__, "token=$token", 0);
+        $this->SendDebug(__FUNCTION__, 'token=' . $token, 0);
         return $token;
     }
 
@@ -718,7 +816,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetVehicleData()
     {
         $command = '/api/v1/user/vehicles/';
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
@@ -733,7 +831,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetVehicleInfo()
     {
         $command = '/api/me/vehicles/v2';
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $this->SetMultiBuffer('bmw_car_interface', $response);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
@@ -750,7 +848,8 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/navigation/v1/' . $vin;
-        $response = $this->SendBMWAPI($command, '');
+
+        $response = $this->SendBMWAPI($command, '', 1);
         $this->SetMultiBuffer('bmw_navigation_interface', $response);
 
         $data = json_decode((string) $response);
@@ -900,7 +999,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/efficiency/v1/' . $vin;
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 1);
         $this->SetMultiBuffer('bmw_efficiency_interface', $response);
 
         $model = $this->ReadPropertyInteger('model');
@@ -996,7 +1095,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/remoteservices/chargingprofile/v1/' . $vin;
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $this->SetMultiBuffer('bmw_chargingprofile_interface', $response);
         return $response;
     }
@@ -1010,7 +1109,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/me/service/mapupdate/download/v1/' . $vin;
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 1);
         $this->SetMultiBuffer('bmw_mapupdate_interface', $response);
         return $response;
     }
@@ -1024,7 +1123,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/store/v2/' . $vin . '/offersAndPortfolios';
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response, true);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
         $this->SetMultiBuffer('bmw_store_interface', $response);
@@ -1040,7 +1139,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/specs/v1/' . $vin;
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 1);
         $data = json_decode((string) $response, true);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
         $this->SetMultiBuffer('bmw_specs_interface', $response);
@@ -1056,7 +1155,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/service/v1/' . $vin;
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response, true);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
         $this->SetMultiBuffer('bmw_service_interface', $response);
@@ -1072,7 +1171,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/servicepartner/v1/' . $vin;
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response, true);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
         $this->SetMultiBuffer('bmw_service_partner_interface', $response);
@@ -1089,21 +1188,21 @@ class BMWConnectedDrive extends IPSModule
         $vin = $this->ReadPropertyString('vin');
         $command = '/webapi/v1/user/vehicles/' . $vin . '/serviceExecutionHistory';
 
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $this->SetMultiBuffer('bmw_history_interface', $response);
         $data = json_decode((string) $response, true);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
         $services = [
-            'CLIMATE_NOW'		     => 'climate now',
-            'DOOR_LOCK'			      => 'door lock',
-            'DOOR_UNLOCK'		     => 'door unlock',
-            'LIGHT_FLASH'		     => 'light flash',
-            'HORN_BLOW'			      => 'horn blow',
-            'VEHICLE_FINDER'	   => 'find vehicle',
-            'CHARGE_NOW'		      => 'charge now',
-            'CHARGING_CONTROL'	 => 'charging control',
-            'CHARGE_PREFERENCE'	=> 'charge preferences',
+            'CLIMATE_NOW'       => 'climate now',
+            'DOOR_LOCK'         => 'door lock',
+            'DOOR_UNLOCK'       => 'door unlock',
+            'LIGHT_FLASH'       => 'light flash',
+            'HORN_BLOW'         => 'horn blow',
+            'VEHICLE_FINDER'    => 'find vehicle',
+            'CHARGE_NOW'        => 'charge now',
+            'CHARGING_CONTROL'  => 'charging control',
+            'CHARGE_PREFERENCE' => 'charge preferences',
         ];
         $status = [
             'SUCCESS'   => 'success',
@@ -1201,7 +1300,7 @@ class BMWConnectedDrive extends IPSModule
 
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/dynamic/v1/' . $vin . '?offset=' . date('Z') / -60;
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $this->SetMultiBuffer('bmw_dynamic_interface', $response);
 
         $data = json_decode((string) $response);
@@ -1433,7 +1532,6 @@ class BMWConnectedDrive extends IPSModule
         $active_lock_data = $this->ReadPropertyBoolean('active_lock_data');
 
         $vin = $this->ReadPropertyString('vin');
-        $command = '/api/v1/user/vehicles/' . $vin . '/status';
         $command = '/webapi/v1/user/vehicles/' . $vin . '/status';
 
         $instID = IPS_GetInstanceListByModuleID('{45E97A63-F870-408A-B259-2933F7EABF74}')[0];
@@ -1451,7 +1549,7 @@ class BMWConnectedDrive extends IPSModule
         $command .= '&dlat=' . number_format($home_lat, 6, '.', '');
         $command .= '&dlon=' . number_format($home_lon, 6, '.', '');
 
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
@@ -1581,7 +1679,7 @@ class BMWConnectedDrive extends IPSModule
 
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/vehicle/image/v1/' . $vin . '?startAngle=' . $angle . '&stepAngle=10&width=780';
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $this->SetMultiBuffer('bmw_image_interface', $response);
         $images = json_decode((string) $response);
         if (isset($images->vin) && $active_picture) {
@@ -1632,7 +1730,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/statistics/lastTrip';
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
@@ -1648,7 +1746,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/chargingprofile';
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
@@ -1664,7 +1762,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/destinations';
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
@@ -1680,7 +1778,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/statistics/allTrips';
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
@@ -1696,7 +1794,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/rangemap';
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
@@ -1707,7 +1805,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/rangemap';
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
@@ -1725,7 +1823,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/webapi/v1/user/vehicles/' . $vin . '/serviceExecutionStatus?serviceType=' . $service;
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
 
@@ -1743,7 +1841,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/api/v1/user/vehicles/' . $vin . '/' . $service;
-        $response = $this->SendBMWAPI($command, '');
+        $response = $this->SendBMWAPI($command, '', 2);
         return $response;
     }
 
@@ -1762,7 +1860,7 @@ class BMWConnectedDrive extends IPSModule
         $postfields = [
             'serviceType'   => $action
         ];
-        $response = $this->SendBMWAPI($command, $postfields);
+        $response = $this->SendBMWAPI($command, $postfields, 2);
         return $response;
     }
 
@@ -1883,12 +1981,12 @@ class BMWConnectedDrive extends IPSModule
         return $result;
     }
 
-    protected function SendBMWAPI($command, $postfields)
+    protected function SendBMWAPI($command, $postfields, $mode)
     {
-        $token = $this->CheckToken();
+        $token = $this->CheckToken($mode);
 
         $area = $this->ReadPropertyInteger('bmw_server');
-        $api = $this->GetBMWServerURL($area);
+        $api = $this->GetBMWServerURL($area, $mode);
 
         $ch = curl_init();
         $this->SendDebug(__FUNCTION__, 'url=' . $api . $command, 0);
@@ -1897,12 +1995,12 @@ class BMWConnectedDrive extends IPSModule
         $header = [
             'Accept: application/json',
             'Authorization: Bearer ' . $token,
-            //'referer: https://www.bmw-connecteddrive.de/app/index.html',
+            'referer: https://b2vapi.bmwgroup.com/app/index.html',
         ];
         $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
-        if ($postfields) {
+        if ($postfields != '') {
             curl_setopt($ch, CURLOPT_POST, 1);
             $this->SendDebug(__FUNCTION__, 'postfields=' . print_r($postfields, true), 0);
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postfields));
@@ -2173,7 +2271,7 @@ class BMWConnectedDrive extends IPSModule
                     [
                         'name'    => 'active_vehicle_finder',
                         'type'    => 'CheckBox',
-                        'caption' => 'search vehicle (not useable)'
+                        'caption' => 'search vehicle'
                     ],
                     [
                         'name'    => 'active_picture',
