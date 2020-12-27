@@ -742,7 +742,8 @@ class BMWConnectedDrive extends IPSModule
 
         if (empty($response) || $response === false || !empty($curl_error)) {
             $this->SendDebug(__FUNCTION__, 'Empty answer from Bearerinterface: ' . $curl_error, 0);
-            return false; }
+            return false;
+        }
 
         $header = substr($response, 0, $header_size);
         $this->SendDebug(__FUNCTION__, 'header=' . print_r($header, true), 0);
@@ -770,7 +771,7 @@ class BMWConnectedDrive extends IPSModule
         return $access_token;
     }
 
-    public function CheckToken($mode)
+    private function CheckToken($mode)
     {
         switch ($mode) {
             case '1':
@@ -803,11 +804,6 @@ class BMWConnectedDrive extends IPSModule
         return $token;
     }
 
-    public function MessageSink($TimeStamp, $SenderID, $Message, $Data)
-    {
-        IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'SenderID: ' . $SenderID . ', Message: ' . $Message . ', Data:' . json_encode($Data));
-    }
-
     /**
      * Get Vehicle Data.
      *
@@ -815,7 +811,7 @@ class BMWConnectedDrive extends IPSModule
      */
     public function GetVehicleData()
     {
-        $command = '/api/v1/user/vehicles/';
+        $command = '/webapi/v1/user/vehicles/';
         $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
@@ -1195,6 +1191,7 @@ class BMWConnectedDrive extends IPSModule
 
         $services = [
             'CLIMATE_NOW'       => 'climate now',
+            'CLIMATE_CONTROL'   => 'climate control',
             'DOOR_LOCK'         => 'door lock',
             'DOOR_UNLOCK'       => 'door unlock',
             'LIGHT_FLASH'       => 'light flash',
@@ -1729,7 +1726,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetLastTrip()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = '/api/v1/user/vehicles/' . $vin . '/statistics/lastTrip';
+        $command = '/webapi/v1/user/vehicles/' . $vin . '/statistics/lastTrip';
         $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
@@ -1745,7 +1742,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetChargingTimes()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = '/api/v1/user/vehicles/' . $vin . '/chargingprofile';
+        $command = '/webapi/v1/user/vehicles/' . $vin . '/chargingprofile';
         $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
@@ -1761,7 +1758,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetVehicleDestinations()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = '/api/v1/user/vehicles/' . $vin . '/destinations';
+        $command = '/webapi/v1/user/vehicles/' . $vin . '/destinations';
         $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
@@ -1777,7 +1774,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetAllTripDetails()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = '/api/v1/user/vehicles/' . $vin . '/statistics/allTrips';
+        $command = '/webapi/v1/user/vehicles/' . $vin . '/statistics/allTrips';
         $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
@@ -1793,18 +1790,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetRangeMap()
     {
         $vin = $this->ReadPropertyString('vin');
-        $command = '/api/v1/user/vehicles/' . $vin . '/rangemap';
-        $response = $this->SendBMWAPI($command, '', 2);
-        $data = json_decode((string) $response);
-        $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
-
-        return $data;
-    }
-
-    public function GetSoCData()
-    {
-        $vin = $this->ReadPropertyString('vin');
-        $command = '/api/v1/user/vehicles/' . $vin . '/rangemap';
+        $command = '/webapi/v1/user/vehicles/' . $vin . '/rangemap';
         $response = $this->SendBMWAPI($command, '', 2);
         $data = json_decode((string) $response);
         $this->SendDebug(__FUNCTION__, 'data=' . print_r($data, true), 0);
@@ -1819,7 +1805,7 @@ class BMWConnectedDrive extends IPSModule
      *
      * @return mixed
      */
-    public function GetRequestStatus($service)
+    public function GetRequestStatus(string $service)
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/webapi/v1/user/vehicles/' . $vin . '/serviceExecutionStatus?serviceType=' . $service;
@@ -1834,26 +1820,11 @@ class BMWConnectedDrive extends IPSModule
      * Instructs the car to perform an action.
      *
      * @param $service
-     *
-     * @return mixed
-     */
-    protected function PerformAction($service)
-    {
-        $vin = $this->ReadPropertyString('vin');
-        $command = '/api/v1/user/vehicles/' . $vin . '/' . $service;
-        $response = $this->SendBMWAPI($command, '', 2);
-        return $response;
-    }
-
-    /**
-     * Instructs the car to perform an action.
-     *
-     * @param $service
      * @param $action
      *
      * @return mixed
      */
-    protected function PerformActionV1($service, $action)
+    protected function ExecuteService($service, $action)
     {
         $vin = $this->ReadPropertyString('vin');
         $command = '/webapi/v1/user/vehicles/' . $vin . '/executeService';
@@ -1872,7 +1843,9 @@ class BMWConnectedDrive extends IPSModule
     public function InitiateCharging()
     {
         $service = 'serviceType=CHARGE_NOW';
-        $result = $this->PerformAction($service);
+        $vin = $this->ReadPropertyString('vin');
+        $command = '/webapi/v1/user/vehicles/' . $vin . '/serviceType=CHARGE_NOW';
+        $result = $this->SendBMWAPI($command, '', 2);
         return $result;
     }
 
@@ -1885,7 +1858,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $service = 'RCN';
         $action = 'CLIMATE_NOW';
-        $result = $this->PerformActionV1($service, $action);
+        $result = $this->ExecuteService($service, $action);
         $this->SendDebug(__FUNCTION__, 'service=' . $service . ', action=' . $action . ', result=' . $result, 0);
         return $result;
     }
@@ -1899,7 +1872,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $service = 'RDL';
         $action = 'DOOR_LOCK';
-        $result = $this->PerformActionV1($service, $action);
+        $result = $this->ExecuteService($service, $action);
         $this->SendDebug(__FUNCTION__, 'service=' . $service . ', action=' . $action . ', result=' . $result, 0);
         return $result;
     }
@@ -1913,7 +1886,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $service = 'RDU';
         $action = 'DOOR_UNLOCK';
-        $result = $this->PerformActionV1($service, $action);
+        $result = $this->ExecuteService($service, $action);
         $this->SendDebug(__FUNCTION__, 'service=' . $service . ', action=' . $action . ', result=' . $result, 0);
         return $result;
     }
@@ -1927,7 +1900,7 @@ class BMWConnectedDrive extends IPSModule
     {
         $service = 'RLF';
         $action = 'LIGHT_FLASH';
-        $result = $this->PerformActionV1($service, $action);
+        $result = $this->ExecuteService($service, $action);
         $this->SendDebug(__FUNCTION__, 'service=' . $service . ', action=' . $action . ', result=' . $result, 0);
         return $result;
     }
@@ -1941,18 +1914,10 @@ class BMWConnectedDrive extends IPSModule
     {
         $service = 'RHB';
         $action = 'HORN_BLOW';
-        $result = $this->PerformActionV1($service, $action);
+        $result = $this->ExecuteService($service, $action);
         $this->SendDebug(__FUNCTION__, 'service=' . $service . ', action=' . $action . ', result=' . $result, 0);
         return $result;
     }
-
-    /*
-    public function ChargingSchedule()
-    {
-        $service = "serviceType=CHARGING_CONTROL";
-        $this->PerformAction($service);
-    }
-     */
 
     /**
      * vehicle finder.
@@ -1961,23 +1926,26 @@ class BMWConnectedDrive extends IPSModule
      */
     public function VehicleFinder()
     {
-        $service = 'serviceType=VEHICLE_FINDER';
-        $result = $this->PerformAction($service);
-        $this->SendDebug(__FUNCTION__, 'service=' . $service . ', result=' . $result, 0);
-        return $result;
-    }
+        $vin = $this->ReadPropertyString('vin');
+        $command = '/webapi/v1/user/vehicles/' . $vin . '/serviceType=VEHICLE_FINDER';
 
-    /**
-     * Find vehicle.
-     *
-     * @return mixed
-     */
-    public function FindVehicle()
-    {
-        $service = 'RVF';
-        $action = 'VEHICLE_FINDER';
-        $result = $this->PerformActionV1($service, $action);
-        $this->SendDebug(__FUNCTION__, 'service=' . $service . ', action=' . $action . ', result=' . $result, 0);
+        $instID = IPS_GetInstanceListByModuleID('{45E97A63-F870-408A-B259-2933F7EABF74}')[0];
+        if (IPS_GetKernelVersion() >= 5) {
+            $loc = json_decode(IPS_GetProperty($instID, 'Location'), true);
+            $this->SendDebug(__FUNCTION__, 'loc=' . print_r($loc, true), 0);
+            $home_lon = $loc['longitude'];
+            $home_lat = $loc['latitude'];
+        } else {
+            $home_lon = IPS_GetProperty($instID, 'Longitude');
+            $home_lat = IPS_GetProperty($instID, 'Latitude');
+        }
+
+        $command .= '?deviceTime=' . date('Y-m-d\TH:i:s', time());
+        $command .= '&dlat=' . number_format($home_lat, 6, '.', '');
+        $command .= '&dlon=' . number_format($home_lon, 6, '.', '');
+        $result = $this->SendBMWAPI($command, '', 2);
+
+        $this->SendDebug(__FUNCTION__, 'service=' . $service . ', result=' . $result, 0);
         return $result;
     }
 

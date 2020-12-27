@@ -119,6 +119,7 @@
 
 			"climate now": "Klimatisierung aktivieren",
 			"climate timer": "Klimatisierung planen",
+			"climate control": "Klimatisierungs-Dienst",
 			"horn blow": "Hupe",
 			"light flash": "Lichthupe",
 			"door lock": "Verriegeln",
@@ -126,7 +127,7 @@
 			"find vehicle": "Fahrzeug lokalisieren",
             "charge now": "Ladevorgang starten",
 			"charge preferences": "Ladepreferenzen",
-			"unknown service": "unbekannter Service",
+			"unknown service": "unbekannter Dienst",
 
 			"success": "erfolgreich gesendet",
 			"pending": "ausstehend",

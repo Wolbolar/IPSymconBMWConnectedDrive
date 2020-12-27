@@ -220,8 +220,8 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Versions-Historie
 
-- 1.11 @ 02.11.2020 15:07 (beta)
-  - die API hat sich geändert; keine funktionellen Änderungen
+- 1.11 @ 27.12.2020 11:27 (beta)
+  - die API hat sich geändert
 
 - 1.10 @ 03.02.2020 16:01
   - das bisherige Datenfeld 'socMax' heisst nun 'socmax'. Es werden beide Schreibweisen unterstützt
