@@ -220,7 +220,7 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Versions-Historie
 
-- 1.11 @ 28.12.2020 09:52 (beta)
+- 1.11 @ 28.12.2020 12:16 (beta)
   - die API hat sich geändert
   - Variablen für Zeitpunkt der letzten Statusmeldung und Status der letzten Fahrzeugsuche
 
