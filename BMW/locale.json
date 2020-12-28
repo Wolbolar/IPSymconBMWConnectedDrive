@@ -153,7 +153,12 @@
 			"Service type": "Serviceart",
 			"Description": "Beschreibung",
 			"Date": "Datum",
-			"Kilometer": "Kilometer"
+			"Kilometer": "Kilometer",
+
+			"last status update": "Zeitpunkt des letzten Status-Update",
+
+			"position request status": "Status der Positionsabfrage",
+			"TOO_FAR_AWAY": "ausser Reichweite"
 		}
 	}
 }

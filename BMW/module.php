@@ -460,11 +460,14 @@ class BMWConnectedDrive extends IPSModule
         } else {
             $this->UnregisterVariable('bmw_start_honk');
         }
+
         if ($active_vehicle_finder) {
             $this->RegisterVariableInteger('bmw_start_vehicle_finder', $this->Translate('search vehicle'), 'BMW.Start', 25);
+            $this->RegisterVariableString('bmw_position_request_status', $this->Translate('position request status'), '', 27);
             $this->EnableAction('bmw_start_vehicle_finder');
         } else {
             $this->UnregisterVariable('bmw_start_vehicle_finder');
+            $this->UnregisterVariable('bmw_position_request_status');
         }
         if ($active_picture) {
             $this->RegisterVariableString('bmw_car_picture', $this->Translate('picture'), '~HTMLBox', 1);
@@ -499,8 +502,9 @@ class BMWConnectedDrive extends IPSModule
             $this->UnregisterVariable('bmw_current_latitude');
             $this->UnregisterVariable('bmw_current_longitude');
         }
+
         if ($active_service) {
-            $this->RegisterVariableString('bmw_service', $this->Translate('Service'), '~HTMLBox', 15);
+            $this->RegisterVariableString('bmw_service', $this->Translate('Service'), '~HTMLBox', 16);
         } else {
             $this->UnregisterVariable('bmw_service');
         }
@@ -534,6 +538,9 @@ class BMWConnectedDrive extends IPSModule
             $this->UnregisterVariable('bmw_hood');
             $this->UnregisterVariable('bmw_doorLockState');
         }
+
+        $this->RegisterVariableInteger('bmw_last_status_update', $this->Translate('last status update'), '~UnixTimestamp', 99);
+
         // Status Aktiv
         $this->SetStatus(102);
     }
@@ -1525,6 +1532,7 @@ class BMWConnectedDrive extends IPSModule
     public function GetVehicleStatus()
     {
         $active_current_position = $this->ReadPropertyBoolean('active_current_position');
+        $active_vehicle_finder = $this->ReadPropertyBoolean('active_vehicle_finder');
         $active_lock = $this->ReadPropertyBoolean('active_lock');
         $active_lock_data = $this->ReadPropertyBoolean('active_lock_data');
 
@@ -1534,7 +1542,6 @@ class BMWConnectedDrive extends IPSModule
         $instID = IPS_GetInstanceListByModuleID('{45E97A63-F870-408A-B259-2933F7EABF74}')[0];
         if (IPS_GetKernelVersion() >= 5) {
             $loc = json_decode(IPS_GetProperty($instID, 'Location'), true);
-            $this->SendDebug(__FUNCTION__, 'loc=' . print_r($loc, true), 0);
             $home_lon = $loc['longitude'];
             $home_lat = $loc['latitude'];
         } else {
@@ -1568,8 +1575,12 @@ class BMWConnectedDrive extends IPSModule
                 if ($active_current_position) {
                     if (isset($carinfo->position)) {
                         $position = $carinfo->position;
-                        if (isset($position->status) && $position->status == 'OK') {
-                            if (isset($position->lat) && isset($position->lon)) {
+                        if (isset($position->status)) {
+                            if ($active_vehicle_finder) {
+                                $this->SetValue('bmw_position_request_status', $this->Translate($position->status));
+                            }
+
+                            if ($position->status == 'OK' && isset($position->lat) && isset($position->lon)) {
                                 $this->SetValue('bmw_current_latitude', $position->lat);
                                 $this->SetValue('bmw_current_longitude', $position->lon);
                             }
@@ -1637,6 +1648,12 @@ class BMWConnectedDrive extends IPSModule
                         $this->SetLockState('bmw_doorLockState', $doorLockState);
                     }
                 }
+
+                $ts = 0;
+                if (isset($carinfo->updateTime)) {
+                    $ts = strtotime($carinfo->updateTime);
+                }
+                $this->SetValue('bmw_last_status_update', $ts);
             }
         }
 
@@ -1920,32 +1937,16 @@ class BMWConnectedDrive extends IPSModule
     }
 
     /**
-     * vehicle finder.
+     * Find vehicle.
      *
      * @return mixed
      */
-    public function VehicleFinder()
+    public function FindVehicle()
     {
-        $vin = $this->ReadPropertyString('vin');
-        $command = '/webapi/v1/user/vehicles/' . $vin . '/serviceType=VEHICLE_FINDER';
-
-        $instID = IPS_GetInstanceListByModuleID('{45E97A63-F870-408A-B259-2933F7EABF74}')[0];
-        if (IPS_GetKernelVersion() >= 5) {
-            $loc = json_decode(IPS_GetProperty($instID, 'Location'), true);
-            $this->SendDebug(__FUNCTION__, 'loc=' . print_r($loc, true), 0);
-            $home_lon = $loc['longitude'];
-            $home_lat = $loc['latitude'];
-        } else {
-            $home_lon = IPS_GetProperty($instID, 'Longitude');
-            $home_lat = IPS_GetProperty($instID, 'Latitude');
-        }
-
-        $command .= '?deviceTime=' . date('Y-m-d\TH:i:s', time());
-        $command .= '&dlat=' . number_format($home_lat, 6, '.', '');
-        $command .= '&dlon=' . number_format($home_lon, 6, '.', '');
-        $result = $this->SendBMWAPI($command, '', 2);
-
-        $this->SendDebug(__FUNCTION__, 'service=' . $service . ', result=' . $result, 0);
+        $service = 'RVF';
+        $action = 'VEHICLE_FINDER';
+        $result = $this->ExecuteService($service, $action);
+        $this->SendDebug(__FUNCTION__, 'service=' . $service . ', action=' . $action . ', result=' . $result, 0);
         return $result;
     }
 
@@ -1969,7 +1970,7 @@ class BMWConnectedDrive extends IPSModule
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
 
         if ($postfields != '') {
-            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POST, true);
             $this->SendDebug(__FUNCTION__, 'postfields=' . print_r($postfields, true), 0);
             curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($postfields));
         }
@@ -2026,7 +2027,7 @@ class BMWConnectedDrive extends IPSModule
                 $this->FlashHeadlights();
                 break;
             case 'bmw_start_vehicle_finder':
-                $this->VehicleFinder();
+                $this->FindVehicle();
                 break;
             case 'bmw_perspective':
                 $zoom = GetValue($this->GetIDForIdent('bmw_car_picture_zoom'));
