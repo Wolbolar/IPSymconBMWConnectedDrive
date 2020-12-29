@@ -158,7 +158,9 @@
 			"last status update": "Zeitpunkt des letzten Status-Update",
 
 			"position request status": "Status der Positionsabfrage",
-			"TOO_FAR_AWAY": "ausser Reichweite"
+			"OK": "erfolgreich",
+			"TOO_FAR_AWAY": "ausser Reichweite",
+			"VEHICLE_ACTIVE": "in Bewegung"
 		}
 	}
 }
