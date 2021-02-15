@@ -2374,7 +2374,15 @@ class BMWConnectedDrive extends IPSModule
     protected function SetValue($Ident, $Value)
     {
         if (IPS_GetKernelVersion() >= 5) {
-            parent::SetValue($Ident, $Value);
+            @$varID = $this->GetIDForIdent($Ident);
+            if ($varID == false) {
+                $this->SendDebug(__FUNCTION__, 'missing variable ' . $Ident, 0);
+                return;
+            }
+            @$ret = parent::SetValue($Ident, $Value);
+            if ($ret == false) {
+                $this->SendDebug(__FUNCTION__, 'mismatch of value "' . $Value . '" for variable ' . $Ident, 0);
+            }
         } else {
             SetValue($this->GetIDForIdent($Ident), $Value);
         }
