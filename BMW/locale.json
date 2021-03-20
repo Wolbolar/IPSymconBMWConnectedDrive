@@ -55,7 +55,7 @@
 			"rear window": "Rückfenster",
 			"remaining electric range": "Elektrische Reichweite",
 			"remaining range": "Tankreichweite",
-			"search vehicle (not useable)": "Fahrzeug suchen (nicht funktionsfähig)",
+			"search vehicle": "Fahrzeug suchen",
 			"select area": "Gebiet auswählen",
 			"service message": "Service Mitteilungen",
 			"Service": "Service",
@@ -119,16 +119,20 @@
 
 			"climate now": "Klimatisierung aktivieren",
 			"climate timer": "Klimatisierung planen",
+			"climate control": "Klimatisierungs-Dienst",
 			"horn blow": "Hupe",
 			"light flash": "Lichthupe",
 			"door lock": "Verriegeln",
 			"door unlock": "Entriegeln",
+			"find vehicle": "Fahrzeug lokalisieren",
+            "charge now": "Ladevorgang starten",
 			"charge preferences": "Ladepreferenzen",
-			"unknown service": "unbekannter Service",
+			"unknown service": "unbekannter Dienst",
 
 			"success": "erfolgreich gesendet",
 			"pending": "ausstehend",
 			"initated": "initiiert",
+			"executed": "ausgeführt",
 			"failed": "fehlgeschlagen",
 			"error": "fehlgeschlagen",
 			"cancelled": "abgebrochen",
@@ -136,7 +140,7 @@
 
 			"Web-Portal": "Webportal",
 			"App": "App",
-			"unknown channel": "unbekannte Quelle",
+			"unknown client": "unbekannte Quelle",
 
 			"unknown": "unbekannt",
 			"disconnected": "nicht verbunden",
@@ -149,7 +153,14 @@
 			"Service type": "Serviceart",
 			"Description": "Beschreibung",
 			"Date": "Datum",
-			"Kilometer": "Kilometer"
+			"Kilometer": "Kilometer",
+
+			"last status update": "Zeitpunkt des letzten Status-Update",
+
+			"position request status": "Status der Positionsabfrage",
+			"OK": "erfolgreich",
+			"TOO_FAR_AWAY": "ausser Reichweite",
+			"VEHICLE_ACTIVE": "in Bewegung"
 		}
 	}
 }
