@@ -1220,6 +1220,7 @@ class BMWConnectedDrive extends IPSModule
             'ERROR'     => 'error',
             'CANCELLED' => 'cancelled',
             'EXECUTED'  => 'executed',
+            'NOT_EXECUTED'  => 'not_executed',
         ];
         $client = [
             'PORTAL'      => 'Web-Portal',
