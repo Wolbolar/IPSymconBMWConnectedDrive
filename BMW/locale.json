@@ -133,6 +133,7 @@
 			"pending": "ausstehend",
 			"initated": "initiiert",
 			"executed": "ausgeführt",
+			"not_executed": "nicht ausgeführt",
 			"failed": "fehlgeschlagen",
 			"error": "fehlgeschlagen",
 			"cancelled": "abgebrochen",
