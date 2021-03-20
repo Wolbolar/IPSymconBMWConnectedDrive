@@ -220,6 +220,11 @@ GUID: `{8FD2A163-E07A-A2A2-58CC-974155FAEE33}`
 
 ## 7. Versions-Historie
 
+- 1.11 @ 15.02.2021 14:10 (beta)
+  - die API hat sich geändert
+  - Variablen für Zeitpunkt der letzten Statusmeldung und Status der letzten Fahrzeugsuche
+  - SetValue() abgesichert
+
 - 1.10 @ 03.02.2020 16:01
   - das bisherige Datenfeld 'socMax' heisst nun 'socmax'. Es werden beide Schreibweisen unterstützt
 
