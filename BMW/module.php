@@ -1233,7 +1233,8 @@ class BMWConnectedDrive extends IPSModule
         if ($data != '') {
             if (isset($data['errors'])) {
                 $html = 'Datenabruf ist nicht möglich';
-                IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'got error: ' . print_r($data, true));
+                $this->SendDebug(__CLASS__ . '::' . __FUNCTION__, 'got error: ' . json_encode($data), 0);
+                $this->LogMessage(__CLASS__ . '::' . __FUNCTION__ . ': got error: ' . json_encode($data), KL_ERROR);
             } elseif (isset($data['serviceExecutionHistory'])) {
                 $history = $data['serviceExecutionHistory'];
                 $this->SendDebug(__FUNCTION__, 'history=' . print_r($history, true), 0);
@@ -1259,7 +1260,8 @@ class BMWConnectedDrive extends IPSModule
                     if (isset($services[$_rst])) {
                         $rst = $this->Translate($services[$_rst]);
                     } else {
-                        IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown service "' . $_rst . '"');
+                        $this->SendDebug(__CLASS__ . '::' . __FUNCTION__, 'unknown service "' . $_rst . '"', 0);
+                        $this->LogMessage(__CLASS__ . '::' . __FUNCTION__ . ': unknown service "' . $_rst . '"', KL_DEBUG);
                         $rst = $this->Translate('unknown service') . ' "' . $_rst . '"';
                     }
 
@@ -1267,7 +1269,8 @@ class BMWConnectedDrive extends IPSModule
                     if (isset($status[$_st])) {
                         $st = $this->Translate($status[$_st]);
                     } else {
-                        IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown status "' . $_st . '"');
+                        $this->SendDebug(__CLASS__ . '::' . __FUNCTION__, 'unknown status "' . $_st . '"', 0);
+                        $this->LogMessage(__CLASS__ . '::' . __FUNCTION__ . ': unknown status "' . $_st . '"', KL_DEBUG);
                         $st = $this->Translate('unknown status') . ' "' . $_st . '"';
                     }
 
@@ -1275,7 +1278,8 @@ class BMWConnectedDrive extends IPSModule
                     if (isset($client[$_clnt])) {
                         $clnt = $this->Translate($client[$_clnt]);
                     } else {
-                        IPS_LogMessage(__CLASS__ . '::' . __FUNCTION__, 'unknown client "' . $_clnt . '"');
+                        $this->SendDebug(__CLASS__ . '::' . __FUNCTION__, 'unknown client "' . $_clnt . '"', 0);
+                        $this->LogMessage(__CLASS__ . '::' . __FUNCTION__ . ': unknown client "' . $_clnt . '"', KL_DEBUG);
                         $clnt = $this->Translate('unknown client') . ' "' . $_clnt . '"';
                     }
 
